@@ -180,7 +180,7 @@ export function SettingsSection() {
   };
 
   return (
-    <div className="space-y-6 max-w-4xl select-none pb-24 md:pb-8">
+    <div data-dashboard-section="settings" className="w-full min-w-0 max-w-4xl space-y-6 select-none pb-24 md:pb-8">
       {/* Header */}
       <div className="space-y-2">
         <div className="flex items-center gap-1.5 text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">
@@ -200,9 +200,9 @@ export function SettingsSection() {
       <Tabs
         value={activeTab}
         onValueChange={setActiveTab}
-        className="space-y-6"
+        className="w-full min-w-0 space-y-6"
       >
-        <TabsList className="bg-[#f4f4f4] dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/[0.08] p-1 rounded-xl flex overflow-x-auto max-w-full scrollbar-none">
+        <TabsList data-settings-tabs="true" className="w-full min-w-0 max-w-full justify-start bg-[#f4f4f4] dark:bg-[#1c1c1e] border border-black/[0.06] dark:border-white/[0.08] p-1 rounded-xl flex overflow-x-auto scrollbar-none">
           <TabsTrigger
             value="profile"
             className="data-[state=active]:bg-white dark:data-[state=active]:bg-[#2c2c2e] data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-lg text-xs font-semibold whitespace-nowrap px-3 py-1.5 min-h-[44px] sm:min-h-[36px] inline-flex items-center shrink-0 transition-all cursor-pointer active:scale-95"
@@ -240,7 +240,7 @@ export function SettingsSection() {
         {/* 1. ABA PERFIL & APARÊNCIA */}
         <TabsContent
           value="profile"
-          className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-200"
+          className="w-full min-w-0 space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-200"
         >
           {/* Card: Dados do Perfil */}
           <Card className="border-border bg-card shadow-sm rounded-2xl">

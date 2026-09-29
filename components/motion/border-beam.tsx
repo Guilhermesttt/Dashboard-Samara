@@ -19,8 +19,8 @@ interface BorderBeamProps {
 
 export function BorderBeam({ children, className, beamClassName }: BorderBeamProps) {
   return (
-    <span className={cn("relative inline-flex overflow-hidden rounded-xl", className)}>
-      <span className={cn("relative z-10 inline-flex w-full", beamClassName)}>{children}</span>
+    <span className={cn("relative inline-flex min-w-0 max-w-full overflow-hidden rounded-xl", className)}>
+      <span className={cn("relative z-10 inline-flex min-w-0 w-full", beamClassName)}>{children}</span>
       <span
         aria-hidden="true"
         className="beam-glow pointer-events-none absolute inset-[-60%] z-0 animate-[beam-spin_4s_linear_infinite] motion-reduce:animate-none motion-reduce:opacity-0"

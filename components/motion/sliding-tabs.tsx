@@ -76,7 +76,7 @@ export function SlidingTabs({ tabs, value, onChange, ariaLabel, className }: Sli
       aria-label={ariaLabel ?? "Filtros"}
       onKeyDown={onKeyDown}
       className={cn(
-        "relative inline-flex max-w-full items-center gap-1 overflow-x-auto rounded-xl bg-[#f4f4f4] p-1 scrollbar-none dark:bg-[#1c1c1e]",
+        "relative inline-flex min-w-0 max-w-full items-center gap-1 overflow-x-auto rounded-xl bg-[#f4f4f4] p-1 scrollbar-none dark:bg-[#1c1c1e]",
         className
       )}
     >

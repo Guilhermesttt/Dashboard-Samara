@@ -186,10 +186,10 @@ export function ReportsSection() {
   };
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto space-y-6 select-none p8-page-enter pb-24 md:pb-8">
+    <div data-dashboard-section="reports" className="w-full min-w-0 max-w-[1400px] mx-auto space-y-6 select-none p8-page-enter pb-24 md:pb-8">
       {/* Header com Filtros & Botão Principal de Download do PDF */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-[#121212] p-4 sm:p-5 rounded-2xl border border-border dark:border-white/[0.08] shadow-sm">
-        <div className="space-y-1">
+        <div className="min-w-0 space-y-1">
           <div className="flex items-center gap-1.5 text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">
             <FileText className="w-3.5 h-3.5 text-black dark:text-white" />
             <span>Dados Reais da Clínica</span>
@@ -204,7 +204,7 @@ export function ReportsSection() {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex min-w-0 w-full flex-wrap items-center gap-2 sm:w-auto">
           {/* Seletor de Período — SlidingTabs (transitions.dev) */}
           <SlidingTabs
             ariaLabel="Filtrar relatórios por período"

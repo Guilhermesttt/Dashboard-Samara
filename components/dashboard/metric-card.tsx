@@ -23,10 +23,10 @@ export function MetricCard({
 }: MetricCardProps) {
   return (
     <div
-      className="p8-page-enter group relative bg-white dark:bg-[#121212] border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-3.5 sm:p-5 hover:border-black/20 dark:hover:border-white/20 transition-all duration-300 overflow-hidden shadow-[0_1px_3px_0_rgba(0,0,0,0.02)]"
+      className="p8-page-enter group relative min-w-0 max-w-full bg-white dark:bg-[#121212] border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-3.5 sm:p-5 hover:border-black/20 dark:hover:border-white/20 transition-all duration-300 overflow-hidden shadow-[0_1px_3px_0_rgba(0,0,0,0.02)]"
       style={{ animationDelay: `${delay * 100}ms`, animationFillMode: "both" }}
     >
-      <div className="relative">
+      <div className="relative min-w-0">
         <div className="flex items-start justify-between gap-1 mb-2 sm:mb-3">
           <span className="text-xs sm:text-sm text-[#767676] dark:text-[#a1a1aa] font-medium leading-snug line-clamp-1">
             {title}

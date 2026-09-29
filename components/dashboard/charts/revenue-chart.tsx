@@ -35,7 +35,7 @@ export function RevenueChart() {
   }, []);
 
   return (
-    <div className="bg-white dark:bg-[#121212] border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 sm:p-5 h-[300px] sm:h-[360px] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] transition-colors">
+    <div className="w-full min-w-0 max-w-full overflow-hidden bg-white dark:bg-[#121212] border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 sm:p-5 h-[300px] sm:h-[360px] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] transition-colors">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
         <div>
           <h3 className="text-sm sm:text-base font-semibold text-black dark:text-white">
@@ -57,7 +57,7 @@ export function RevenueChart() {
         </div>
       </div>
 
-      <div className={`h-[210px] sm:h-[260px] transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+      <div className={`h-[210px] min-w-0 sm:h-[260px] transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>

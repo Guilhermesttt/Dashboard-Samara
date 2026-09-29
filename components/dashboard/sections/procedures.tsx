@@ -239,7 +239,7 @@ export function ProceduresSection() {
   };
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto space-y-6 select-none p8-page-enter pb-24 sm:pb-8">
+    <div data-dashboard-section="procedures" className="w-full min-w-0 max-w-[1400px] mx-auto space-y-6 select-none p8-page-enter pb-24 sm:pb-8">
       {/* 1. Header */}
       <div className="space-y-2">
         <div className="flex items-center gap-1.5 text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">
@@ -256,7 +256,7 @@ export function ProceduresSection() {
               Catálogo de serviços estéticos e precificação da clínica.
             </p>
           </div>
-          <BorderBeam className="self-start sm:self-auto">
+          <BorderBeam className="w-full self-start sm:w-auto sm:self-auto">
           <button
             onClick={handleOpenAdd}
             className="h-11 sm:h-9 px-4 rounded-xl bg-black dark:bg-white hover:bg-[#262626] dark:hover:bg-[#ededed] active:scale-[0.98] text-white dark:text-black text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition-all duration-150 cursor-pointer min-h-[44px] sm:min-h-0 w-full sm:w-auto"
@@ -324,7 +324,7 @@ export function ProceduresSection() {
       {/* 3. Filter and Search Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-2 border-b border-black/[0.06] dark:border-white/[0.08] pb-3">
         {/* Category Tabs — SlidingTabs (transitions.dev) */}
-        <div className="w-full sm:w-auto overflow-x-auto scrollbar-none scroll-smooth">
+        <div className="w-full min-w-0 max-w-full sm:w-auto overflow-x-auto scrollbar-none scroll-smooth">
           <SlidingTabs
             ariaLabel="Filtrar procedimentos por categoria"
             value={selectedCategory}
@@ -391,25 +391,25 @@ export function ProceduresSection() {
             <div
               key={proc.id}
               className={cn(
-                "bg-white dark:bg-[#121212] border rounded-2xl p-4 shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] space-y-3 transition-all",
+                "w-full min-w-0 max-w-full bg-white dark:bg-[#121212] border rounded-2xl p-4 shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] space-y-3 transition-all",
                 isSelected
                   ? "border-black dark:border-white ring-1 ring-black dark:ring-white"
                   : "border-black/[0.08] dark:border-white/[0.08]"
               )}
             >
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex items-center gap-2.5">
+              <div className="flex min-w-0 flex-wrap items-start justify-between gap-2">
+                <div className="flex min-w-0 flex-1 basis-[11rem] items-center gap-2.5">
                   <div className="w-8 h-8 rounded-xl bg-[#f5f5f7] dark:bg-[#1c1c1e] flex items-center justify-center text-black dark:text-white shrink-0">
                     <Sparkles className="w-4 h-4" />
                   </div>
-                  <div>
-                    <h4 className="font-bold text-sm text-black dark:text-white">{proc.name}</h4>
+                  <div className="min-w-0">
+                    <h4 className="break-words font-bold text-sm text-black dark:text-white">{proc.name}</h4>
                     <span className="text-[11px] text-[#8f8f8f] dark:text-[#a1a1aa]">Cód: {proc.id.toUpperCase()}</span>
                   </div>
                 </div>
                 <span
                   className={cn(
-                    "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border",
+                    "inline-flex max-w-full shrink-0 items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border",
                     categoryBadgeColor(proc.category)
                   )}
                 >
@@ -423,7 +423,7 @@ export function ProceduresSection() {
                 </p>
               )}
 
-              <div className="pt-2.5 border-t border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between">
+              <div className="pt-2.5 border-t border-black/[0.06] dark:border-white/[0.06] flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <span className="text-[10px] text-[#8f8f8f] dark:text-[#a1a1aa] block">Valor da Sessão</span>
                   <span className="text-base font-bold text-black dark:text-white">
@@ -434,14 +434,14 @@ export function ProceduresSection() {
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={() => handleOpenEdit(proc)}
-                    className="h-8 px-2.5 rounded-lg bg-[#f5f5f5] dark:bg-[#1c1c1e] hover:bg-[#ebebeb] dark:hover:bg-[#2c2c2e] text-xs font-semibold text-black dark:text-white flex items-center gap-1 transition-colors cursor-pointer active:scale-95"
+                    className="h-11 min-w-[44px] px-3 rounded-xl bg-[#f5f5f5] dark:bg-[#1c1c1e] hover:bg-[#ebebeb] dark:hover:bg-[#2c2c2e] text-xs font-semibold text-black dark:text-white flex items-center justify-center gap-1 transition-colors cursor-pointer active:scale-95"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
                     <span>Editar</span>
                   </button>
                   <button
                     onClick={() => handleDeleteProcedure(proc.id)}
-                    className="w-8 h-8 rounded-lg bg-[#f5f5f5] dark:bg-[#1c1c1e] hover:bg-rose-50 dark:hover:bg-rose-950/40 text-[#8f8f8f] hover:text-rose-600 flex items-center justify-center transition-colors cursor-pointer active:scale-95"
+                    className="w-11 h-11 rounded-xl bg-[#f5f5f5] dark:bg-[#1c1c1e] hover:bg-rose-50 dark:hover:bg-rose-950/40 text-[#8f8f8f] hover:text-rose-600 flex items-center justify-center transition-colors cursor-pointer active:scale-95"
                     title="Excluir procedimento"
                   >
                     <Trash2 className="w-3.5 h-3.5" />

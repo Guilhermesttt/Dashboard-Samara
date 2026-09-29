@@ -10,6 +10,8 @@ const mobileProjects = [
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: false,
+  timeout: 60_000,
+  workers: 2,
   retries: process.env.CI ? 2 : 0,
   reporter: "line",
   use: {

@@ -256,7 +256,7 @@ export function CustomersSection() {
   }).length;
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto space-y-5 sm:space-y-6 select-none p8-page-enter pb-24 sm:pb-8">
+    <div data-dashboard-section="customers" className="w-full min-w-0 max-w-[1400px] mx-auto space-y-5 sm:space-y-6 select-none p8-page-enter pb-24 sm:pb-8">
       {/* 1. Header */}
       <div className="space-y-2.5 sm:space-y-2">
         <div className="flex items-center gap-1.5 text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">
@@ -333,7 +333,7 @@ export function CustomersSection() {
       {/* 3. Filter and Tab Bar */}
       <div className="space-y-3 pt-1 border-b border-black/[0.06] dark:border-white/[0.08] pb-3">
         {/* Navigation Tabs — SlidingTabs (transitions.dev): pill segue a aba ativa, 44px touch, setas de teclado */}
-        <div className="w-full overflow-x-auto scrollbar-none scroll-smooth">
+        <div className="w-full min-w-0 max-w-full overflow-x-auto scrollbar-none scroll-smooth">
           <SlidingTabs
             ariaLabel="Filtrar pacientes"
             value={activeTab}
@@ -351,9 +351,9 @@ export function CustomersSection() {
         </div>
 
         {/* Search, Sort & View Mode */}
-        <div className="flex items-center gap-2 w-full">
+        <div className="flex min-w-0 items-center gap-2 w-full">
           {/* Search Box with anti-zoom (text-base sm:text-xs) and clear button */}
-          <div className="relative flex-1">
+          <div className="relative min-w-0 flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8f8f8f] pointer-events-none" />
             <input
               type="text"
@@ -455,11 +455,11 @@ export function CustomersSection() {
                   }}
                   tabIndex={0}
                   aria-label={`Abrir prontuário de ${patient.name}`}
-                  className="bg-white dark:bg-[#121212] border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] active:scale-[0.99] transition-all cursor-pointer space-y-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black dark:focus-visible:outline-white"
+                  className="w-full min-w-0 max-w-full bg-white dark:bg-[#121212] border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] active:scale-[0.99] transition-all cursor-pointer space-y-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black dark:focus-visible:outline-white"
                 >
                   {/* Top: Avatar, Name, CPF & Status */}
-                  <div className="flex items-start justify-between gap-2.5">
-                    <div className="flex items-center gap-3 min-w-0">
+                  <div className="flex min-w-0 flex-wrap items-start justify-between gap-2.5">
+                    <div className="flex min-w-0 flex-1 basis-[12rem] items-center gap-3">
                       <div className="w-11 h-11 rounded-xl bg-black dark:bg-white text-white dark:text-black font-bold flex items-center justify-center text-sm shrink-0 shadow-sm">
                         {patient.name
                           .split(" ")
@@ -477,7 +477,7 @@ export function CustomersSection() {
                       </div>
                     </div>
                     <span
-                      className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+                      className={`max-w-full shrink-0 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
                         patient.status === "Em Tratamento"
                           ? "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/40 dark:text-purple-300 dark:border-purple-800/40"
                           : patient.status === "Ativo"
@@ -536,7 +536,7 @@ export function CustomersSection() {
                   </div>
 
                   {/* Summary row: Total Investido & Date */}
-                  <div className="flex items-center justify-between text-xs pt-2 border-t border-black/[0.04] dark:border-white/[0.06]">
+                  <div className="flex min-w-0 flex-wrap items-center justify-between gap-2 text-xs pt-2 border-t border-black/[0.04] dark:border-white/[0.06]">
                     <div>
                       <span className="text-[10px] text-[#8f8f8f] dark:text-[#a1a1aa] block">Total Investido</span>
                       <span className="font-bold text-black dark:text-white">
@@ -555,7 +555,7 @@ export function CustomersSection() {
 
                   {/* Mobile Actions: Touch targets at least 44px */}
                   <div
-                    className="grid grid-cols-2 gap-2 pt-1"
+                    className="grid min-w-0 grid-cols-2 gap-2 pt-1"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <button

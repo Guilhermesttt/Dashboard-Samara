@@ -582,7 +582,7 @@ export function AppointmentsSection() {
   }, [appointments, selectedDayFilter, searchQuery]);
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto space-y-6 select-none p8-page-enter pb-24 sm:pb-8">
+    <div data-dashboard-section="appointments" className="w-full min-w-0 max-w-[1400px] mx-auto space-y-6 select-none p8-page-enter pb-24 sm:pb-8">
       {/* 1. Header */}
       <div className="space-y-2">
         <div className="flex items-center gap-1.5 text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">
@@ -599,11 +599,11 @@ export function AppointmentsSection() {
               Controle de atendimentos diários e acompanhamento de retornos de 15 dias.
             </p>
           </div>
-          <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+          <div className="flex min-w-0 flex-wrap items-center gap-2 self-start sm:self-auto sm:shrink-0">
             <button
               type="button"
               onClick={() => playNotificationSound()}
-              className="h-9 px-2.5 sm:px-3 rounded-xl bg-[#f5f5f5] dark:bg-[#1c1c1e] hover:bg-[#ebebeb] dark:hover:bg-[#2c2c2e] active:scale-[0.98] text-black dark:text-white text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer border border-black/[0.04] dark:border-white/[0.08]"
+              className="h-11 sm:h-9 px-2.5 sm:px-3 rounded-xl bg-[#f5f5f5] dark:bg-[#1c1c1e] hover:bg-[#ebebeb] dark:hover:bg-[#2c2c2e] active:scale-[0.98] text-black dark:text-white text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer border border-black/[0.04] dark:border-white/[0.08]"
               title="Testar alerta sonoro do sistema"
             >
               <Volume2 className="w-3.5 h-3.5" />
@@ -612,7 +612,7 @@ export function AppointmentsSection() {
 
             <button
               onClick={() => setIsAddModalOpen(true)}
-              className="h-9 px-3.5 sm:px-4 rounded-xl bg-black dark:bg-white hover:bg-[#262626] dark:hover:bg-[#ededed] active:scale-[0.98] text-white dark:text-black text-xs font-semibold flex items-center gap-1.5 sm:gap-2 shadow-sm transition-all duration-150 cursor-pointer"
+              className="h-11 sm:h-9 px-3.5 sm:px-4 rounded-xl bg-black dark:bg-white hover:bg-[#262626] dark:hover:bg-[#ededed] active:scale-[0.98] text-white dark:text-black text-xs font-semibold flex items-center gap-1.5 sm:gap-2 shadow-sm transition-all duration-150 cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Novo Agendamento</span>
@@ -697,8 +697,8 @@ export function AppointmentsSection() {
         </div>
 
         {/* Busca e alternador de modo */}
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <div className="relative flex-1 sm:w-56">
+        <div className="grid min-w-0 w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:w-auto">
+          <div className="relative min-w-0 flex-1 sm:w-56">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8f8f8f] pointer-events-none" />
             <input
               type="text"
@@ -732,7 +732,7 @@ export function AppointmentsSection() {
             <span className="hidden sm:inline">{autoFlowEnabled ? "Fluxo Ativo" : "Fluxo Manual"}</span>
           </button>
 
-          <div className="inline-flex rounded-xl bg-[#f4f4f4] dark:bg-[#1c1c1e] p-1 shrink-0 border border-black/[0.04] dark:border-white/[0.06]" role="group" aria-label="Modo de visualização">
+          <div className="col-span-2 grid grid-cols-2 rounded-xl bg-[#f4f4f4] dark:bg-[#1c1c1e] p-1 border border-black/[0.04] dark:border-white/[0.06] sm:col-auto sm:inline-flex sm:shrink-0" role="group" aria-label="Modo de visualização">
             <button
               onClick={() => setViewMode("kanban")}
               aria-pressed={viewMode === "kanban"}
@@ -780,7 +780,7 @@ export function AppointmentsSection() {
           </button>
         </div>
       ) : viewMode === "kanban" ? (
-        <div className="flex lg:grid lg:grid-cols-5 gap-3.5 overflow-x-auto pb-4 scroll-momentum scroll-pl-3.5 scrollbar-thin snap-x">
+        <div data-kanban-board="true" className="flex w-full min-w-0 max-w-full lg:grid lg:grid-cols-5 gap-3.5 overflow-x-auto pb-4 scroll-momentum scroll-pl-3.5 scrollbar-thin snap-x">
           {stages.map((stage) => {
             const stageAppointments = filteredAppointments.filter(
               (a) => a.status === stage.id
