@@ -116,6 +116,11 @@ test("keeps customer and procedure actions complete and touchable", async ({ pag
 
 test("contains settings tabs and the report export action", async ({ page }) => {
   await openSection(page, "settings")
+  expect(
+    await page
+      .locator('[data-dashboard-section="settings"]')
+      .evaluate((element) => getComputedStyle(element).userSelect),
+  ).not.toBe("none")
   const tabs = page.locator('[data-settings-tabs="true"]')
   await expect(tabs).toBeVisible()
   expect(

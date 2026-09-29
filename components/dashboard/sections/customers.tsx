@@ -256,7 +256,7 @@ export function CustomersSection() {
   }).length;
 
   return (
-    <div data-dashboard-section="customers" className="w-full min-w-0 max-w-[1400px] mx-auto space-y-5 sm:space-y-6 select-none p8-page-enter pb-24 sm:pb-8">
+    <div data-dashboard-section="customers" className="w-full min-w-0 max-w-[1400px] mx-auto space-y-5 sm:space-y-6 p8-page-enter pb-24 sm:pb-8">
       {/* 1. Header */}
       <div className="space-y-2.5 sm:space-y-2">
         <div className="flex items-center gap-1.5 text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">
@@ -472,7 +472,7 @@ export function CustomersSection() {
                           {patient.name}
                         </h3>
                         <p className="text-[11px] text-[#767676] dark:text-[#a1a1aa] truncate">
-                          CPF: {patient.cpf || "Não informado"} • {patient.age || 30} anos
+                          CPF: {patient.cpf || "Não informado"} • {patient.age > 0 ? `${patient.age} anos` : "Idade não informada"}
                         </p>
                       </div>
                     </div>
@@ -646,7 +646,7 @@ export function CustomersSection() {
                                     {patient.name}
                                   </div>
                                   <div className="text-[11px] text-[#8f8f8f] dark:text-[#a1a1aa]">
-                                    CPF: {patient.cpf || "Não informado"} • {patient.age || 30} anos
+                                    CPF: {patient.cpf || "Não informado"} • {patient.age > 0 ? `${patient.age} anos` : "Idade não informada"}
                                   </div>
                                 </div>
                               </div>

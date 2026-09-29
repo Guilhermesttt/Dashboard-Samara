@@ -317,52 +317,23 @@ export function AppointmentsSection() {
       if (isBotox) activeProcedures.push("botox");
       if (isHof) activeProcedures.push("hof");
       if (isBio) activeProcedures.push("bio");
-      if (activeProcedures.length === 0) activeProcedures.push("botox");
 
       const newRecord: PatientRecord = {
         id: `pat-${Date.now()}`,
         name: patientName,
-        cpf: "342.891.108-45",
-        phone: phone || "(11) 98765-4321",
-        email: `${patientName.toLowerCase().replace(/\s+/g, ".")}@gmail.com`,
-        birthDate: "15/05/1992",
-        age: 33,
-        gender: "Feminino",
-        location: "São Paulo, SP",
-        profession: "Profissional Liberal",
+        cpf: "",
+        phone: phone.trim(),
+        email: "",
+        birthDate: "",
+        age: 0,
+        gender: "",
+        location: "",
+        profession: "",
         status: "Em Tratamento",
-        totalSpent: 1200,
-        proceduresCount: 1,
-        lastProcedureDate: "Hoje",
+        totalSpent: 0,
+        proceduresCount: 0,
+        lastProcedureDate: "",
         activeProcedures,
-        anamnese: {
-          clientId: `pat-${Date.now()}`,
-          clientName: patientName,
-          updatedAt: new Date().toLocaleDateString("pt-BR"),
-          status: "completed",
-          queixaPrincipal: `Agendamento de ${procedureName || "procedimento estético"}.`,
-          emTratamentoMedico: false,
-          cirurgiaPrevia: false,
-          anestesiaGeral: false,
-          anestesiaOdontologica: true,
-          alergiaAnestesia: false,
-          alergiaMedicamento: false,
-          alergiaAlimento: false,
-          medicamentoPressao: false,
-          alteracaoCardiologica: false,
-          proteseCardiaca: false,
-          diabetico: false,
-          convulsoesEpilepsia: false,
-          disfuncaoRenal: false,
-          coagulacaoSanguinea: false,
-          gravidaLactante: false,
-          herpesLabial: false,
-          usoAnticoagulante: false,
-          tratamentoEsteticoPrevio: true,
-          tipoPele: "Mista",
-          fotoenvelhecimento: "Leve",
-          termoConsentimentoAceito: true,
-        },
       };
 
       setPatients((prev) => {
@@ -582,7 +553,7 @@ export function AppointmentsSection() {
   }, [appointments, selectedDayFilter, searchQuery]);
 
   return (
-    <div data-dashboard-section="appointments" className="w-full min-w-0 max-w-[1400px] mx-auto space-y-6 select-none p8-page-enter pb-24 sm:pb-8">
+    <div data-dashboard-section="appointments" className="w-full min-w-0 max-w-[1400px] mx-auto space-y-6 p8-page-enter pb-24 sm:pb-8">
       {/* 1. Header */}
       <div className="space-y-2">
         <div className="flex items-center gap-1.5 text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">

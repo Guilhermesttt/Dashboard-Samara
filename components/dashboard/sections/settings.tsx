@@ -180,7 +180,7 @@ export function SettingsSection() {
   };
 
   return (
-    <div data-dashboard-section="settings" className="w-full min-w-0 max-w-4xl space-y-6 select-none pb-24 md:pb-8">
+    <div data-dashboard-section="settings" className="w-full min-w-0 max-w-4xl space-y-6 pb-24 md:pb-8">
       {/* Header */}
       <div className="space-y-2">
         <div className="flex items-center gap-1.5 text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">

@@ -239,7 +239,7 @@ export function ProceduresSection() {
   };
 
   return (
-    <div data-dashboard-section="procedures" className="w-full min-w-0 max-w-[1400px] mx-auto space-y-6 select-none p8-page-enter pb-24 sm:pb-8">
+    <div data-dashboard-section="procedures" className="w-full min-w-0 max-w-[1400px] mx-auto space-y-6 p8-page-enter pb-24 sm:pb-8">
       {/* 1. Header */}
       <div className="space-y-2">
         <div className="flex items-center gap-1.5 text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">
@@ -641,7 +641,7 @@ export function ProceduresSection() {
       {/* 5. Modal: Adicionar / Editar Procedimento */}
       <ModalPortal isOpen={isAddModalOpen || !!editingProcedure}>
         <div
-          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200 select-none"
+          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200"
           style={{
             backdropFilter: "blur(12px)",
             WebkitBackdropFilter: "blur(12px)",

@@ -186,7 +186,7 @@ export function ReportsSection() {
   };
 
   return (
-    <div data-dashboard-section="reports" className="w-full min-w-0 max-w-[1400px] mx-auto space-y-6 select-none p8-page-enter pb-24 md:pb-8">
+    <div data-dashboard-section="reports" className="w-full min-w-0 max-w-[1400px] mx-auto space-y-6 p8-page-enter pb-24 md:pb-8">
       {/* Header com Filtros & Botão Principal de Download do PDF */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-[#121212] p-4 sm:p-5 rounded-2xl border border-border dark:border-white/[0.08] shadow-sm">
         <div className="min-w-0 space-y-1">

@@ -21,6 +21,11 @@ test("keeps customer modal header and actions reachable in a short viewport", as
   await expect(dialog).toBeVisible()
   await expect(heading).toBeVisible()
   await expect(footer).toBeVisible()
+  expect(
+    await page
+      .getByLabel("Nome Completo *")
+      .evaluate((element) => getComputedStyle(element).userSelect),
+  ).not.toBe("none")
 
   const dialogBox = await dialog.boundingBox()
   expect(dialogBox).not.toBeNull()
