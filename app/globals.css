@@ -1,0 +1,557 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Light Mode Palette per user specification */
+  --background: #ffffff;
+  --foreground: #0d0d0d;
+  --card: #ffffff;
+  --card-foreground: #0d0d0d;
+  --popover: #ffffff;
+  --popover-foreground: #0d0d0d;
+  --primary: #000000;
+  --primary-foreground: #ffffff;
+  --secondary: #f6f6f6;
+  --secondary-foreground: #0d0d0d;
+  --muted: #f4f4f5;
+  --muted-foreground: #6c6c6c;
+  --text-subtle: #767676;
+  --text-faint: #8f8f8f;
+  --accent: #000000;
+  --accent-foreground: #ffffff;
+  --destructive: #e23014;
+  --destructive-foreground: #ffffff;
+  --border: #eaeaea;
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --input: #e5e5e5;
+  --ring: #000000;
+  --chart-1: #000000;
+  --chart-2: #525252;
+  --chart-3: #737373;
+  --chart-4: #a3a3a3;
+  --chart-5: #d4d4d4;
+  --radius: 0.75rem;
+
+  /* Sidebar Tokens (Light Mode) */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0d0d0d;
+  --sidebar-primary: #000000;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f5f5f5;
+  --sidebar-accent-foreground: #000000;
+  --sidebar-border: #ebebeb;
+  --sidebar-ring: #000000;
+
+  /* Status Colors */
+  --success: #10b981;
+  --success-bg: rgba(16, 185, 129, 0.1);
+  --success-text: #047857;
+  --warning: #f59e0b;
+  --warning-bg: rgba(245, 158, 11, 0.1);
+  --warning-text: #b45309;
+  --danger: #ef4444;
+  --danger-bg: rgba(239, 68, 68, 0.1);
+  --danger-text: #b91c1c;
+
+  /* transitions.dev Motion Tokens */
+  --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.36, 0.64, 1);
+  --ease-in-out: ease-in-out;
+  --duration-micro: 80ms;
+  --duration-quick: 150ms;
+  --duration-fast: 250ms;
+  --duration-medium: 350ms;
+  --duration-slow: 400ms;
+  --duration-very-slow: 500ms;
+
+  /* P12 Input Shake Tokens (transitions.dev) */
+  --p12-shake-distance: 6px;
+  --p12-shake-overshoot: 4px;
+  --p12-shake-dur-a: 80ms;
+  --p12-shake-dur-b: 60ms;
+  --p12-shake-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --p12-error-border: #e23014;
+  --p12-error-text: #d62b11;
+
+  /* Material and Shadows */
+  --material-shadow: 0 4px 28px 0 rgba(0, 0, 0, 0.06), 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+.dark {
+  /* Dark Mode Palette - Noir Housty per Apple Design Guidelines */
+  --background: #070707;
+  --foreground: #ffffff;
+  --card: #141414;
+  --card-foreground: #ffffff;
+  --popover: #141414;
+  --popover-foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #000000;
+  --secondary: #1c1c1e;
+  --secondary-foreground: #ffffff;
+  --muted: #262626;
+  --muted-foreground: #a1a1aa;
+  --text-subtle: #d4d4d8;
+  --text-faint: #71717a;
+  --accent: #ffffff;
+  --accent-foreground: #000000;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #27272a;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --input: #27272a;
+  --ring: #ffffff;
+
+  /* Sidebar Tokens (Dark Mode) */
+  --sidebar: #0d0d0f;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #ffffff;
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent: #1c1c1e;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #27272a;
+  --sidebar-ring: #ffffff;
+
+  --material-shadow: 0 4px 28px 0 rgba(0, 0, 0, 0.4), 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+  --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+@theme inline {
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-squircle: 20px;
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    box-sizing: border-box;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3, h4 {
+    color: #000000;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .dark h1, .dark h2, .dark h3, .dark h4 {
+    color: #ffffff;
+  }
+}
+
+/* ============================================================ */
+/* Dark Mode Inversion & Apple Solid Surfaces                   */
+/* ============================================================ */
+.dark {
+  color-scheme: dark;
+}
+
+.dark body {
+  background-color: #070707 !important;
+  color: #ffffff !important;
+}
+
+.dark .bg-white {
+  background-color: #141414 !important;
+}
+
+.dark .bg-white\/90 {
+  background-color: rgba(20, 20, 20, 0.92) !important;
+}
+
+.dark .bg-\[\#fbfbfb\],
+.dark .bg-\[\#fafafa\],
+.dark .bg-\[\#f9f9f9\],
+.dark .bg-\[\#f7f7f7\],
+.dark .bg-\[\#f6f6f6\],
+.dark .bg-\[\#f5f5f5\],
+.dark .bg-\[\#f4f4f4\],
+.dark .bg-\[\#f0f0f0\],
+.dark .bg-\[\#eee\] {
+  background-color: #1c1c1e !important;
+}
+
+.dark .hover\:bg-\[\#fafafa\]:hover,
+.dark .hover\:bg-\[\#f7f7f7\]:hover,
+.dark .hover\:bg-\[\#f5f5f5\]:hover,
+.dark .hover\:bg-\[\#f4f4f4\]:hover,
+.dark .hover\:bg-\[\#ebebeb\]:hover,
+.dark .hover\:bg-\[\#ededed\]:hover {
+  background-color: #27272a !important;
+}
+
+.dark .text-black {
+  color: #ffffff !important;
+}
+
+.dark .text-\[\#0d0d0d\] {
+  color: #ffffff !important;
+}
+
+.dark .text-\[\#767676\],
+.dark .text-\[\#6c6c6c\] {
+  color: #d3d3d3 !important;
+}
+
+.dark .text-\[\#8f8f8f\],
+.dark .text-\[\#a3a3a3\] {
+  color: #a1a1aa !important;
+}
+
+.dark .border-black\/\[0\.08\],
+.dark .border-black\/\[0\.06\],
+.dark .border-black\/\[0\.05\],
+.dark .border-black\/\[0\.04\],
+.dark .border-black\/\[0\.03\],
+.dark .border-\[\#ebebeb\],
+.dark .border-\[\#eaeaea\] {
+  border-color: #27272a !important;
+}
+
+.dark .divide-black\/\[0\.05\] > :not([hidden]) ~ :not([hidden]),
+.dark .divide-black\/\[0\.04\] > :not([hidden]) ~ :not([hidden]) {
+  border-color: #27272a !important;
+}
+
+/* Inverted buttons in dark mode: primary is crisp white with black text */
+.dark .bg-black:not(.text-white\.bg-black) {
+  background-color: #ffffff !important;
+  color: #070707 !important;
+}
+
+.dark .bg-black:hover {
+  background-color: #e4e4e7 !important;
+}
+
+.dark .hover\:bg-black:hover {
+  background-color: #ffffff !important;
+  color: #070707 !important;
+}
+
+.dark input,
+.dark select,
+.dark textarea {
+  color: #ffffff !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #71717a !important;
+}
+
+/* ============================================================ */
+/* transitions.dev Animations & Microinteractions                */
+/* ============================================================ */
+
+/* P12: Input Shake on Error */
+@keyframes p12-shake {
+  0% {
+    transform: translateX(0);
+    animation-timing-function: var(--p12-shake-ease);
+  }
+  28.57% {
+    transform: translateX(var(--p12-shake-distance));
+    animation-timing-function: var(--p12-shake-ease);
+  }
+  57.14% {
+    transform: translateX(calc(var(--p12-shake-distance) * -1));
+    animation-timing-function: var(--p12-shake-ease);
+  }
+  78.57% {
+    transform: translateX(var(--p12-shake-overshoot));
+    animation-timing-function: var(--p12-shake-ease);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.is-shaking {
+  animation: p12-shake 280ms linear;
+}
+
+/* P8: Page / Content Slide & Fade */
+@keyframes p8-slide-in {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+    filter: blur(3px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.p8-page-enter {
+  animation: p8-slide-in 250ms var(--ease-smooth-out) both;
+}
+
+/* P7: Modal Scale & Fade */
+@keyframes p7-modal-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.p7-modal-enter {
+  animation: p7-modal-in 250ms var(--ease-smooth-out) both;
+}
+
+/* Interactive Icon transitions (Gray -> Black on hover) */
+.icon-reactive {
+  color: #8f8f8f;
+  transition: color 150ms var(--ease-smooth-out), transform 150ms var(--ease-smooth-out);
+}
+
+.icon-reactive:hover,
+button:hover .icon-reactive,
+a:hover .icon-reactive,
+tr:hover .icon-reactive {
+  color: #000000;
+}
+
+/* Squircle Curvature helper */
+.squircle {
+  border-radius: 20px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+.squircle-sm {
+  border-radius: 12px;
+}
+
+.squircle-md {
+  border-radius: 16px;
+}
+
+.squircle-lg {
+  border-radius: 24px;
+}
+
+/* Button Primary (Black background, white text) */
+.btn-primary {
+  background-color: #000000;
+  color: #ffffff;
+  border-radius: 12px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 150ms var(--ease-smooth-out), transform 100ms var(--ease-smooth-out), opacity 150ms ease;
+  user-select: none;
+}
+
+.btn-primary:hover {
+  background-color: #242424;
+}
+
+.btn-primary:active {
+  background-color: #000000;
+  transform: scale(0.98);
+}
+
+/* Custom Checkbox (transitions.dev P25 animated draw) */
+.checkbox-custom {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid #d4d4d4;
+  border-radius: 4px;
+  background: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 150ms var(--ease-smooth-out), background-color 150ms var(--ease-smooth-out);
+}
+
+.checkbox-custom:hover {
+  border-color: #737373;
+}
+
+.checkbox-custom[data-checked="true"] {
+  background: #000000;
+  border-color: #000000;
+}
+
+.checkbox-custom svg {
+  stroke: #ffffff;
+  stroke-dasharray: 16;
+  stroke-dashoffset: 16;
+  transition: stroke-dashoffset 200ms var(--ease-smooth-out);
+}
+
+.checkbox-custom[data-checked="true"] svg {
+  stroke-dashoffset: 0;
+}
+
+/* Safe area support for iPhone notch & home indicator */
+.pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom, 12px), 12px);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ============================================================ */
+/* APPLE WEB APP & SAFE AREAS (DESIGN.MD)                       */
+/* ============================================================ */
+html {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Momentum scrolling for iOS scroll roots */
+.scroll-momentum {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* Touch hit targets per Apple Human Interface & WCAG 2.5.5 */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Full Safe Area utilities for iPhone notch / Dynamic Island & Home indicator */
+.pt-safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.pb-safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.pl-safe-left {
+  padding-left: env(safe-area-inset-left, 0px);
+}
+.pr-safe-right {
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* ============================================================ */
+/* ACCESSIBLE ANIMATION (SKILL.MD - TIERED REDUCED MOTION)      */
+/* ============================================================ */
+
+/* Global safety net: neutralize runaway motion but use 0.01ms so transitionend fires */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Tier 1: Remove vestibular triggers (shake, large transforms, 3D rotations) */
+  .is-shaking {
+    animation: none !important;
+  }
+  .animate-ping {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  /* Tier 2: Soften page and modal entries to short opacity fades (≤150ms) */
+  .p8-page-enter {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: opacity 150ms ease !important;
+  }
+  .p7-modal-enter {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: opacity 150ms ease !important;
+  }
+
+  /* Tier 3: Preserve essential loading spinner feedback */
+  .animate-spin {
+    animation-duration: 1.5s !important;
+    animation-iteration-count: infinite !important;
+  }
+}
+
+/* ============================================================ */
+/* REDUCED TRANSPARENCY (APPLE GUIDELINES & ACCESSIBILITY)      */
+/* ============================================================ */
+@media (prefers-reduced-transparency: reduce) {
+  .backdrop-blur-md,
+  .backdrop-blur-lg,
+  .backdrop-blur-xl,
+  .backdrop-blur-2xl {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  header {
+    background-color: #ffffff !important;
+  }
+  .dark header {
+    background-color: #070707 !important;
+  }
+  nav[aria-label="Navegação Inferior Mobile"] {
+    background-color: #ffffff !important;
+  }
+  .dark nav[aria-label="Navegação Inferior Mobile"] {
+    background-color: #0c0c0c !important;
+  }
+}
+
