@@ -169,21 +169,22 @@ export function CustomerFormModal({
         }}
         onClick={onClose}
       >
-        <div
+        <form
+          onSubmit={handleSubmit}
           onClick={(e) => e.stopPropagation()}
           role="dialog"
           aria-modal="true"
           aria-labelledby="customer-form-title"
-          className="bg-white rounded-t-[28px] sm:rounded-[24px] border-t sm:border border-black/[0.08] shadow-[0_24px_48px_-16px_rgba(0,0,0,0.25)] w-full max-w-[620px] max-h-[92vh] flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-150"
+          className="h-[min(100dvh,48rem)] max-h-[100dvh] w-full max-w-[620px] min-h-0 overflow-hidden rounded-t-[28px] border-t border-black/[0.08] bg-white shadow-[0_24px_48px_-16px_rgba(0,0,0,0.25)] flex flex-col animate-in fade-in duration-150 sm:h-auto sm:max-h-[92dvh] sm:rounded-[24px] sm:border sm:zoom-in-95"
         >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-black/[0.06] bg-white">
-          <div className="flex items-center gap-3">
+        <div className="shrink-0 flex min-w-0 items-center justify-between gap-3 px-4 sm:px-6 py-4 border-b border-black/[0.06] bg-white">
+          <div className="flex min-w-0 items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-black text-white flex items-center justify-center shrink-0">
               <User className="w-5 h-5" />
             </div>
-            <div>
-              <h2 id="customer-form-title" className="text-lg font-bold text-black tracking-tight">
+            <div className="min-w-0">
+              <h2 id="customer-form-title" className="truncate text-lg font-bold text-black tracking-tight">
                 {patientToEdit ? "Editar Cadastro de Cliente" : "Novo Cliente / Paciente"}
               </h2>
               <p className="text-xs text-[#767676]">
@@ -196,14 +197,15 @@ export function CustomerFormModal({
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-[#f4f4f4] hover:bg-[#ebebeb] flex items-center justify-center text-[#8f8f8f] hover:text-black transition-colors cursor-pointer"
+            aria-label="Fechar cadastro de cliente"
+            className="w-11 h-11 sm:w-9 sm:h-9 shrink-0 rounded-full bg-[#f4f4f4] hover:bg-[#ebebeb] flex items-center justify-center text-[#8f8f8f] hover:text-black transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-4">
+        <div data-modal-body="true" className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 sm:p-6 space-y-4 scroll-momentum">
           {/* Nome Completo */}
           <div className="space-y-1">
             <label htmlFor="customer-name" className="text-xs font-semibold text-black">Nome Completo *</label>
@@ -443,10 +445,11 @@ export function CustomerFormModal({
 
           {/* Observações Gerais */}
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-black">
+            <label htmlFor="customer-notes" className="text-xs font-semibold text-black">
               Observações Gerais & Preferências
             </label>
             <textarea
+              id="customer-notes"
               rows={2}
               placeholder="Indicações, preferências de horário, canais de contato preferenciais..."
               value={notes}
@@ -485,8 +488,10 @@ export function CustomerFormModal({
             </div>
           )}
 
+        </div>
+
           {/* Submit buttons */}
-          <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 pt-3 border-t border-black/[0.06]">
+          <div data-modal-footer="true" className="shrink-0 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 border-t border-black/[0.06] bg-white px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:px-6 sm:py-4">
             <button
               type="button"
               onClick={onClose}
@@ -502,7 +507,6 @@ export function CustomerFormModal({
             </button>
           </div>
         </form>
-      </div>
     </div>
   </ModalPortal>
 );

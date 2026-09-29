@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { acquireAppScrollLock } from "@/lib/app-scroll-lock";
 
 interface ModalPortalProps {
   children: React.ReactNode;
@@ -18,13 +19,7 @@ export function ModalPortal({ children, isOpen = true }: ModalPortalProps) {
   useEffect(() => {
     if (!isOpen) return;
 
-    // Lock body scrolling when modal is open
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.body.style.overflow = originalOverflow;
-    };
+    return acquireAppScrollLock(document);
   }, [isOpen]);
 
   if (!mounted || !isOpen || typeof document === "undefined") {

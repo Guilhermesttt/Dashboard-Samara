@@ -641,7 +641,7 @@ export function ProceduresSection() {
       {/* 5. Modal: Adicionar / Editar Procedimento */}
       <ModalPortal isOpen={isAddModalOpen || !!editingProcedure}>
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200 select-none"
+          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200 select-none"
           style={{
             backdropFilter: "blur(12px)",
             WebkitBackdropFilter: "blur(12px)",
@@ -651,14 +651,18 @@ export function ProceduresSection() {
             setEditingProcedure(null);
           }}
         >
-          <div
+          <form
+            onSubmit={handleSubmitForm}
             onClick={(e) => e.stopPropagation()}
-            className="bg-white rounded-[24px] border border-black/[0.08] shadow-[0_24px_48px_-16px_rgba(0,0,0,0.25)] w-full max-w-[500px] p-6 space-y-5 animate-in zoom-in-95 duration-150"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="procedure-form-title"
+            className="h-[min(100dvh,42rem)] max-h-[100dvh] w-full max-w-[500px] min-h-0 overflow-hidden rounded-t-[28px] border-t border-black/[0.08] bg-white shadow-[0_24px_48px_-16px_rgba(0,0,0,0.25)] flex flex-col animate-in fade-in duration-150 sm:h-auto sm:max-h-[92dvh] sm:rounded-[24px] sm:border sm:zoom-in-95"
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-black/[0.06] pb-4">
-              <div>
-                <h3 className="text-lg font-bold text-black tracking-tight">
+            <div className="shrink-0 flex min-w-0 items-center justify-between gap-3 border-b border-black/[0.06] px-4 py-4 sm:px-6">
+              <div className="min-w-0">
+                <h3 id="procedure-form-title" className="truncate text-lg font-bold text-black tracking-tight">
                   {editingProcedure ? "Editar Procedimento" : "Novo Procedimento"}
                 </h3>
                 <p className="text-xs text-[#767676]">
@@ -672,14 +676,15 @@ export function ProceduresSection() {
                   setIsAddModalOpen(false);
                   setEditingProcedure(null);
                 }}
-                className="w-8 h-8 rounded-full bg-[#f4f4f4] hover:bg-[#ebebeb] flex items-center justify-center text-[#8f8f8f] hover:text-black transition-colors cursor-pointer"
+                aria-label="Fechar formulário de procedimento"
+                className="w-11 h-11 sm:w-9 sm:h-9 shrink-0 rounded-full bg-[#f4f4f4] hover:bg-[#ebebeb] flex items-center justify-center text-[#8f8f8f] hover:text-black transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Modal Form */}
-            <form onSubmit={handleSubmitForm} className="space-y-4">
+            <div data-modal-body="true" className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 sm:px-6 sm:py-5 space-y-4 scroll-momentum">
               {/* Nome do Procedimento */}
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-black">Nome do Procedimento *</label>
@@ -696,13 +701,13 @@ export function ProceduresSection() {
               {/* Categoria */}
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-black">Categoria *</label>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {(["Facial", "Corporal", "Facial/Corporal"] as const).map((cat) => (
                     <button
                       type="button"
                       key={cat}
                       onClick={() => setFormCategory(cat)}
-                      className={`h-9 px-3 rounded-xl text-xs font-medium transition-all cursor-pointer border ${
+                      className={`h-11 sm:h-9 px-3 rounded-xl text-xs font-medium transition-all cursor-pointer border last:col-span-2 sm:last:col-span-1 ${
                         formCategory === cat
                           ? "bg-black text-white border-black font-semibold shadow-sm"
                           : "bg-[#f6f6f6] text-[#767676] border-transparent hover:text-black hover:bg-[#eee]"
@@ -750,27 +755,28 @@ export function ProceduresSection() {
                 </p>
               </div>
 
+            </div>
+
               {/* Action Buttons */}
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-black/[0.06]">
+              <div data-modal-footer="true" className="shrink-0 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 border-t border-black/[0.06] bg-white px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:px-6 sm:py-4">
                 <button
                   type="button"
                   onClick={() => {
                     setIsAddModalOpen(false);
                     setEditingProcedure(null);
                   }}
-                  className="h-10 px-4 rounded-xl text-xs font-medium text-[#767676] hover:text-black hover:bg-[#f4f4f4] transition-colors cursor-pointer"
+                  className="h-11 sm:h-10 px-4 rounded-xl text-xs font-medium text-[#767676] hover:text-black hover:bg-[#f4f4f4] transition-colors cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="h-10 px-5 rounded-xl bg-black hover:bg-[#262626] text-white text-xs font-semibold shadow-sm transition-all duration-150 active:scale-[0.98] cursor-pointer"
+                  className="h-11 sm:h-10 w-full sm:w-auto px-5 rounded-xl bg-black hover:bg-[#262626] text-white text-xs font-semibold shadow-sm transition-all duration-150 active:scale-[0.98] cursor-pointer"
                 >
                   {editingProcedure ? "Salvar Alterações" : "Cadastrar Procedimento"}
                 </button>
               </div>
             </form>
-          </div>
         </div>
       </ModalPortal>
     </div>
