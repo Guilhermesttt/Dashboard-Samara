@@ -71,7 +71,7 @@ export function MobileBottomNav({
   return (
     <nav
       aria-label="Navegação Inferior Mobile"
-      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0c0c0c]/95 backdrop-blur-xl border-t border-black/[0.08] dark:border-white/[0.08] flex items-center justify-around min-h-[4rem] h-[calc(4rem+env(safe-area-inset-bottom,0px))] pb-[env(safe-area-inset-bottom,0px)] px-2 select-none shadow-[0_-4px_20px_rgba(0,0,0,0.04)] transition-colors"
+      className="md:hidden fixed inset-x-0 bottom-0 z-40 bg-white/95 dark:bg-[#0c0c0c]/95 backdrop-blur-xl border-t border-black/[0.08] dark:border-white/[0.08] flex items-center justify-around min-h-[var(--mobile-nav-height)] h-[calc(var(--mobile-nav-height)+env(safe-area-inset-bottom,0px))] pb-[env(safe-area-inset-bottom,0px)] pl-[max(0.5rem,env(safe-area-inset-left,0px))] pr-[max(0.5rem,env(safe-area-inset-right,0px))] select-none shadow-[0_-4px_20px_rgba(0,0,0,0.04)] transition-colors"
     >
       {tabs.map((tab) => {
         const Icon = tab.icon;

@@ -32,8 +32,8 @@ export function Header({
   const [searchFocused, setSearchFocused] = useState(false);
 
   return (
-    <header className="min-h-[4rem] h-[calc(4rem+env(safe-area-inset-top,0px))] pt-[env(safe-area-inset-top,0px)] border-b border-[#ebebeb] dark:border-[#27272a] bg-white/90 dark:bg-[#070707]/90 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6 select-none transition-colors">
-      <div className="flex items-center gap-2.5 sm:gap-6">
+    <header className="min-h-[var(--app-header-height)] h-[calc(var(--app-header-height)+env(safe-area-inset-top,0px))] pt-[env(safe-area-inset-top,0px)] border-b border-[#ebebeb] dark:border-[#27272a] bg-white/90 dark:bg-[#070707]/90 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between gap-2 px-4 sm:px-6 select-none transition-colors shrink-0">
+      <div className="min-w-0 flex-1 flex items-center gap-2.5 sm:gap-6">
         {/* Mobile menu trigger with 44px touch area */}
         <button
           onClick={onOpenMobileMenu}
@@ -44,7 +44,7 @@ export function Header({
           <Menu className="w-5 h-5" />
         </button>
 
-        <h1 className="text-base sm:text-xl font-bold text-black dark:text-white tracking-tight truncate">
+        <h1 className="min-w-0 text-base sm:text-xl font-bold text-black dark:text-white tracking-tight truncate">
           {sectionTitles[activeSection] || "Painel"}
         </h1>
         <div className="hidden lg:flex items-center gap-1.5 text-xs text-[#767676] dark:text-[#a1a1aa] bg-[#f7f7f7] dark:bg-[#141414] px-2.5 py-1 rounded-lg border border-black/[0.04] dark:border-white/[0.06]">
@@ -53,7 +53,7 @@ export function Header({
         </div>
       </div>
 
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className="shrink-0 flex items-center gap-2 sm:gap-3">
         {/* Search (Desktop only: on mobile each section has its dedicated search) */}
         <div
           className={cn(

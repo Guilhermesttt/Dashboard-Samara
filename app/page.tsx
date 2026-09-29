@@ -196,7 +196,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex min-h-screen bg-white dark:bg-[#070707] text-black dark:text-white">
+    <div className="dashboard-shell flex w-full min-w-0 bg-white dark:bg-[#070707] text-black dark:text-white">
       {/* Sidebar with Portuguese labels & Mobile Drawer */}
       <Sidebar
         activeSection={activeSection}
@@ -211,7 +211,7 @@ export default function Dashboard() {
 
       {/* Main Content Area (Responsive on mobile and desktop) */}
       <div
-        className={`flex-1 flex flex-col transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ml-0 ${
+        className={`min-w-0 min-h-0 flex-1 flex flex-col transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ml-0 ${
           sidebarCollapsed ? "md:ml-[72px]" : "md:ml-[260px]"
         }`}
       >
@@ -222,8 +222,11 @@ export default function Dashboard() {
           onOpenReminders={() => setIsRemindersOpen(true)}
           pendingRemindersCount={pendingRemindersCount}
         />
-        <main className="flex-1 p-3.5 sm:p-6 md:p-8 pb-[calc(5.5rem+env(safe-area-inset-bottom,16px))] md:pb-8 pl-[max(0.875rem,env(safe-area-inset-left,0px))] pr-[max(0.875rem,env(safe-area-inset-right,0px))] overflow-auto scroll-momentum bg-white dark:bg-[#070707] transition-colors">
-          <div key={activeSection} className="p8-page-enter">
+        <main
+          data-app-scroll-root
+          className="dashboard-scroll-root min-w-0 min-h-0 flex-1 p-3.5 sm:p-6 md:p-8 pb-[calc(var(--mobile-nav-height)+env(safe-area-inset-bottom,0px)+1.5rem)] md:pb-8 pl-[max(0.875rem,env(safe-area-inset-left,0px))] pr-[max(0.875rem,env(safe-area-inset-right,0px))] overflow-x-hidden overflow-y-auto scroll-momentum bg-white dark:bg-[#070707] transition-colors"
+        >
+          <div key={activeSection} className="w-full min-w-0 p8-page-enter">
             {renderSection()}
           </div>
         </main>
