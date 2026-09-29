@@ -16,6 +16,18 @@ import {
   Droplet,
 } from "lucide-react";
 import { ModalPortal } from "@/components/ui/modal-portal";
+import {
+  ALAGOAS_LOCATIONS,
+  DEFAULT_ALAGOAS_LOCATION,
+} from "@/lib/alagoas-municipalities";
+import {
+  calculateAgeFromBirthDate,
+  formatCpf,
+  formatPhone,
+  isCompleteCpf,
+  isCompletePhone,
+  normalizeAlagoasLocation,
+} from "@/lib/customer-input";
 import { PatientRecord, ClinicalProcedureType } from "./customer-profile-modal";
 
 interface CustomerFormModalProps {
@@ -47,12 +59,12 @@ export function CustomerFormModal({
   useEffect(() => {
     if (patientToEdit) {
       setName(patientToEdit.name);
-      setCpf(patientToEdit.cpf);
-      setPhone(patientToEdit.phone);
+      setCpf(formatCpf(patientToEdit.cpf));
+      setPhone(formatPhone(patientToEdit.phone));
       setEmail(patientToEdit.email);
       setBirthDate(patientToEdit.birthDate);
       setGender(patientToEdit.gender);
-      setLocation(patientToEdit.location);
+      setLocation(normalizeAlagoasLocation(patientToEdit.location));
       setProfession(patientToEdit.profession);
       setStatus(patientToEdit.status);
       setNotes(patientToEdit.notes || "");
@@ -71,7 +83,7 @@ export function CustomerFormModal({
       setEmail("");
       setBirthDate("");
       setGender("Feminino");
-      setLocation("São Paulo, SP");
+      setLocation(DEFAULT_ALAGOAS_LOCATION);
       setProfession("");
       setStatus("Ativo");
       setNotes("");
@@ -90,29 +102,47 @@ export function CustomerFormModal({
     }
   };
 
+  const handleCpfChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatCpf(event.currentTarget.value);
+    event.currentTarget.setCustomValidity(
+      isCompleteCpf(formatted) || !formatted ? "" : "Informe os 11 dígitos do CPF.",
+    );
+    setCpf(formatted);
+  };
+
+  const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhone(event.currentTarget.value);
+    event.currentTarget.setCustomValidity(
+      isCompletePhone(formatted) || !formatted
+        ? ""
+        : "Informe um telefone com DDD e 10 ou 11 dígitos.",
+    );
+    setPhone(formatted);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Calculate approximate age if birthDate is provided
-    let age = 30;
-    if (birthDate) {
-      const year = parseInt(birthDate.slice(-4));
-      if (!isNaN(year) && year > 1920 && year < 2026) {
-        age = 2026 - year;
-      }
+    if (
+      !isCompleteCpf(cpf) ||
+      !isCompletePhone(phone) ||
+      !ALAGOAS_LOCATIONS.includes(location)
+    ) {
+      (e.currentTarget as HTMLFormElement).reportValidity();
+      return;
     }
 
     const patientData: PatientRecord = {
       id: patientToEdit ? patientToEdit.id : `pat-${Date.now()}`,
       name: name.trim(),
-      cpf: cpf.trim() || "000.000.000-00",
+      cpf: cpf.trim(),
       phone: phone.trim(),
-      email: email.trim() || `${name.toLowerCase().replace(/\s+/g, ".")}@gmail.com`,
-      birthDate: birthDate.trim() || "15/05/1994",
-      age: patientToEdit ? patientToEdit.age : age,
+      email: email.trim(),
+      birthDate: birthDate.trim(),
+      age: calculateAgeFromBirthDate(birthDate.trim()),
       gender,
-      location: location.trim() || "São Paulo, SP",
-      profession: profession.trim() || "Profissional Liberal",
+      location,
+      profession: profession.trim(),
       status,
       totalSpent: patientToEdit ? patientToEdit.totalSpent : 0,
       proceduresCount: patientToEdit ? patientToEdit.proceduresCount : 0,
@@ -141,6 +171,9 @@ export function CustomerFormModal({
       >
         <div
           onClick={(e) => e.stopPropagation()}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="customer-form-title"
           className="bg-white rounded-t-[28px] sm:rounded-[24px] border-t sm:border border-black/[0.08] shadow-[0_24px_48px_-16px_rgba(0,0,0,0.25)] w-full max-w-[620px] max-h-[92vh] flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-150"
         >
         {/* Header */}
@@ -150,7 +183,7 @@ export function CustomerFormModal({
               <User className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-black tracking-tight">
+              <h2 id="customer-form-title" className="text-lg font-bold text-black tracking-tight">
                 {patientToEdit ? "Editar Cadastro de Cliente" : "Novo Cliente / Paciente"}
               </h2>
               <p className="text-xs text-[#767676]">
@@ -173,10 +206,12 @@ export function CustomerFormModal({
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-4">
           {/* Nome Completo */}
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-black">Nome Completo *</label>
+            <label htmlFor="customer-name" className="text-xs font-semibold text-black">Nome Completo *</label>
             <input
+              id="customer-name"
               type="text"
               required
+              autoComplete="name"
               placeholder="Ex: Beatriz Mendonça de Oliveira"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -187,36 +222,56 @@ export function CustomerFormModal({
           {/* CPF e Telefone */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-black">CPF *</label>
+              <label htmlFor="customer-cpf" className="text-xs font-semibold text-black">CPF *</label>
               <input
+                id="customer-cpf"
                 type="text"
                 required
+                inputMode="numeric"
+                autoComplete="off"
+                maxLength={14}
+                pattern="[0-9]{3}[.][0-9]{3}[.][0-9]{3}-[0-9]{2}"
+                aria-describedby="customer-cpf-help"
                 placeholder="000.000.000-00"
                 value={cpf}
-                onChange={(e) => setCpf(e.target.value)}
+                onChange={handleCpfChange}
                 className="w-full h-11 sm:h-10 px-3.5 rounded-xl bg-[#f7f7f7] border border-transparent focus:border-black text-base sm:text-xs text-black outline-none transition-all placeholder:text-[#8f8f8f]"
               />
+              <p id="customer-cpf-help" className="text-[11px] text-[#767676]">
+                Informe os 11 dígitos do CPF.
+              </p>
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-black">Telefone / WhatsApp *</label>
+              <label htmlFor="customer-phone" className="text-xs font-semibold text-black">Telefone / WhatsApp *</label>
               <input
+                id="customer-phone"
                 type="text"
                 required
-                placeholder="(11) 98765-4321"
+                inputMode="tel"
+                autoComplete="tel"
+                minLength={14}
+                maxLength={15}
+                aria-describedby="customer-phone-help"
+                placeholder="(82) 98765-4321"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={handlePhoneChange}
                 className="w-full h-11 sm:h-10 px-3.5 rounded-xl bg-[#f7f7f7] border border-transparent focus:border-black text-base sm:text-xs text-black outline-none transition-all placeholder:text-[#8f8f8f]"
               />
+              <p id="customer-phone-help" className="text-[11px] text-[#767676]">
+                Use DDD e um telefone com 10 ou 11 dígitos.
+              </p>
             </div>
           </div>
 
           {/* E-mail e Data de Nascimento */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-black">E-mail</label>
+              <label htmlFor="customer-email" className="text-xs font-semibold text-black">E-mail</label>
               <input
+                id="customer-email"
                 type="email"
+                autoComplete="email"
                 placeholder="paciente@exemplo.com.br"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -225,9 +280,12 @@ export function CustomerFormModal({
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-black">Data de Nascimento</label>
+              <label htmlFor="customer-birth-date" className="text-xs font-semibold text-black">Data de Nascimento</label>
               <input
+                id="customer-birth-date"
                 type="text"
+                inputMode="numeric"
+                autoComplete="bday"
                 placeholder="DD/MM/AAAA (ex: 22/08/1992)"
                 value={birthDate}
                 onChange={(e) => setBirthDate(e.target.value)}
@@ -269,14 +327,20 @@ export function CustomerFormModal({
           {/* Cidade e Profissão */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-black">Cidade / UF</label>
-              <input
-                type="text"
-                placeholder="Ex: São Paulo, SP"
+              <label htmlFor="customer-location" className="text-xs font-semibold text-black">Cidade / UF *</label>
+              <select
+                id="customer-location"
+                required
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                className="w-full h-11 sm:h-10 px-3.5 rounded-xl bg-[#f7f7f7] border border-transparent focus:border-black text-base sm:text-xs text-black outline-none transition-all placeholder:text-[#8f8f8f]"
-              />
+                className="w-full h-11 sm:h-10 px-3 rounded-xl bg-[#f7f7f7] border border-transparent focus:border-black text-base sm:text-xs text-black outline-none transition-all"
+              >
+                {ALAGOAS_LOCATIONS.map((city) => (
+                  <option key={city} value={city}>
+                    {city}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="space-y-1">
