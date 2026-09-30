@@ -213,7 +213,7 @@ export default function Dashboard() {
           onRegisterSuccess={(user) => {
             setCurrentUser(user as any);
             setIsAuthenticated(true);
-            if (user?.email && isClinicAdminEmail(user.email)) {
+            if (user?.role === "admin" || (user?.email && isClinicAdminEmail(user.email))) {
               setIsOnboardingOpen(true);
             }
           }}

@@ -24,7 +24,7 @@ import { loginWithFirebase, registerWithFirebase } from "@/lib/auth-service";
 
 interface LoginViewProps {
   onLoginSuccess?: () => void;
-  onRegisterSuccess?: (user: { name: string; email: string }) => void;
+  onRegisterSuccess?: (user: { name: string; email: string; role?: string; uid?: string }) => void;
 }
 
 export function LoginView({ onLoginSuccess, onRegisterSuccess }: LoginViewProps) {
@@ -112,9 +112,10 @@ export function LoginView({ onLoginSuccess, onRegisterSuccess }: LoginViewProps)
           description: `Bem-vinda, ${name.trim()}! Acesso liberado no sistema.`,
         });
 
+        const registeredUser = result.user;
         setTimeout(() => {
-          if (onRegisterSuccess) {
-            onRegisterSuccess({ name: name.trim(), email: cleanEmail });
+          if (onRegisterSuccess && registeredUser) {
+            onRegisterSuccess(registeredUser);
           } else if (onLoginSuccess) {
             onLoginSuccess();
           }
