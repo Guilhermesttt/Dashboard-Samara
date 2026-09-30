@@ -58,6 +58,13 @@ export function SettingsSection() {
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
+  // Redireciona para perfil caso a aba de banco tente ser acessada em produção
+  useEffect(() => {
+    if (isProduction && activeTab === "database") {
+      setActiveTab("profile");
+    }
+  }, [activeTab]);
+
   // Dark Mode State
   const [isDarkMode, setIsDarkMode] = useState(false);
 
@@ -339,14 +346,16 @@ export function SettingsSection() {
             <span className="hidden sm:inline">Segurança & Senha</span>
             <span className="sm:hidden">Segurança</span>
           </TabsTrigger>
-          <TabsTrigger
-            value="database"
-            className="data-[state=active]:bg-white dark:data-[state=active]:bg-[#2c2c2e] data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-lg text-xs font-semibold whitespace-nowrap px-3 py-1.5 min-h-[44px] sm:min-h-[36px] inline-flex items-center shrink-0 transition-all cursor-pointer active:scale-95"
-          >
-            <Database className="w-3.5 h-3.5 mr-1.5" />
-            <span className="hidden sm:inline">Banco & Firebase</span>
-            <span className="sm:hidden">Firebase</span>
-          </TabsTrigger>
+          {!isProduction && (
+            <TabsTrigger
+              value="database"
+              className="data-[state=active]:bg-white dark:data-[state=active]:bg-[#2c2c2e] data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-lg text-xs font-semibold whitespace-nowrap px-3 py-1.5 min-h-[44px] sm:min-h-[36px] inline-flex items-center shrink-0 transition-all cursor-pointer active:scale-95"
+            >
+              <Database className="w-3.5 h-3.5 mr-1.5" />
+              <span className="hidden sm:inline">Banco & Firebase</span>
+              <span className="sm:hidden">Firebase</span>
+            </TabsTrigger>
+          )}
         </TabsList>
 
         {/* 1. ABA PERFIL & APARÊNCIA */}
@@ -1038,186 +1047,188 @@ export function SettingsSection() {
           </Card>
         </TabsContent>
 
-        {/* 4. ABA BANCO DE DADOS & FIREBASE */}
-        <TabsContent
-          value="database"
-          className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-200"
-        >
-          <Card className="border-border bg-card shadow-sm rounded-2xl">
-            <CardHeader className="pb-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <CardTitle className="text-sm font-bold text-foreground flex items-center gap-2">
-                    <Database className="w-4 h-4 text-black dark:text-white" />
-                    Conexão com Google Firebase & Firestore
-                  </CardTitle>
-                  <CardDescription className="text-xs mt-1">
-                    Sincronização em tempo real de pacientes, fichas clínicas (Botox, HOF, Bioestimulador) e fluxo Kanban.
-                  </CardDescription>
+        {/* 4. ABA BANCO DE DADOS & FIREBASE (Visível exclusivamente em ambiente de desenvolvimento) */}
+        {!isProduction && (
+          <TabsContent
+            value="database"
+            className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-200"
+          >
+            <Card className="border-border bg-card shadow-sm rounded-2xl">
+              <CardHeader className="pb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <CardTitle className="text-sm font-bold text-foreground flex items-center gap-2">
+                      <Database className="w-4 h-4 text-black dark:text-white" />
+                      Conexão com Google Firebase & Firestore
+                    </CardTitle>
+                    <CardDescription className="text-xs mt-1">
+                      Sincronização em tempo real de pacientes, fichas clínicas (Botox, HOF, Bioestimulador) e fluxo Kanban.
+                    </CardDescription>
+                  </div>
+                  <div className="shrink-0 self-start sm:self-auto">
+                    {isFirebaseConfigured ? (
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                        Firebase Conectado
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
+                        <span className="w-2 h-2 rounded-full bg-amber-500" />
+                        Modo Local (Aguardando Chaves)
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <div className="shrink-0 self-start sm:self-auto">
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Status explanation */}
+                <div className="p-4 rounded-xl bg-secondary/40 border border-border text-xs space-y-2">
+                  <div className="flex items-center gap-2 font-semibold text-foreground">
+                    <Server className="w-4 h-4 text-primary" />
+                    <span>Estado do Banco de Dados</span>
+                  </div>
                   {isFirebaseConfigured ? (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                      Firebase Conectado
-                    </span>
+                    <p className="text-muted-foreground leading-relaxed">
+                      Seu sistema está conectado ao projeto Firestore <strong>{firebaseConfig.projectId}</strong>. Quaisquer alterações em prontuários, novos agendamentos no Kanban ou edições em fichas clínicas são gravadas instantaneamente no banco de dados na nuvem.
+                    </p>
                   ) : (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
-                      <span className="w-2 h-2 rounded-full bg-amber-500" />
-                      Modo Local (Aguardando Chaves)
-                    </span>
+                    <p className="text-muted-foreground leading-relaxed">
+                      O dashboard está operando em <strong>modo local seguro</strong> com persistência em memória/sessão. Assim que você fornecer os valores do Firebase, as credenciais serão lidas automaticamente pelo arquivo <code>.env.local</code> e o app passará a sincronizar com a nuvem em tempo real!
+                    </p>
                   )}
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Status explanation */}
-              <div className="p-4 rounded-xl bg-secondary/40 border border-border text-xs space-y-2">
-                <div className="flex items-center gap-2 font-semibold text-foreground">
-                  <Server className="w-4 h-4 text-primary" />
-                  <span>Estado do Banco de Dados</span>
-                </div>
-                {isFirebaseConfigured ? (
-                  <p className="text-muted-foreground leading-relaxed">
-                    Seu sistema está conectado ao projeto Firestore <strong>{firebaseConfig.projectId}</strong>. Quaisquer alterações em prontuários, novos agendamentos no Kanban ou edições em fichas clínicas são gravadas instantaneamente no banco de dados na nuvem.
-                  </p>
-                ) : (
-                  <p className="text-muted-foreground leading-relaxed">
-                    O dashboard está operando em <strong>modo local seguro</strong> com persistência em memória/sessão. Assim que você fornecer os valores do Firebase, as credenciais serão lidas automaticamente pelo arquivo <code>.env.local</code> e o app passará a sincronizar com a nuvem em tempo real!
-                  </p>
-                )}
-              </div>
 
-              {/* Guia Rápido */}
-              <div className="space-y-3">
-                <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">
-                  Como Configurar o Firebase:
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-                  <div className="p-3.5 rounded-xl border border-border bg-card space-y-1.5">
-                    <span className="w-6 h-6 rounded-lg bg-black text-white dark:bg-white dark:text-black font-bold flex items-center justify-center text-xs">
-                      1
-                    </span>
-                    <span className="font-semibold text-foreground block">
-                      Criar Projeto
-                    </span>
-                    <p className="text-[11px] text-muted-foreground">
-                      Acesse console.firebase.google.com e crie um projeto gratuito com Firestore Database.
-                    </p>
-                  </div>
+                {/* Guia Rápido */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">
+                    Como Configurar o Firebase:
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                    <div className="p-3.5 rounded-xl border border-border bg-card space-y-1.5">
+                      <span className="w-6 h-6 rounded-lg bg-black text-white dark:bg-white dark:text-black font-bold flex items-center justify-center text-xs">
+                        1
+                      </span>
+                      <span className="font-semibold text-foreground block">
+                        Criar Projeto
+                      </span>
+                      <p className="text-[11px] text-muted-foreground">
+                        Acesse console.firebase.google.com e crie um projeto gratuito com Firestore Database.
+                      </p>
+                    </div>
 
-                  <div className="p-3.5 rounded-xl border border-border bg-card space-y-1.5">
-                    <span className="w-6 h-6 rounded-lg bg-black text-white dark:bg-white dark:text-black font-bold flex items-center justify-center text-xs">
-                      2
-                    </span>
-                    <span className="font-semibold text-foreground block">
-                      Copiar Chaves Web
-                    </span>
-                    <p className="text-[11px] text-muted-foreground">
-                      Em Configurações do Projeto &gt; Aplicativos Web &gt; Copie as chaves do firebaseConfig.
-                    </p>
-                  </div>
+                    <div className="p-3.5 rounded-xl border border-border bg-card space-y-1.5">
+                      <span className="w-6 h-6 rounded-lg bg-black text-white dark:bg-white dark:text-black font-bold flex items-center justify-center text-xs">
+                        2
+                      </span>
+                      <span className="font-semibold text-foreground block">
+                        Copiar Chaves Web
+                      </span>
+                      <p className="text-[11px] text-muted-foreground">
+                        Em Configurações do Projeto &gt; Aplicativos Web &gt; Copie as chaves do firebaseConfig.
+                      </p>
+                    </div>
 
-                  <div className="p-3.5 rounded-xl border border-border bg-card space-y-1.5">
-                    <span className="w-6 h-6 rounded-lg bg-black text-white dark:bg-white dark:text-black font-bold flex items-center justify-center text-xs">
-                      3
-                    </span>
-                    <span className="font-semibold text-foreground block">
-                      Inserir no Arquivo
-                    </span>
-                    <p className="text-[11px] text-muted-foreground">
-                      Cole as chaves no arquivo <code>.env.local</code> ou nos passe aqui no chat.
-                    </p>
+                    <div className="p-3.5 rounded-xl border border-border bg-card space-y-1.5">
+                      <span className="w-6 h-6 rounded-lg bg-black text-white dark:bg-white dark:text-black font-bold flex items-center justify-center text-xs">
+                        3
+                      </span>
+                      <span className="font-semibold text-foreground block">
+                        Inserir no Arquivo
+                      </span>
+                      <p className="text-[11px] text-muted-foreground">
+                        Cole as chaves no arquivo <code>.env.local</code> ou nos passe aqui no chat.
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Valores Atuais */}
-              <div className="space-y-3">
-                <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">
-                  Variáveis de Ambiente Detectadas:
-                </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                  <div className="p-3 rounded-xl bg-secondary/50 border border-border">
-                    <span className="text-[11px] text-muted-foreground block mb-0.5">NEXT_PUBLIC_FIREBASE_PROJECT_ID</span>
-                    <span className="font-mono font-medium text-foreground break-all">
-                      {firebaseConfig.projectId || "(não configurado ainda)"}
-                    </span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-secondary/50 border border-border">
-                    <span className="text-[11px] text-muted-foreground block mb-0.5">NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN</span>
-                    <span className="font-mono font-medium text-foreground break-all">
-                      {firebaseConfig.authDomain || "(não configurado ainda)"}
-                    </span>
+                {/* Valores Atuais */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">
+                    Variáveis de Ambiente Detectadas:
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div className="p-3 rounded-xl bg-secondary/50 border border-border">
+                      <span className="text-[11px] text-muted-foreground block mb-0.5">NEXT_PUBLIC_FIREBASE_PROJECT_ID</span>
+                      <span className="font-mono font-medium text-foreground break-all">
+                        {firebaseConfig.projectId || "(não configurado ainda)"}
+                      </span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-secondary/50 border border-border">
+                      <span className="text-[11px] text-muted-foreground block mb-0.5">NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN</span>
+                      <span className="font-mono font-medium text-foreground break-all">
+                        {firebaseConfig.authDomain || "(não configurado ainda)"}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          {/* Card de Isolamento de Dados: Dev vs Produção */}
-          <Card className="border-border bg-card shadow-sm rounded-2xl">
-            <CardHeader className="pb-3">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <CardTitle className="text-sm font-bold text-foreground flex items-center gap-2">
-                    <Server className="w-4 h-4 text-black dark:text-white" />
-                    Isolamento de Dados & Ambiente
-                  </CardTitle>
-                  <CardDescription className="text-xs mt-1">
-                    Separação estrita dos dados de teste locais e a base clínica real de produção.
-                  </CardDescription>
-                </div>
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-bold shrink-0 self-start sm:self-auto ${
-                    isProduction
-                      ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800"
-                      : "bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800"
-                  }`}
-                >
-                  {isProduction ? "🟢 Modo Produção (Clínica Real)" : "🟡 Modo Desenvolvimento (Testes)"}
-                </span>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="p-3.5 rounded-xl bg-secondary/40 border border-border text-xs leading-relaxed text-muted-foreground">
-                {isProduction ? (
-                  <p>
-                    O sistema está operando em <strong>Produção</strong> com isolamento <code>samara_prod_*</code>. Todos os dados contabilizados nos relatórios e prontuários pertencem exclusivamente a atendimentos reais da Dra. Sâmara.
-                  </p>
-                ) : (
-                  <p>
-                    O sistema está operando em <strong>Desenvolvimento</strong> (<code>samara_dev_*</code>). Agendamentos e faturamentos de teste estão isolados e nunca poluirão o build ou banco final da clínica.
-                  </p>
-                )}
-              </div>
-
-              <div className="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-border">
-                <div>
-                  <span className="text-xs font-bold text-foreground block">
-                    Resetar Atendimentos e Dados de Teste
-                  </span>
-                  <span className="text-[11px] text-muted-foreground">
-                    Zera os agendamentos e pacientes de teste locais sem afetar procedimentos ou configurações.
+            {/* Card de Isolamento de Dados: Dev vs Produção */}
+            <Card className="border-border bg-card shadow-sm rounded-2xl">
+              <CardHeader className="pb-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <CardTitle className="text-sm font-bold text-foreground flex items-center gap-2">
+                      <Server className="w-4 h-4 text-black dark:text-white" />
+                      Isolamento de Dados & Ambiente
+                    </CardTitle>
+                    <CardDescription className="text-xs mt-1">
+                      Separação estrita dos dados de teste locais e a base clínica real de produção.
+                    </CardDescription>
+                  </div>
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-bold shrink-0 self-start sm:self-auto ${
+                      isProduction
+                        ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800"
+                        : "bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800"
+                    }`}
+                  >
+                    {isProduction ? "🟢 Modo Produção (Clínica Real)" : "🟡 Modo Desenvolvimento (Testes)"}
                   </span>
                 </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    if (confirm("Tem certeza de que deseja limpar todos os agendamentos e clientes de teste locais?")) {
-                      clearDevTestData();
-                      toast.success("Dados de teste resetados com sucesso! O Kanban e relatórios foram limpos.");
-                    }
-                  }}
-                  className="text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 border-rose-200 dark:border-rose-900/50 cursor-pointer h-9 px-4 shrink-0 active:scale-95"
-                >
-                  Limpar Dados de Teste
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="p-3.5 rounded-xl bg-secondary/40 border border-border text-xs leading-relaxed text-muted-foreground">
+                  {isProduction ? (
+                    <p>
+                      O sistema está operando em <strong>Produção</strong> com isolamento <code>samara_prod_*</code>. Todos os dados contabilizados nos relatórios e prontuários pertencem exclusivamente a atendimentos reais da Dra. Sâmara.
+                    </p>
+                  ) : (
+                    <p>
+                      O sistema está operando em <strong>Desenvolvimento</strong> (<code>samara_dev_*</code>). Agendamentos e faturamentos de teste estão isolados e nunca poluirão o build ou banco final da clínica.
+                    </p>
+                  )}
+                </div>
+
+                <div className="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-border">
+                  <div>
+                    <span className="text-xs font-bold text-foreground block">
+                      Resetar Atendimentos e Dados de Teste
+                    </span>
+                    <span className="text-[11px] text-muted-foreground">
+                      Zera os agendamentos e pacientes de teste locais sem afetar procedimentos ou configurações.
+                    </span>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      if (confirm("Tem certeza de que deseja limpar todos os agendamentos e clientes de teste locais?")) {
+                        clearDevTestData();
+                        toast.success("Dados de teste resetados com sucesso! O Kanban e relatórios foram limpos.");
+                      }
+                    }}
+                    className="text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 border-rose-200 dark:border-rose-900/50 cursor-pointer h-9 px-4 shrink-0 active:scale-95"
+                  >
+                    Limpar Dados de Teste
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );
