@@ -18,10 +18,9 @@ import {
 import { toast } from "sonner";
 import {
   STORAGE_KEYS,
-  getStoredAccounts,
-  saveRegisteredUser,
   setStoredUserProfile,
 } from "@/lib/storage-keys";
+import { loginWithFirebase, registerWithFirebase } from "@/lib/auth-service";
 
 interface LoginViewProps {
   onLoginSuccess?: () => void;
@@ -53,7 +52,7 @@ export function LoginView({ onLoginSuccess, onRegisterSuccess }: LoginViewProps)
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsError(false);
 
@@ -70,8 +69,8 @@ export function LoginView({ onLoginSuccess, onRegisterSuccess }: LoginViewProps)
       return;
     }
 
-    if (cleanPassword.length < 4) {
-      triggerError("A senha informada deve ter pelo menos 4 caracteres.");
+    if (cleanPassword.length < 6) {
+      triggerError("A senha informada deve ter pelo menos 6 caracteres.");
       return;
     }
 
@@ -88,37 +87,29 @@ export function LoginView({ onLoginSuccess, onRegisterSuccess }: LoginViewProps)
 
       setIsLoading(true);
 
-      const result = saveRegisteredUser({
-        name: name.trim(),
-        email: cleanEmail,
-        password: cleanPassword,
-      });
-
-      if (!result.success) {
-        setIsLoading(false);
-        triggerError(result.error || "Erro ao cadastrar usuário.");
-        return;
-      }
-
-      // Inicializa perfil e sessão
-      setStoredUserProfile({
-        name: name.trim(),
-        email: cleanEmail,
-        title: "Biomédica Esteta • Harmonização Facial",
-      });
-
       try {
-        localStorage.setItem(STORAGE_KEYS.AUTH_SESSION, "true");
-        localStorage.setItem("samara_auth_session", "true");
-        localStorage.setItem("samara_user_email", cleanEmail);
-        localStorage.removeItem(STORAGE_KEYS.ONBOARDING_DONE);
-      } catch (e) {}
+        const result = await registerWithFirebase(name.trim(), cleanEmail, cleanPassword);
 
-      setTimeout(() => {
+        if (!result.success || !result.user) {
+          setIsLoading(false);
+          triggerError(result.error || "Erro ao cadastrar usuário no Firebase.");
+          return;
+        }
+
+        // Inicializa perfil
+        setStoredUserProfile({
+          name: name.trim(),
+          email: cleanEmail,
+          title:
+            result.user.role === "admin"
+              ? "Biomédica Esteta • Harmonização Facial"
+              : "Equipe de Atendimento",
+        });
+
         setIsLoading(false);
         setIsSuccess(true);
         toast.success(`Conta criada com sucesso!`, {
-          description: `Bem-vinda, ${name.trim()}! Vamos configurar seu perfil e preferências.`,
+          description: `Bem-vinda, ${name.trim()}! Acesso liberado no sistema.`,
         });
 
         setTimeout(() => {
@@ -128,52 +119,40 @@ export function LoginView({ onLoginSuccess, onRegisterSuccess }: LoginViewProps)
             onLoginSuccess();
           }
         }, 400);
-      }, 500);
+      } catch (err: any) {
+        setIsLoading(false);
+        triggerError(err?.message || "Erro inesperado ao registrar conta.");
+      }
 
       return;
     }
 
-    // Modo LOGIN
+    // Modo LOGIN com Firebase Auth Real
     setIsLoading(true);
 
-    const accounts = getStoredAccounts();
-    const matchedAccount = accounts.find(
-      (acc) => acc.email.toLowerCase() === cleanEmail && acc.password === cleanPassword
-    );
-
-    // Fallback de administrador / credenciais padrão
-    const isMasterAdmin =
-      (cleanEmail === "samara-nagy@hotmail.com" ||
-        cleanEmail === "dra.samara@samaraestetica.com.br" ||
-        cleanEmail === "samara@estetica.com" ||
-        cleanEmail === "samara" ||
-        cleanEmail.startsWith("samara")) &&
-      (cleanPassword === "samara123" || cleanPassword === "samara2026");
-
-    if (!matchedAccount && !isMasterAdmin) {
-      setTimeout(() => {
-        setIsLoading(false);
-        triggerError("Credenciais não reconhecidas. Verifique e-mail e senha ou crie sua conta.");
-      }, 400);
-      return;
-    }
-
-    // Salvar sessão persistente
     try {
-      localStorage.setItem(STORAGE_KEYS.AUTH_SESSION, "true");
-      localStorage.setItem("samara_auth_session", "true");
-      localStorage.setItem("samara_user_email", cleanEmail);
-    } catch (e) {}
+      const result = await loginWithFirebase(cleanEmail, cleanPassword);
 
-    setTimeout(() => {
+      if (!result.success) {
+        setIsLoading(false);
+        triggerError(
+          result.error || "Credenciais não reconhecidas. Verifique e-mail e senha."
+        );
+        return;
+      }
+
       setIsLoading(false);
       setIsSuccess(true);
+
       setTimeout(() => {
         if (onLoginSuccess) {
           onLoginSuccess();
         }
       }, 400);
-    }, 400);
+    } catch (err: any) {
+      setIsLoading(false);
+      triggerError(err?.message || "Erro inesperado na autenticação.");
+    }
   };
 
   return (

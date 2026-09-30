@@ -18,6 +18,12 @@ import {
   getStoredUserProfile,
 } from "@/lib/storage-keys";
 import {
+  subscribeToAuthState,
+  logoutFromFirebase,
+  AppUser,
+  isClinicAdminEmail,
+} from "@/lib/auth-service";
+import {
   ReminderItem,
   getLocalReminders,
   saveLocalReminders,
@@ -44,7 +50,7 @@ export default function Dashboard() {
 
   // Central Reminders & Onboarding State
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState<{ name: string; email: string } | null>(null);
+  const [currentUser, setCurrentUser] = useState<AppUser | null>(null);
   const [isRemindersOpen, setIsRemindersOpen] = useState(false);
   const [reminders, setReminders] = useState<ReminderItem[]>([]);
   const [hasTodayAppointments, setHasTodayAppointments] = useState(false);
@@ -63,22 +69,32 @@ export default function Dashboard() {
     };
   }, []);
 
-  // 1. Checar Sessão Persistente da Dra. Sâmara e status de Onboarding
+  // 1. Checar Sessão e Perfil com Firebase Auth
   useEffect(() => {
-    try {
-      const savedAuth =
-        localStorage.getItem("samara_auth_session") ||
-        localStorage.getItem(STORAGE_KEYS.AUTH_SESSION);
-      if (savedAuth === "true") {
+    const unsubscribe = subscribeToAuthState((user) => {
+      if (user) {
         setIsAuthenticated(true);
+        setCurrentUser(user);
         const onboardingDone = localStorage.getItem(STORAGE_KEYS.ONBOARDING_DONE);
-        if (!onboardingDone) {
+        if (!onboardingDone && user.role === "admin") {
           setIsOnboardingOpen(true);
         }
+      } else {
+        setIsAuthenticated(false);
+        setCurrentUser(null);
       }
-    } catch (e) {}
-    setAuthChecked(true);
+      setAuthChecked(true);
+    });
+
+    return () => unsubscribe();
   }, []);
+
+  // 2. Proteção de Acesso por Papel (RBAC): Funcionária não acessa financeiro/relatórios
+  useEffect(() => {
+    if (currentUser?.role === "funcionaria" && activeSection === "reports") {
+      setActiveSection("overview");
+    }
+  }, [currentUser?.role, activeSection]);
 
   // 2. Carregar Lembretes (Local e Cloud Firestore)
   useEffect(() => {
@@ -165,12 +181,10 @@ export default function Dashboard() {
     deleteReminderFromFirestore(id);
   }, []);
 
-  const handleLogout = useCallback(() => {
-    try {
-      localStorage.removeItem("samara_auth_session");
-      sessionStorage.removeItem("samara_last_alert_run");
-    } catch (e) {}
+  const handleLogout = useCallback(async () => {
+    await logoutFromFirebase();
     setIsAuthenticated(false);
+    setCurrentUser(null);
   }, []);
 
   // Evita flash de tela antes de checar localStorage
@@ -186,15 +200,17 @@ export default function Dashboard() {
             setIsAuthenticated(true);
             try {
               const done = localStorage.getItem(STORAGE_KEYS.ONBOARDING_DONE);
-              if (!done) {
+              if (!done && currentUser?.role === "admin") {
                 setIsOnboardingOpen(true);
               }
             } catch (e) {}
           }}
           onRegisterSuccess={(user) => {
-            setCurrentUser(user);
+            setCurrentUser(user as any);
             setIsAuthenticated(true);
-            setIsOnboardingOpen(true);
+            if (user?.email && isClinicAdminEmail(user.email)) {
+              setIsOnboardingOpen(true);
+            }
           }}
         />
       </div>
@@ -234,6 +250,7 @@ export default function Dashboard() {
         mobileOpen={mobileMenuOpen}
         onMobileClose={() => setMobileMenuOpen(false)}
         hasTodayAppointments={hasTodayAppointments}
+        userRole={currentUser?.role || "admin"}
       />
 
       {/* Main Content Area (Responsive on mobile and desktop) */}
@@ -250,6 +267,8 @@ export default function Dashboard() {
           pendingRemindersCount={pendingRemindersCount}
           sidebarCollapsed={sidebarCollapsed}
           onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
+          userRole={currentUser?.role || "admin"}
+          userName={currentUser?.name}
         />
         <main
           data-app-scroll-root

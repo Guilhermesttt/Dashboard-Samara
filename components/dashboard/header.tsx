@@ -15,6 +15,8 @@ interface HeaderProps {
   pendingRemindersCount?: number;
   sidebarCollapsed?: boolean;
   onToggleSidebar?: () => void;
+  userRole?: "admin" | "funcionaria";
+  userName?: string;
 }
 
 const sectionTitles: Record<Section, string> = {
@@ -34,6 +36,8 @@ export function Header({
   pendingRemindersCount = 0,
   sidebarCollapsed = false,
   onToggleSidebar,
+  userRole = "admin",
+  userName,
 }: HeaderProps) {
   const [searchFocused, setSearchFocused] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfileData | null>(null);
@@ -138,7 +142,10 @@ export function Header({
             )}
           </div>
           <span className="hidden sm:inline font-semibold text-[11px] truncate max-w-[120px]">
-            {userProfile?.name?.split(" ")[0] || "Sâmara"}
+            {userName || userProfile?.name?.split(" ")[0] || "Sâmara"}
+          </span>
+          <span className="hidden md:inline text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-black/5 dark:bg-white/10 text-[#767676] dark:text-[#a1a1aa] border border-black/5 dark:border-white/10">
+            {userRole === "admin" ? "Admin" : "Equipe"}
           </span>
         </button>
       </div>

@@ -1,10 +1,174 @@
 rules_version = '2';
 
+// ===============================================================
+// Regras de Segurança do Cloud Firestore — Dra. Sâmara Souza Estética
+// ===============================================================
+//
+// Modelo de Dados e Permissões Assumidos:
+//
+// 1. Coleção: users/{userId}
+//    - uid: string (imutável, igual a request.auth.uid)
+//    - email: string (formato de e-mail válido)
+//    - name: string (nome da colaboradora ou administradora)
+//    - role: string ("admin" | "funcionaria")
+//    - title: string (opcional)
+//    - photoUrl: string (opcional)
+//    - createdAt: string | timestamp
+//
+// 2. Coleção: patients/{patientId}
+//    - Dados cadastrais, ficha clínica, anamnese e alertas médicos
+//    - Leitura, Criação e Edição: Usuários autenticados (Equipe e Administradora)
+//    - Exclusão: Estritamente restrita a administradores (proteção de prontuário de saúde)
+//
+// 3. Coleção: appointments/{appointmentId}
+//    - Agendamentos, horários e fluxo kanban de atendimento e retorno
+//    - Leitura, Criação e Edição: Usuários autenticados
+//    - Exclusão: Estritamente restrita a administradores
+//
+// 4. Coleção: procedures/{procedureId}
+//    - Catálogo clínico oficial e tabela de precificação
+//    - Leitura: Usuários autenticados
+//    - Criação, Edição e Exclusão: Estritamente restrita a administradores
+//
+// 5. Coleção: clinic_settings/{settingId} e user_profile/{profileId}
+//    - Parâmetros institucionais da clínica e perfil profissional da responsável técnica
+//    - Leitura: Usuários autenticados
+//    - Escrita: Estritamente restrita a administradores
+//
+// 6. Coleção: reminders/{reminderId}
+//    - Lembretes internos de tarefas da clínica
+//    - Leitura e Escrita: Usuários autenticados
+// ===============================================================
+
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // ===============================================================
+    // Funções Auxiliares de Segurança e RBAC
+    // ===============================================================
+
+    // Verifica se a requisição é de um usuário autenticado no Firebase Auth
+    function isAuthenticated() {
+      return request.auth != null && request.auth.uid != null;
+    }
+
+    // Verifica se o usuário atual é o proprietário do documento
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Acesso ao documento do usuário em users/{uid}
+    function getUserData(uid) {
+      return get(/databases/$(database)/documents/users/$(uid)).data;
+    }
+
+    // Verifica se o usuário autenticado possui perfil de administradora
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.email in [
+          'samara-nagy@hotmail.com',
+          'dra.samara@samaraestetica.com.br',
+          'samara@samaraestetica.com.br',
+          'samara@estetica.com'
+        ] ||
+        (
+          exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          getUserData(request.auth.uid).role == 'admin'
+        )
+      );
+    }
+
+    // Garante que campos sensíveis e imutáveis não foram alterados
+    function areImmutableFieldsUnchanged(fields) {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(fields);
+    }
+
+    // ===============================================================
+    // 1. Coleção de Usuários e Permissões (users)
+    // ===============================================================
+    match /users/{userId} {
+      // Usuário pode ler o próprio perfil; Administradora pode listar/ler toda a equipe
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+
+      // Usuário pode criar o próprio documento ao registrar-se
+      // Auto-atribuição de admin é proibida, exceto para a administradora bootstrap
+      allow create: if isAuthenticated() && request.auth.uid == userId && (
+        request.resource.data.role == 'funcionaria' || isAdmin()
+      );
+
+      // Usuário pode atualizar campos básicos (nome, foto, bio), mas não pode mudar seu próprio role
+      // Apenas administradora pode alterar papéis ou promover colaboradoras
+      allow update: if isAuthenticated() && (
+        (isOwner(userId) && areImmutableFieldsUnchanged(['role', 'uid', 'email'])) ||
+        isAdmin()
+      );
+
+      // Apenas a administradora pode excluir contas de colaboradoras
+      allow delete: if isAdmin();
+    }
+
+    // ===============================================================
+    // 2. Pacientes e Fichas de Saúde (patients)
+    // ===============================================================
+    match /patients/{patientId} {
+      // Leitura permitida apenas para equipe autenticada (nenhum dado médico aberto)
+      allow read: if isAuthenticated();
+
+      // Registro de novas pacientes e atualização de fichas/anamneses pela equipe
+      allow create, update: if isAuthenticated();
+
+      // Exclusão física de prontuário e ficha médica restrita a administradores
+      allow delete: if isAdmin();
+    }
+
+    // ===============================================================
+    // 3. Agendamentos e Fluxo Kanban (appointments)
+    // ===============================================================
+    match /appointments/{appointmentId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+
+    // ===============================================================
+    // 4. Catálogo de Procedimentos e Precificação (procedures)
+    // ===============================================================
+    match /procedures/{procedureId} {
+      // Equipe pode visualizar o catálogo oficial
+      allow read: if isAuthenticated();
+
+      // Somente a administradora pode alterar preços, criar ou remover procedimentos
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ===============================================================
+    // 5. Configurações da Clínica (clinic_settings)
+    // ===============================================================
+    match /clinic_settings/{settingId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // ===============================================================
+    // 6. Perfil Institucional da Responsável Técnica (user_profile)
+    // ===============================================================
+    match /user_profile/{profileId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // ===============================================================
+    // 7. Central de Lembretes Internos (reminders)
+    // ===============================================================
+    match /reminders/{reminderId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // ===============================================================
+    // Bloqueio Padrão (Default Deny para qualquer outra coleção)
+    // ===============================================================
     match /{document=**} {
-      // Permite leitura e escrita para o dashboard da Dra. Sâmara
-      allow read, write: if true;
+      allow read, write: if false;
     }
   }
 }

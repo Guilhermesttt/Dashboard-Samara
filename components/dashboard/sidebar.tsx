@@ -27,6 +27,7 @@ interface SidebarProps {
   mobileOpen?: boolean;
   onMobileClose?: () => void;
   hasTodayAppointments?: boolean;
+  userRole?: "admin" | "funcionaria";
 }
 
 const navItems: {
@@ -39,7 +40,7 @@ const navItems: {
   { id: "appointments", label: "Agendamentos", icon: CalendarCheck },
   { id: "customers", label: "Clientes", icon: Users },
   { id: "procedures", label: "Procedimentos", icon: Sparkles },
-  { id: "reports", label: "Relatórios", icon: BarChart3 },
+  { id: "reports", label: "Relatórios", icon: BarChart3, isAdminOnly: true },
   { id: "settings", label: "Configurações", icon: Settings },
 ];
 
@@ -52,6 +53,7 @@ export function Sidebar({
   mobileOpen = false,
   onMobileClose,
   hasTodayAppointments,
+  userRole = "admin",
 }: SidebarProps) {
   const [hasToday, setHasToday] = useState(false);
 
@@ -130,7 +132,9 @@ export function Sidebar({
 
       {/* Navigation Links */}
       <nav className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto">
-        {navItems.map((item) => {
+        {navItems
+          .filter((item) => !item.isAdminOnly || userRole === "admin")
+          .map((item) => {
           const Icon = item.icon;
           const isActive = activeSection === item.id;
 
@@ -196,7 +200,25 @@ export function Sidebar({
       </nav>
 
       {/* Footer Actions */}
-      <div className="p-3 border-t border-black/15 dark:border-white/20 space-y-1">
+      <div className="p-3 border-t border-black/15 dark:border-white/20 space-y-2">
+        {!collapsed && (
+          <div className="px-3 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between">
+            <span className="text-[10px] uppercase tracking-wider font-semibold text-[#8f8f8f] dark:text-[#8D9B7F]">
+              Nível
+            </span>
+            <span
+              className={cn(
+                "text-[10px] font-bold px-2 py-0.5 rounded-full border",
+                userRole === "admin"
+                  ? "bg-[#A8B29A]/15 text-[#A8B29A] border-[#A8B29A]/30"
+                  : "bg-white/10 text-white border-white/20"
+              )}
+            >
+              {userRole === "admin" ? "Administradora" : "Atendimento"}
+            </span>
+          </div>
+        )}
+
         {onLogout && (
           <button
             onClick={onLogout}
