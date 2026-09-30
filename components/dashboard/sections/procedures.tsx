@@ -22,6 +22,9 @@ import {
 import { toast } from "sonner";
 import { ModalPortal } from "@/components/ui/modal-portal";
 import { cn } from "@/lib/utils";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { SlidingTabs, AnimatedNumber, KineticHeading, BorderBeam } from "@/components/motion";
 import {
   ProcedureItem,
@@ -391,60 +394,68 @@ export function ProceduresSection() {
 
       {/* 2. Metrics Overview Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5">
-        <div className="bg-white dark:bg-[#121214] p-3 sm:p-4 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_16px_rgba(0,0,0,0.4)]">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">Procedimentos</span>
-            <span className="w-7 h-7 rounded-lg bg-[#f6f6f6] dark:bg-[#1c1c1e] flex items-center justify-center text-black dark:text-white">
-              <Layers className="w-3.5 h-3.5" />
-            </span>
-          </div>
-          <div className="text-xl sm:text-2xl font-bold text-black dark:text-white mt-1.5 sm:mt-2">
-            <AnimatedNumber value={procedures.length} ariaLabel={`${procedures.length} procedimentos`} />
-          </div>
-          <span className="text-[11px] text-[#8f8f8f] dark:text-[#a1a1aa] mt-0.5 block truncate">Ativos no catálogo</span>
-        </div>
+        <Card>
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">Procedimentos</span>
+              <span className="w-7 h-7 rounded-lg bg-[#f6f6f6] dark:bg-[#1c1c1e] flex items-center justify-center text-black dark:text-white">
+                <Layers className="w-3.5 h-3.5" />
+              </span>
+            </div>
+            <div className="text-xl sm:text-2xl font-bold text-black dark:text-white mt-1.5 sm:mt-2">
+              <AnimatedNumber value={procedures.length} ariaLabel={`${procedures.length} procedimentos`} />
+            </div>
+            <span className="text-[11px] text-[#8f8f8f] dark:text-[#a1a1aa] mt-0.5 block truncate">Ativos no catálogo</span>
+          </CardContent>
+        </Card>
 
-        <div className="bg-white dark:bg-[#121214] p-3 sm:p-4 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_16px_rgba(0,0,0,0.4)]">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">Categorias</span>
-            <span className="w-7 h-7 rounded-lg bg-[#f6f6f6] dark:bg-[#1c1c1e] flex items-center justify-center text-black dark:text-white">
-              <Tag className="w-3.5 h-3.5" />
+        <Card>
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">Categorias</span>
+              <span className="w-7 h-7 rounded-lg bg-[#f6f6f6] dark:bg-[#1c1c1e] flex items-center justify-center text-black dark:text-white">
+                <Tag className="w-3.5 h-3.5" />
+              </span>
+            </div>
+            <div className="text-xl sm:text-2xl font-bold text-black dark:text-white mt-1.5 sm:mt-2">
+              <AnimatedNumber value={categories.length} ariaLabel={`${categories.length} categorias`} />
+            </div>
+            <span className="text-[11px] text-[#8f8f8f] dark:text-[#a1a1aa] mt-0.5 block truncate">
+              {categories.slice(0, 2).join(", ")}
+              {categories.length > 2 ? ` +${categories.length - 2}` : ""}
             </span>
-          </div>
-          <div className="text-xl sm:text-2xl font-bold text-black dark:text-white mt-1.5 sm:mt-2">
-            <AnimatedNumber value={categories.length} ariaLabel={`${categories.length} categorias`} />
-          </div>
-          <span className="text-[11px] text-[#8f8f8f] dark:text-[#a1a1aa] mt-0.5 block truncate">
-            {categories.slice(0, 2).join(", ")}
-            {categories.length > 2 ? ` +${categories.length - 2}` : ""}
-          </span>
-        </div>
+          </CardContent>
+        </Card>
 
-        <div className="bg-white dark:bg-[#121214] p-3 sm:p-4 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_16px_rgba(0,0,0,0.4)]">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">Ticket Médio</span>
-            <span className="w-7 h-7 rounded-lg bg-[#f6f6f6] dark:bg-[#1c1c1e] flex items-center justify-center text-black dark:text-white">
-              <DollarSign className="w-3.5 h-3.5" />
-            </span>
-          </div>
-          <div className="text-xl sm:text-2xl font-bold text-black dark:text-white mt-1.5 sm:mt-2 truncate">
-            {formatBRL(
-              procedures.reduce((acc, p) => acc + p.price, 0) / (procedures.length || 1)
-            )}
-          </div>
-          <span className="text-[11px] text-[#8f8f8f] dark:text-[#a1a1aa] mt-0.5 block truncate">Média por sessão</span>
-        </div>
+        <Card>
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">Ticket Médio</span>
+              <span className="w-7 h-7 rounded-lg bg-[#f6f6f6] dark:bg-[#1c1c1e] flex items-center justify-center text-black dark:text-white">
+                <DollarSign className="w-3.5 h-3.5" />
+              </span>
+            </div>
+            <div className="text-xl sm:text-2xl font-bold text-black dark:text-white mt-1.5 sm:mt-2 truncate">
+              {formatBRL(
+                procedures.reduce((acc, p) => acc + p.price, 0) / (procedures.length || 1)
+              )}
+            </div>
+            <span className="text-[11px] text-[#8f8f8f] dark:text-[#a1a1aa] mt-0.5 block truncate">Média por sessão</span>
+          </CardContent>
+        </Card>
 
-        <div className="bg-white dark:bg-[#121214] p-3 sm:p-4 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_16px_rgba(0,0,0,0.4)]">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">Destaque</span>
-            <span className="w-7 h-7 rounded-lg bg-[#f6f6f6] dark:bg-[#1c1c1e] flex items-center justify-center text-black dark:text-white">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-            </span>
-          </div>
-          <div className="text-base sm:text-lg font-bold text-black dark:text-white mt-1.5 sm:mt-2 truncate">Botox & Preench.</div>
-          <span className="text-[11px] text-[#8f8f8f] dark:text-[#a1a1aa] mt-0.5 block truncate">Alta demanda</span>
-        </div>
+        <Card>
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">Destaque</span>
+              <span className="w-7 h-7 rounded-lg bg-[#f6f6f6] dark:bg-[#1c1c1e] flex items-center justify-center text-black dark:text-white">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+              </span>
+            </div>
+            <div className="text-base sm:text-lg font-bold text-black dark:text-white mt-1.5 sm:mt-2 truncate">Botox & Preench.</div>
+            <span className="text-[11px] text-[#8f8f8f] dark:text-[#a1a1aa] mt-0.5 block truncate">Alta demanda</span>
+          </CardContent>
+        </Card>
       </div>
 
       {/* 3. Filter and Search Bar */}

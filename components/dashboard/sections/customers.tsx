@@ -30,6 +30,17 @@ import { CustomerFormModal } from "./customer-form-modal";
 import { AnamneseFormModal, AnamneseData } from "./anamnese-form-modal";
 import { SlidingTabs, AnimatedNumber, KineticHeading } from "@/components/motion";
 import { ModalPortal } from "@/components/ui/modal-portal";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from "@/components/ui/table";
 import { toast } from "sonner";
 import {
   savePatientToFirestore,
@@ -285,49 +296,57 @@ export function CustomersSection() {
 
       {/* 2. Overview Metrics Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5">
-        <div className="bg-white dark:bg-[#121214] p-3.5 sm:p-4 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_16px_rgba(0,0,0,0.4)] transition-all hover:border-black/20">
+        <Card className="p-3.5 sm:p-4 gap-0 justify-between hover:border-black/20 dark:hover:border-white/25">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] sm:text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">Total Pacientes</span>
-            <span className="w-7 h-7 rounded-lg bg-[#f6f6f6] dark:bg-[#1c1c1e] flex items-center justify-center text-black dark:text-white">
+            <span className="text-[11px] sm:text-xs text-[#767676] dark:text-[#8D9B7F] font-medium">Total Pacientes</span>
+            <span className="w-7 h-7 rounded-lg bg-black/5 dark:bg-white/10 flex items-center justify-center text-black dark:text-white">
               <Users className="w-3.5 h-3.5" />
             </span>
           </div>
-          <div className="text-2xl sm:text-3xl font-bold text-black dark:text-white mt-1.5 tracking-tight"><AnimatedNumber value={totalPatients} ariaLabel={`${totalPatients} pacientes`} /></div>
-          <span className="text-[11px] text-[#8f8f8f] dark:text-[#a1a1aa] mt-0.5 block truncate">Cadastradas na clínica</span>
-        </div>
+          <div className="text-2xl sm:text-3xl font-bold font-display text-black dark:text-white mt-1.5 tracking-tight">
+            <AnimatedNumber value={totalPatients} ariaLabel={`${totalPatients} pacientes`} />
+          </div>
+          <span className="text-[11px] text-[#8f8f8f] dark:text-[#8D9B7F] mt-0.5 block truncate">Cadastradas na clínica</span>
+        </Card>
 
-        <div className="bg-white dark:bg-[#121214] p-3.5 sm:p-4 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_16px_rgba(0,0,0,0.4)] transition-all hover:border-black/20">
+        <Card className="p-3.5 sm:p-4 gap-0 justify-between hover:border-black/20 dark:hover:border-white/25">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] sm:text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">Em Tratamento</span>
+            <span className="text-[11px] sm:text-xs text-[#767676] dark:text-[#8D9B7F] font-medium">Em Tratamento</span>
             <span className="w-7 h-7 rounded-lg bg-[#A8B29A]/15 flex items-center justify-center text-[#A8B29A]">
               <Sparkles className="w-3.5 h-3.5" />
             </span>
           </div>
-          <div className="text-2xl sm:text-3xl font-bold text-black dark:text-white mt-1.5 tracking-tight"><AnimatedNumber value={inTreatment} ariaLabel={`${inTreatment} em tratamento`} /></div>
+          <div className="text-2xl sm:text-3xl font-bold font-display text-black dark:text-white mt-1.5 tracking-tight">
+            <AnimatedNumber value={inTreatment} ariaLabel={`${inTreatment} em tratamento`} />
+          </div>
           <span className="text-[11px] text-[#A8B29A] mt-0.5 block font-medium truncate">Sessões ativas</span>
-        </div>
+        </Card>
 
-        <div className="bg-white dark:bg-[#121214] p-3.5 sm:p-4 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_16px_rgba(0,0,0,0.4)] transition-all hover:border-black/20">
+        <Card className="p-3.5 sm:p-4 gap-0 justify-between hover:border-black/20 dark:hover:border-white/25">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] sm:text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">Anamneses Feitas</span>
-            <span className="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center text-emerald-700 dark:text-emerald-300">
+            <span className="text-[11px] sm:text-xs text-[#767676] dark:text-[#8D9B7F] font-medium">Anamneses Feitas</span>
+            <span className="w-7 h-7 rounded-lg bg-[#8D9B7F]/15 flex items-center justify-center text-[#8D9B7F]">
               <CheckCircle2 className="w-3.5 h-3.5" />
             </span>
           </div>
-          <div className="text-2xl sm:text-3xl font-bold text-black dark:text-white mt-1.5 tracking-tight"><AnimatedNumber value={totalAnamneseDone} ariaLabel={`${totalAnamneseDone} anamneses`} /></div>
-          <span className="text-[11px] text-emerald-700 dark:text-emerald-300 mt-0.5 block font-medium truncate">Fichas validadas</span>
-        </div>
+          <div className="text-2xl sm:text-3xl font-bold font-display text-black dark:text-white mt-1.5 tracking-tight">
+            <AnimatedNumber value={totalAnamneseDone} ariaLabel={`${totalAnamneseDone} anamneses`} />
+          </div>
+          <span className="text-[11px] text-[#8D9B7F] mt-0.5 block font-medium truncate">Fichas validadas</span>
+        </Card>
 
-        <div className="bg-white dark:bg-[#121214] p-3.5 sm:p-4 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_16px_rgba(0,0,0,0.4)] transition-all hover:border-black/20">
+        <Card className="p-3.5 sm:p-4 gap-0 justify-between hover:border-black/20 dark:hover:border-white/25">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] sm:text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">Alertas Ativos</span>
+            <span className="text-[11px] sm:text-xs text-[#767676] dark:text-[#8D9B7F] font-medium">Alertas Ativos</span>
             <span className="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/40 flex items-center justify-center text-rose-600 dark:text-rose-400">
               <ShieldAlert className="w-3.5 h-3.5" />
             </span>
           </div>
-          <div className="text-2xl sm:text-3xl font-bold text-rose-600 dark:text-rose-400 mt-1.5 tracking-tight"><AnimatedNumber value={patientsWithAlerts} ariaLabel={`${patientsWithAlerts} alertas`} /></div>
+          <div className="text-2xl sm:text-3xl font-bold font-display text-rose-600 dark:text-rose-400 mt-1.5 tracking-tight">
+            <AnimatedNumber value={patientsWithAlerts} ariaLabel={`${patientsWithAlerts} alertas`} />
+          </div>
           <span className="text-[11px] text-rose-700 dark:text-rose-400 mt-0.5 block font-medium truncate">Alergias ou riscos</span>
-        </div>
+        </Card>
       </div>
 
       {/* 3. Filter and Tab Bar */}
@@ -584,186 +603,189 @@ export function CustomersSection() {
           <div className="hidden sm:block">
             {viewMode === "table" ? (
               <div className="w-full bg-white dark:bg-[#121212] border border-black/[0.08] dark:border-white/[0.08] rounded-2xl overflow-hidden shadow-[0_1px_3px_0_rgba(0,0,0,0.02)]">
-                <div className="overflow-x-auto">
-                  <table className="w-full border-collapse text-left text-xs">
-                    {/* Header */}
-                    <thead>
-                      <tr className="border-b border-black/[0.06] dark:border-white/[0.06] bg-[#fafafa]/80 dark:bg-[#18181b]/80 text-[#767676] dark:text-[#a1a1aa] font-medium">
-                        <th className="py-3.5 px-4 font-semibold text-[#0d0d0d] dark:text-white whitespace-nowrap">
-                          Paciente
-                        </th>
-                        <th className="py-3.5 px-4 font-semibold text-[#0d0d0d] dark:text-white whitespace-nowrap">
-                          Status
-                        </th>
-                        <th className="py-3.5 px-4 font-semibold text-[#0d0d0d] dark:text-white whitespace-nowrap">
-                          Ficha de Anamnese & Alertas
-                        </th>
-                        <th className="py-3.5 px-4 font-semibold text-[#0d0d0d] dark:text-white whitespace-nowrap">
-                          Telefone / WhatsApp
-                        </th>
-                        <th className="py-3.5 px-4 font-semibold text-[#0d0d0d] dark:text-white whitespace-nowrap">
-                          Total Investido
-                        </th>
-                        <th className="py-3.5 px-4 font-semibold text-[#0d0d0d] dark:text-white whitespace-nowrap">
-                          Último Procedimento
-                        </th>
-                        <th className="py-3.5 px-4 font-semibold text-[#0d0d0d] dark:text-white text-right whitespace-nowrap">
-                          Ações
-                        </th>
-                      </tr>
-                    </thead>
+                <Table>
+                  {/* Header */}
+                  <TableHeader>
+                    <TableRow className="border-b border-black/[0.06] dark:border-white/[0.06] bg-[#fafafa]/80 dark:bg-[#18181b]/80">
+                      <TableHead className="font-semibold text-[#0d0d0d] dark:text-white whitespace-nowrap">
+                        Paciente
+                      </TableHead>
+                      <TableHead className="font-semibold text-[#0d0d0d] dark:text-white whitespace-nowrap">
+                        Status
+                      </TableHead>
+                      <TableHead className="font-semibold text-[#0d0d0d] dark:text-white whitespace-nowrap">
+                        Ficha de Anamnese & Alertas
+                      </TableHead>
+                      <TableHead className="font-semibold text-[#0d0d0d] dark:text-white whitespace-nowrap">
+                        Telefone / WhatsApp
+                      </TableHead>
+                      <TableHead className="font-semibold text-[#0d0d0d] dark:text-white whitespace-nowrap">
+                        Total Investido
+                      </TableHead>
+                      <TableHead className="font-semibold text-[#0d0d0d] dark:text-white whitespace-nowrap">
+                        Último Procedimento
+                      </TableHead>
+                      <TableHead className="font-semibold text-[#0d0d0d] dark:text-white text-right whitespace-nowrap">
+                        Ações
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
 
-                    {/* Body */}
-                    <tbody className="divide-y divide-black/[0.04] dark:divide-white/[0.04]">
-                      {filteredPatients.map((patient) => {
-                        const anamnese = patient.anamnese;
-                        const isCompleted = anamnese?.status === "completed";
-                        const hasAllergy =
-                          anamnese?.alergiaMedicamento || anamnese?.alergiaAlimento;
-                        const hasCardiacOrCoag =
-                          anamnese?.alteracaoCardiologica ||
-                          anamnese?.proteseCardiaca ||
-                          anamnese?.usoAnticoagulante;
+                  {/* Body */}
+                  <TableBody className="divide-y divide-black/[0.04] dark:divide-white/[0.04]">
+                    {filteredPatients.map((patient) => {
+                      const anamnese = patient.anamnese;
+                      const isCompleted = anamnese?.status === "completed";
+                      const hasAllergy =
+                        anamnese?.alergiaMedicamento || anamnese?.alergiaAlimento;
+                      const hasCardiacOrCoag =
+                        anamnese?.alteracaoCardiologica ||
+                        anamnese?.proteseCardiaca ||
+                        anamnese?.usoAnticoagulante;
 
-                        return (
-                          <tr
-                            key={patient.id}
-                            onClick={() => handleOpenProfile(patient)}
-                            className="hover:bg-[#fbfbfb] dark:hover:bg-[#1a1a1c] transition-colors duration-100 group cursor-pointer"
-                          >
-                            {/* Paciente */}
-                            <td className="py-3.5 px-4 whitespace-nowrap">
-                              <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-xl bg-black dark:bg-white text-white dark:text-black font-bold flex items-center justify-center shrink-0 text-xs">
-                                  {patient.name
-                                    .split(" ")
-                                    .map((n) => n[0])
-                                    .slice(0, 2)
-                                    .join("")}
+                      return (
+                        <TableRow
+                          key={patient.id}
+                          onClick={() => handleOpenProfile(patient)}
+                          className="hover:bg-[#fbfbfb] dark:hover:bg-[#1a1a1c] transition-colors duration-150 group cursor-pointer"
+                        >
+                          {/* Paciente */}
+                          <TableCell className="whitespace-nowrap">
+                            <div className="flex items-center gap-3">
+                              <div className="w-9 h-9 rounded-xl bg-black dark:bg-white text-white dark:text-black font-bold flex items-center justify-center shrink-0 text-xs">
+                                {patient.name
+                                  .split(" ")
+                                  .map((n) => n[0])
+                                  .slice(0, 2)
+                                  .join("")}
+                              </div>
+                              <div>
+                                <div className="font-semibold text-black dark:text-white text-sm group-hover:underline">
+                                  {patient.name}
                                 </div>
-                                <div>
-                                  <div className="font-semibold text-black dark:text-white text-sm group-hover:underline">
-                                    {patient.name}
-                                  </div>
-                                  <div className="text-[11px] text-[#8f8f8f] dark:text-[#a1a1aa]">
-                                    CPF: {patient.cpf || "Não informado"} • {patient.age > 0 ? `${patient.age} anos` : "Idade não informada"}
-                                  </div>
+                                <div className="text-[11px] text-[#8f8f8f] dark:text-[#a1a1aa]">
+                                  CPF: {patient.cpf || "Não informado"} • {patient.age > 0 ? `${patient.age} anos` : "Idade não informada"}
                                 </div>
                               </div>
-                            </td>
+                            </div>
+                          </TableCell>
 
-                            {/* Status */}
-                            <td className="py-3.5 px-4 whitespace-nowrap">
-                              <span
-                                className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${
-                                  patient.status === "Em Tratamento"
-                                    ? "bg-white/10 text-white border-white/20"
-                                    : patient.status === "Ativo"
-                                    ? "bg-[#A8B29A]/15 text-[#A8B29A] border-[#A8B29A]/30"
-                                    : patient.status === "Retorno Agendado"
-                                    ? "bg-[#F7F5F0]/15 text-[#F7F5F0] border-[#F7F5F0]/30"
-                                    : "bg-[#232323] text-[#8D9B7F] border border-white/10"
-                                }`}
+                          {/* Status */}
+                          <TableCell className="whitespace-nowrap">
+                            <Badge
+                              variant={
+                                patient.status === "Em Tratamento"
+                                  ? "secondary"
+                                  : patient.status === "Ativo"
+                                  ? "sage"
+                                  : "outline"
+                              }
+                              className="text-[11px] font-semibold"
+                            >
+                              {patient.status}
+                            </Badge>
+                          </TableCell>
+
+                          {/* Anamnese & Alertas Visuais */}
+                          <TableCell>
+                            <div className="flex items-center gap-1.5 flex-wrap max-w-[320px]">
+                              {isCompleted ? (
+                                <>
+                                  {hasAllergy && (
+                                    <Badge variant="destructive" className="text-[10px] gap-1 py-0.5">
+                                      <AlertTriangle className="w-3 h-3" />
+                                      Alergia:{" "}
+                                      {anamnese.qualAlergiaMedicamento?.split(" ")[0] || "Sim"}
+                                    </Badge>
+                                  )}
+                                  {hasCardiacOrCoag && (
+                                    <Badge variant="destructive" className="text-[10px] gap-1 py-0.5">
+                                      <ShieldAlert className="w-3 h-3" />
+                                      Alerta Cardíaco
+                                    </Badge>
+                                  )}
+                                  {!hasAllergy && !hasCardiacOrCoag && (
+                                    <Badge variant="success" className="text-[10px] gap-1 py-0.5">
+                                      <CheckCircle2 className="w-3 h-3" />
+                                      Anamnese Ok
+                                    </Badge>
+                                  )}
+                                  {anamnese.tipoPele && (
+                                    <span className="text-[10px] text-[#767676] dark:text-[#a1a1aa] bg-[#f2f2f2] dark:bg-[#252528] px-1.5 py-0.5 rounded">
+                                      Pele {anamnese.tipoPele}
+                                    </span>
+                                  )}
+                                </>
+                              ) : (
+                                <Badge variant="warning" pulse className="text-[10px] gap-1 py-0.5">
+                                  <AlertCircle className="w-3 h-3" />
+                                  Pendente
+                                </Badge>
+                              )}
+                            </div>
+                          </TableCell>
+
+                          {/* Telefone / WhatsApp */}
+                          <TableCell className="whitespace-nowrap text-[#525252] dark:text-[#d4d4d8]">
+                            <div className="flex items-center gap-1.5">
+                              <Phone className="w-3 h-3 text-[#8f8f8f]" />
+                              <span>{patient.phone}</span>
+                            </div>
+                          </TableCell>
+
+                          {/* Total Investido */}
+                          <TableCell className="whitespace-nowrap font-semibold text-black dark:text-white">
+                            {formatBRL(patient.totalSpent)}
+                          </TableCell>
+
+                          {/* Último Procedimento */}
+                          <TableCell className="whitespace-nowrap text-[#767676] dark:text-[#a1a1aa]">
+                            {patient.lastProcedureDate}
+                          </TableCell>
+
+                          {/* Ações */}
+                          <TableCell className="text-right whitespace-nowrap">
+                            <div
+                              className="inline-flex items-center gap-1.5"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Button
+                                variant="secondary"
+                                size="sm"
+                                onClick={() => handleOpenAnamnese(patient)}
+                                className="h-8 px-2.5 rounded-lg text-xs font-medium gap-1.5 active:scale-95"
+                                title="Abrir formulário de Anamnese"
                               >
-                                {patient.status}
-                              </span>
-                            </td>
+                                <Stethoscope className="w-3.5 h-3.5" />
+                                <span>Anamnese</span>
+                              </Button>
 
-                            {/* Anamnese & Alertas Visuais */}
-                            <td className="py-3.5 px-4">
-                              <div className="flex items-center gap-1.5 flex-wrap max-w-[320px]">
-                                {isCompleted ? (
-                                  <>
-                                    {hasAllergy && (
-                                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold bg-rose-50 text-rose-800 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-900/40">
-                                        <AlertTriangle className="w-3 h-3 text-rose-600 dark:text-rose-400" />
-                                        Alergia:{" "}
-                                        {anamnese.qualAlergiaMedicamento?.split(" ")[0] || "Sim"}
-                                      </span>
-                                    )}
-                                    {hasCardiacOrCoag && (
-                                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold bg-rose-50 text-rose-800 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-900/40">
-                                        <ShieldAlert className="w-3 h-3 text-rose-600 dark:text-rose-400" />
-                                        Alerta Cardíaco
-                                      </span>
-                                    )}
-                                    {!hasAllergy && !hasCardiacOrCoag && (
-                                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/40">
-                                        <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-                                        Anamnese Ok
-                                      </span>
-                                    )}
-                                    {anamnese.tipoPele && (
-                                      <span className="text-[10px] text-[#767676] dark:text-[#a1a1aa] bg-[#f2f2f2] dark:bg-[#252528] px-1.5 py-0.5 rounded">
-                                        Pele {anamnese.tipoPele}
-                                      </span>
-                                    )}
-                                  </>
-                                ) : (
-                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/40">
-                                    <AlertCircle className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                                    Pendente
-                                  </span>
-                                )}
-                              </div>
-                            </td>
-
-                            {/* Telefone / WhatsApp */}
-                            <td className="py-3.5 px-4 whitespace-nowrap text-[#525252] dark:text-[#d4d4d8]">
-                              <div className="flex items-center gap-1.5">
-                                <Phone className="w-3 h-3 text-[#8f8f8f]" />
-                                <span>{patient.phone}</span>
-                              </div>
-                            </td>
-
-                            {/* Total Investido */}
-                            <td className="py-3.5 px-4 whitespace-nowrap font-semibold text-black dark:text-white">
-                              {formatBRL(patient.totalSpent)}
-                            </td>
-
-                            {/* Último Procedimento */}
-                            <td className="py-3.5 px-4 whitespace-nowrap text-[#767676] dark:text-[#a1a1aa]">
-                              {patient.lastProcedureDate}
-                            </td>
-
-                            {/* Ações */}
-                            <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                              <div
-                                className="inline-flex items-center gap-1.5"
-                                onClick={(e) => e.stopPropagation()}
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => handleOpenEditCustomer(patient)}
+                                className="w-8 h-8 rounded-lg active:scale-95"
+                                title="Editar Dados do Cliente"
                               >
-                                <button
-                                  onClick={() => handleOpenAnamnese(patient)}
-                                  className="h-8 px-2.5 rounded-lg bg-[#f4f4f4] dark:bg-[#1c1c1e] hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black text-xs font-medium text-black dark:text-white flex items-center gap-1.5 transition-colors cursor-pointer"
-                                  title="Abrir formulário de Anamnese"
-                                >
-                                  <Stethoscope className="w-3.5 h-3.5" />
-                                  <span>Anamnese</span>
-                                </button>
+                                <Edit2 className="w-3.5 h-3.5" />
+                              </Button>
 
-                                <button
-                                  onClick={() => handleOpenEditCustomer(patient)}
-                                  className="w-8 h-8 rounded-lg bg-[#f4f4f4] dark:bg-[#1c1c1e] hover:bg-[#ededed] dark:hover:bg-[#252528] text-[#767676] dark:text-[#a1a1aa] hover:text-black dark:hover:text-white flex items-center justify-center transition-colors cursor-pointer"
-                                  title="Editar Dados do Cliente"
-                                >
-                                  <Edit2 className="w-3.5 h-3.5" />
-                                </button>
-
-                                <button
-                                  onClick={() => handleDeleteCustomer(patient.id)}
-                                  className="w-8 h-8 rounded-lg bg-[#f4f4f4] dark:bg-[#1c1c1e] hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40 dark:hover:text-rose-400 text-[#8f8f8f] flex items-center justify-center transition-colors cursor-pointer"
-                                  title="Excluir paciente"
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
+                              <Button
+                                variant="destructive"
+                                size="icon"
+                                onClick={() => handleDeleteCustomer(patient.id)}
+                                className="w-8 h-8 rounded-lg active:scale-95"
+                                title="Excluir paciente"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
 
                 {/* Footer */}
                 <div className="flex items-center justify-between px-4 py-3 border-t border-black/[0.06] dark:border-white/[0.06] bg-[#fafafa]/50 dark:bg-[#18181b]/50 text-xs text-[#767676] dark:text-[#a1a1aa]">
@@ -772,13 +794,13 @@ export function CustomersSection() {
                     <strong className="text-black dark:text-white font-semibold">{patients.length}</strong> pacientes
                   </span>
                   <div className="flex items-center gap-2">
-                    <button className="px-2.5 py-1 rounded-md bg-white dark:bg-[#2c2c2e] border border-black/[0.08] dark:border-white/[0.08] hover:bg-[#f5f5f5] dark:hover:bg-[#3a3a3c] text-black dark:text-white transition-colors cursor-pointer">
+                    <Button variant="outline" size="sm" className="h-7 px-2.5 text-xs rounded-lg active:scale-95">
                       Anterior
-                    </button>
+                    </Button>
                     <span className="font-medium text-black dark:text-white px-2">1</span>
-                    <button className="px-2.5 py-1 rounded-md bg-white dark:bg-[#2c2c2e] border border-black/[0.08] dark:border-white/[0.08] hover:bg-[#f5f5f5] dark:hover:bg-[#3a3a3c] text-black dark:text-white transition-colors cursor-pointer">
+                    <Button variant="outline" size="sm" className="h-7 px-2.5 text-xs rounded-lg active:scale-95">
                       Próximo
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -792,118 +814,127 @@ export function CustomersSection() {
                     anamnese?.alergiaMedicamento || anamnese?.alergiaAlimento;
 
                   return (
-                    <div
+                    <Card
                       key={patient.id}
                       onClick={() => handleOpenProfile(patient)}
-                      className="bg-white dark:bg-[#121212] border border-black/[0.08] dark:border-white/[0.08] hover:border-black/30 dark:hover:border-white/30 rounded-2xl p-5 shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] transition-all cursor-pointer group flex flex-col justify-between space-y-4"
+                      className="cursor-pointer group flex flex-col justify-between hover:border-black/30 dark:hover:border-white/30 transition-all duration-150 active:scale-[0.99]"
                     >
-                      <div>
-                        {/* Top Bar */}
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex items-center gap-3">
-                            <div className="w-11 h-11 rounded-xl bg-black dark:bg-white text-white dark:text-black font-bold flex items-center justify-center text-sm shrink-0">
-                              {patient.name
-                                .split(" ")
-                                .map((n) => n[0])
-                                .slice(0, 2)
-                                .join("")}
-                            </div>
-                            <div>
-                              <h3 className="font-bold text-sm text-black dark:text-white group-hover:underline">
-                                {patient.name}
-                              </h3>
-                              <p className="text-xs text-[#767676] dark:text-[#a1a1aa]">CPF: {patient.cpf || "Não informado"}</p>
-                            </div>
-                          </div>
-                          <span
-                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
-                              patient.status === "Em Tratamento"
-                                ? "bg-white/10 text-white border-white/20"
-                                : "bg-[#A8B29A]/15 text-[#A8B29A] border-[#A8B29A]/30"
-                            }`}
-                          >
-                            {patient.status}
-                          </span>
-                        </div>
-
-                        {/* Medical Alerts Bar */}
-                        <div className="mt-3.5 pt-3 border-t border-black/[0.05] dark:border-white/[0.06] space-y-1.5">
-                          {isCompleted ? (
-                            <div className="flex flex-wrap gap-1.5">
-                              {hasAllergy && (
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-50 text-rose-800 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-900/40">
-                                  <AlertTriangle className="w-3 h-3 text-rose-600 dark:text-rose-400" />
-                                  Alergia Medicamentosa
-                                </span>
-                              )}
-                              {anamnese.alteracaoCardiologica && (
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-50 text-rose-800 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-900/40">
-                                  <ShieldAlert className="w-3 h-3 text-rose-600 dark:text-rose-400" />
-                                  Cardíaco
-                                </span>
-                              )}
-                              {!hasAllergy && !anamnese.alteracaoCardiologica && (
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/40">
-                                  <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-                                  Anamnese Completa
-                                </span>
-                              )}
-                              {anamnese.tipoPele && (
-                                <span className="text-[10px] text-[#767676] dark:text-[#a1a1aa] bg-[#f5f5f5] dark:bg-[#1f1f22] px-1.5 py-0.5 rounded">
-                                  Pele {anamnese.tipoPele}
-                                </span>
-                              )}
-                            </div>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/40">
-                              <AlertCircle className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                              Anamnese Pendente
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Contact info */}
-                        <div className="mt-3 space-y-1 text-xs text-[#6c6c6c] dark:text-[#a1a1aa]">
-                          <div className="flex items-center gap-2">
-                            <Phone className="w-3.5 h-3.5 text-[#8f8f8f]" />
-                            <span>{patient.phone}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Mail className="w-3.5 h-3.5 text-[#8f8f8f]" />
-                            <span className="truncate">{patient.email}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Footer of Card */}
-                      <div
-                        className="pt-3 border-t border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between"
-                        onClick={(e) => e.stopPropagation()}
-                      >
+                      <CardContent className="p-5 flex flex-col justify-between h-full space-y-4">
                         <div>
-                          <span className="text-[10px] text-[#8f8f8f] dark:text-[#a1a1aa] block">Total Investido</span>
-                          <span className="text-xs font-bold text-black dark:text-white">
-                            {formatBRL(patient.totalSpent)}
-                          </span>
+                          {/* Top Bar */}
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex items-center gap-3">
+                              <div className="w-11 h-11 rounded-xl bg-black dark:bg-white text-white dark:text-black font-bold flex items-center justify-center text-sm shrink-0">
+                                {patient.name
+                                  .split(" ")
+                                  .map((n) => n[0])
+                                  .slice(0, 2)
+                                  .join("")}
+                              </div>
+                              <div>
+                                <h3 className="font-bold text-sm text-black dark:text-white group-hover:underline">
+                                  {patient.name}
+                                </h3>
+                                <p className="text-xs text-[#767676] dark:text-[#a1a1aa]">CPF: {patient.cpf || "Não informado"}</p>
+                              </div>
+                            </div>
+                            <Badge
+                              variant={
+                                patient.status === "Em Tratamento"
+                                  ? "secondary"
+                                  : patient.status === "Ativo"
+                                  ? "sage"
+                                  : "outline"
+                              }
+                              className="text-[10px] font-bold"
+                            >
+                              {patient.status}
+                            </Badge>
+                          </div>
+
+                          {/* Medical Alerts Bar */}
+                          <div className="mt-3.5 pt-3 border-t border-black/[0.05] dark:border-white/[0.06] space-y-1.5">
+                            {isCompleted ? (
+                              <div className="flex flex-wrap gap-1.5">
+                                {hasAllergy && (
+                                  <Badge variant="destructive" className="text-[10px] gap-1 py-0.5">
+                                    <AlertTriangle className="w-3 h-3" />
+                                    Alergia Medicamentosa
+                                  </Badge>
+                                )}
+                                {anamnese.alteracaoCardiologica && (
+                                  <Badge variant="destructive" className="text-[10px] gap-1 py-0.5">
+                                    <ShieldAlert className="w-3 h-3" />
+                                    Cardíaco
+                                  </Badge>
+                                )}
+                                {!hasAllergy && !anamnese.alteracaoCardiologica && (
+                                  <Badge variant="success" className="text-[10px] gap-1 py-0.5">
+                                    <CheckCircle2 className="w-3 h-3" />
+                                    Anamnese Completa
+                                  </Badge>
+                                )}
+                                {anamnese.tipoPele && (
+                                  <span className="text-[10px] text-[#767676] dark:text-[#a1a1aa] bg-[#f5f5f5] dark:bg-[#1f1f22] px-1.5 py-0.5 rounded">
+                                    Pele {anamnese.tipoPele}
+                                  </span>
+                                )}
+                              </div>
+                            ) : (
+                              <Badge variant="warning" pulse className="text-[10px] gap-1 py-0.5">
+                                <AlertCircle className="w-3 h-3" />
+                                Anamnese Pendente
+                              </Badge>
+                            )}
+                          </div>
+
+                          {/* Contact info */}
+                          <div className="mt-3 space-y-1 text-xs text-[#6c6c6c] dark:text-[#a1a1aa]">
+                            <div className="flex items-center gap-2">
+                              <Phone className="w-3.5 h-3.5 text-[#8f8f8f]" />
+                              <span>{patient.phone}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Mail className="w-3.5 h-3.5 text-[#8f8f8f]" />
+                              <span className="truncate">{patient.email}</span>
+                            </div>
+                          </div>
                         </div>
 
-                        <div className="flex items-center gap-1.5">
-                          <button
-                            onClick={() => handleOpenAnamnese(patient)}
-                            className="h-8 px-2.5 rounded-lg bg-[#f4f4f4] dark:bg-[#1c1c1e] hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black text-xs font-semibold text-black dark:text-white transition-colors cursor-pointer flex items-center gap-1"
-                          >
-                            <Stethoscope className="w-3 h-3" />
-                            <span>Anamnese</span>
-                          </button>
-                          <button
-                            onClick={() => handleOpenProfile(patient)}
-                            className="h-8 px-2.5 rounded-lg bg-black dark:bg-white text-white dark:text-black hover:bg-[#262626] dark:hover:bg-[#eaeaea] text-xs font-semibold transition-colors cursor-pointer"
-                          >
-                            Ver Perfil
-                          </button>
+                        {/* Footer of Card */}
+                        <div
+                          className="pt-3 border-t border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <div>
+                            <span className="text-[10px] text-[#8f8f8f] dark:text-[#a1a1aa] block">Total Investido</span>
+                            <span className="text-xs font-bold text-black dark:text-white">
+                              {formatBRL(patient.totalSpent)}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-1.5">
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              onClick={() => handleOpenAnamnese(patient)}
+                              className="h-8 px-2.5 rounded-lg text-xs font-semibold gap-1 active:scale-95"
+                            >
+                              <Stethoscope className="w-3 h-3" />
+                              <span>Anamnese</span>
+                            </Button>
+                            <Button
+                              variant="default"
+                              size="sm"
+                              onClick={() => handleOpenProfile(patient)}
+                              className="h-8 px-2.5 rounded-lg text-xs font-semibold active:scale-95"
+                            >
+                              Ver Perfil
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                    </div>
+                      </CardContent>
+                    </Card>
                   );
                 })}
               </div>

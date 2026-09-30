@@ -20,6 +20,8 @@ import {
   Trash2,
 } from "lucide-react";
 import { ModalPortal } from "@/components/ui/modal-portal";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { playNotificationSound } from "@/lib/sound";
 import { toast } from "sonner";
 import {
@@ -807,13 +809,15 @@ export function AppointmentsSection() {
               Sua agenda está livre. Crie novos agendamentos reais para acompanhar o fluxo das pacientes no Kanban.
             </p>
           </div>
-          <button
+          <Button
             onClick={() => setIsAddModalOpen(true)}
-            className="h-9 px-4 rounded-xl bg-black dark:bg-[#9ca889] hover:bg-[#262626] dark:hover:bg-[#8f9b7c] active:bg-[#849071] text-white dark:text-[#070707] text-xs font-semibold flex items-center gap-2 shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_4px_16px_rgba(156,168,137,0.25)] transition-all cursor-pointer"
+            variant="default"
+            size="sm"
+            className="gap-2"
           >
             <Plus className="w-4 h-4" />
             <span>Novo Agendamento</span>
-          </button>
+          </Button>
         </div>
       ) : viewMode === "kanban" ? (
         <div data-kanban-board="true" className="flex w-full min-w-0 max-w-full lg:grid lg:grid-cols-5 gap-3.5 overflow-x-auto pb-4 scroll-momentum scroll-pl-3.5 scrollbar-thin snap-x">
@@ -887,15 +891,15 @@ export function AppointmentsSection() {
                             </span>
                           </div>
 
-                          <div className="flex items-center gap-1 shrink-0">
+                          <div className="flex items-center gap-1.5 shrink-0">
                             {apt.type === "Retorno de 15 Dias" ? (
-                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40">
+                              <Badge variant="warning" pulse>
                                 Retorno 15d
-                              </span>
+                              </Badge>
                             ) : (
-                              <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40">
+                              <Badge variant="sage">
                                 Sessão
-                              </span>
+                              </Badge>
                             )}
                             <GripVertical className="w-3.5 h-3.5 text-[#b0b0b0] opacity-0 group-hover:opacity-100 transition-opacity" />
                           </div>
