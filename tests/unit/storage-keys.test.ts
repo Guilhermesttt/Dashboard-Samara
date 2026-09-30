@@ -51,3 +51,51 @@ test("anti-duplication algorithm correctly identifies existing returns", () => {
 
   assert.equal(nonExisting, false);
 });
+
+test("findStoredAccount and updateStoredAccount correctly manage user records with PBKDF2 hashes", async () => {
+  const store = new Map<string, string>();
+  (globalThis as any).window = {};
+  (globalThis as any).localStorage = {
+    getItem: (key: string) => store.get(key) || null,
+    setItem: (key: string, val: string) => store.set(key, val),
+    removeItem: (key: string) => store.delete(key),
+  };
+
+  const { saveRegisteredUser, findStoredAccount, updateStoredAccount } = await import(
+    "../../lib/storage-keys.ts"
+  );
+
+  const res = await saveRegisteredUser({
+    name: "Dra. Sâmara Souza",
+    email: "dra.samara@samaraestetica.com.br",
+    password: "SenhaCorreta2026",
+    role: "admin",
+  });
+  assert.equal(res.success, true);
+
+  const found = findStoredAccount("dra.samara@samaraestetica.com.br");
+  assert.ok(found);
+  assert.equal(found?.name, "Dra. Sâmara Souza");
+  assert.equal(found?.role, "admin");
+  assert.match(found?.passwordHash || "", /^pbkdf2:sha256:100000:/);
+
+  // Tentativa de duplicar o mesmo e-mail deve falhar
+  const duplicate = await saveRegisteredUser({
+    name: "Outra",
+    email: "DRA.SAMARA@samaraestetica.com.br",
+    password: "OutraSenha",
+  });
+  assert.equal(duplicate.success, false);
+
+  // Atualizar hash de senha com updateStoredAccount
+  const updated = updateStoredAccount("dra.samara@samaraestetica.com.br", {
+    passwordHash: "pbkdf2:sha256:100000:salt:newhash",
+  });
+  assert.equal(updated, true);
+  const foundUpdated = findStoredAccount("dra.samara@samaraestetica.com.br");
+  assert.equal(foundUpdated?.passwordHash, "pbkdf2:sha256:100000:salt:newhash");
+
+  // Limpar mocks
+  delete (globalThis as any).window;
+  delete (globalThis as any).localStorage;
+});

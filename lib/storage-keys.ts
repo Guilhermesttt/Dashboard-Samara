@@ -230,6 +230,37 @@ export async function saveRegisteredUser(account: {
 }
 
 /**
+ * Busca conta cadastrada no armazenamento local pelo e-mail
+ */
+export function findStoredAccount(email: string): UserAccount | null {
+  if (typeof window === "undefined") return null;
+  const accounts = getStoredAccounts();
+  const clean = email.trim().toLowerCase();
+  return accounts.find((a) => a.email.toLowerCase() === clean) || null;
+}
+
+/**
+ * Atualiza campos de uma conta armazenada localmente (ex: novo hash de senha)
+ */
+export function updateStoredAccount(
+  email: string,
+  updates: Partial<Omit<UserAccount, "email">>
+): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const accounts = getStoredAccounts();
+    const clean = email.trim().toLowerCase();
+    const index = accounts.findIndex((a) => a.email.toLowerCase() === clean);
+    if (index === -1) return false;
+    accounts[index] = { ...accounts[index], ...updates };
+    localStorage.setItem(STORAGE_KEYS.AUTH_USERS, JSON.stringify(accounts));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+/**
  * Lê o token JWT de sessão ativo
  */
 export function getStoredJwtToken(): string | null {
