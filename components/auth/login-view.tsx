@@ -222,12 +222,13 @@ export function LoginView({ onLoginSuccess, onRegisterSuccess }: LoginViewProps)
             </div>
           </div>
 
-          {/* Logo da Marca - Mais visível e nítida */}
+          {/* Logo da Marca - 100% visível, branca e nítida em fundo escuro */}
           <div className="flex items-center gap-3 py-1">
             <img
               src="/Samara_Logo_Completa.png"
               alt="Dra. Sâmara Souza - Estética Avançada"
-              className="h-12 sm:h-14 max-w-[270px] object-contain dark:invert drop-shadow-md transition-all"
+              className="h-13 sm:h-16 max-w-[300px] object-contain transition-all drop-shadow-[0_2px_16px_rgba(255,255,255,0.16)]"
+              style={{ filter: "brightness(0) invert(1)" }}
             />
           </div>
 
