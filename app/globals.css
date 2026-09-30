@@ -4,12 +4,11 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ============================================================ */
-/* Typeface: Nohemi (Geometric Grotesque by Rajesh Rajput)      */
+/* Typefaces: Geist (Headings / H1) & SF Pro (Body / UI)        */
 /* ============================================================ */
 @font-face {
-  font-family: 'Nohemi';
-  src: url('/fonts/Nohemi-Regular.woff2') format('woff2'),
-       url('https://db.onlinewebfonts.com/t/29ddb4605533a38e086b48fa105e0d12.woff2') format('woff2');
+  font-family: 'Geist';
+  src: url('/fonts/Geist-Variable.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
@@ -106,9 +105,9 @@
   --accent-sage-glow: rgba(168, 178, 154, 0.28);
   --accent-sage-subtle: rgba(168, 178, 154, 0.12);
 
-  /* Typography Stacks */
-  --font-ui: 'Nohemi', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-  --font-display: 'Nohemi', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+  /* Typography Stacks: Geist para Headings/H1 e SF Pro para Textos Menores/UI */
+  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", 'Inter', system-ui, sans-serif;
+  --font-display: 'Geist', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
 }
 
 .dark {
@@ -151,8 +150,8 @@
 }
 
 @theme inline {
-  --font-sans: 'Nohemi', -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
-  --font-display: 'Nohemi', -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", 'Inter', system-ui, sans-serif;
+  --font-display: 'Geist', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --color-deep-black: #111111;
   --color-charcoal: #232323;
@@ -203,17 +202,19 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-ui);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
-  h1, h2, h3, h4 {
+  h1, h2, h3, h4, .font-heading, .font-display {
+    font-family: var(--font-display);
     color: #000000;
     font-weight: 700;
     letter-spacing: -0.02em;
   }
-  .dark h1, .dark h2, .dark h3, .dark h4 {
+  .dark h1, .dark h2, .dark h3, .dark h4, .dark .font-heading, .dark .font-display {
     color: #ffffff;
   }
 }

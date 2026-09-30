@@ -54,9 +54,7 @@ export default function RootLayout({
     <html lang="pt-BR" className="dark" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/Samara_logo.png" type="image/png" sizes="any" />
-        <link rel="apple-touch-icon" href="/Samara_logo.png" />
-        <link rel="preload" href="/fonts/Nohemi-Regular.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-        <link href="https://db.onlinewebfonts.com/c/29ddb4605533a38e086b48fa105e0d12?family=Nohemi" rel="stylesheet" />
+        <link rel="preload" href="/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
