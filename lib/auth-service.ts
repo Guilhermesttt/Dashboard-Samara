@@ -23,7 +23,8 @@ import {
   type Unsubscribe,
 } from "firebase/firestore";
 import { auth, db, isFirebaseConfigured } from "./firebase.ts";
-import { STORAGE_KEYS } from "./storage-keys.ts";
+import { STORAGE_KEYS, setStoredJwtToken, getStoredJwtToken } from "./storage-keys.ts";
+import { signJwt } from "./security-crypto.ts";
 
 export type UserRole = "admin" | "funcionaria";
 
@@ -35,6 +36,7 @@ export interface AppUser {
   title?: string;
   photoUrl?: string;
   createdAt?: string;
+  token?: string; // Token JWT criptografado da sessão
 }
 
 // E-mails com privilégio administrativo automático na inicialização
@@ -135,7 +137,21 @@ export async function loginWithFirebase(
 
     const appUser = await getUserProfileAndRole(userCredential.user);
 
-    // Salvar token e dados de sessão de forma segura
+    // Gerar token JWT assinado para a sessão
+    try {
+      const jwtToken = await signJwt({
+        sub: appUser.uid,
+        email: appUser.email,
+        role: appUser.role,
+        name: appUser.name,
+      });
+      appUser.token = jwtToken;
+      setStoredJwtToken(jwtToken);
+    } catch (e) {
+      console.warn("Aviso ao emitir JWT:", e);
+    }
+
+    // Salvar dados de sessão
     try {
       localStorage.setItem("samara_auth_session", "true");
       localStorage.setItem(STORAGE_KEYS.AUTH_SESSION, "true");
@@ -226,6 +242,20 @@ export async function registerWithFirebase(
       await setDoc(doc(db, "users", appUser.uid), appUser, { merge: true });
     }
 
+    // Gerar token JWT assinado para a nova conta
+    try {
+      const jwtToken = await signJwt({
+        sub: appUser.uid,
+        email: appUser.email,
+        role: appUser.role,
+        name: appUser.name,
+      });
+      appUser.token = jwtToken;
+      setStoredJwtToken(jwtToken);
+    } catch (e) {
+      console.warn("Aviso ao emitir JWT no cadastro:", e);
+    }
+
     try {
       localStorage.setItem("samara_auth_session", "true");
       localStorage.setItem(STORAGE_KEYS.AUTH_SESSION, "true");
@@ -268,6 +298,7 @@ export async function logoutFromFirebase(): Promise<void> {
   }
 
   try {
+    setStoredJwtToken(null);
     localStorage.removeItem("samara_auth_session");
     localStorage.removeItem(STORAGE_KEYS.AUTH_SESSION);
     localStorage.removeItem("samara_user_uid");
@@ -292,8 +323,10 @@ export function subscribeToAuthState(
       const name = localStorage.getItem("samara_user_name") || "Dra. Sâmara Souza";
       const role = (localStorage.getItem("samara_user_role") as UserRole) || "admin";
       const uid = localStorage.getItem("samara_user_uid") || "local-user";
-      onUserChange({ uid, email, name, role });
+      const token = getStoredJwtToken() || undefined;
+      onUserChange({ uid, email, name, role, token });
     } else {
+      setStoredJwtToken(null);
       onUserChange(null);
     }
     return () => {};
@@ -302,6 +335,19 @@ export function subscribeToAuthState(
   const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
     if (firebaseUser) {
       const appUser = await getUserProfileAndRole(firebaseUser);
+      let token = getStoredJwtToken();
+      if (!token) {
+        try {
+          token = await signJwt({
+            sub: appUser.uid,
+            email: appUser.email,
+            role: appUser.role,
+            name: appUser.name,
+          });
+          setStoredJwtToken(token);
+        } catch (e) {}
+      }
+      appUser.token = token || undefined;
       onUserChange(appUser);
     } else {
       // Checa se há sessão local (útil para testes E2E mockados)
@@ -311,14 +357,23 @@ export function subscribeToAuthState(
         const name = localStorage.getItem("samara_user_name") || "Dra. Sâmara Souza";
         const role = (localStorage.getItem("samara_user_role") as UserRole) || "admin";
         const uid = localStorage.getItem("samara_user_uid") || "local-user";
-        onUserChange({ uid, email, name, role });
+        const token = getStoredJwtToken() || undefined;
+        onUserChange({ uid, email, name, role, token });
       } else {
+        setStoredJwtToken(null);
         onUserChange(null);
       }
     }
   });
 
   return unsubscribe;
+}
+
+/**
+ * Retorna o token JWT ativo atual
+ */
+export function getAuthJwtToken(): string | null {
+  return getStoredJwtToken();
 }
 
 /**

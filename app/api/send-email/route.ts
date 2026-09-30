@@ -1,7 +1,27 @@
 import { NextResponse } from "next/server";
+import { extractBearerToken, verifyJwt } from "@/lib/security-crypto";
 
 export async function POST(request: Request) {
   try {
+    // 1. Verificação de Token JWT de Sessão (se fornecido no cabeçalho ou cookie)
+    const authHeader = request.headers.get("authorization");
+    const cookieHeader = request.headers.get("cookie");
+    const token = extractBearerToken(authHeader) || extractBearerToken(cookieHeader);
+
+    let authenticatedUser = null;
+    if (token) {
+      authenticatedUser = await verifyJwt(token);
+      if (!authenticatedUser) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Token JWT de autenticação inválido ou expirado.",
+          },
+          { status: 401 }
+        );
+      }
+    }
+
     let body: any = {};
     try {
       body = await request.json();

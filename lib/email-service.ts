@@ -35,10 +35,16 @@ export async function sendEmailNotification(payload: EmailAlertPayload): Promise
   }
 
   try {
+    const token = typeof window !== "undefined" ? localStorage.getItem("samara_dev_jwt_token") || localStorage.getItem("samara_prod_jwt_token") : null;
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
     // Tenta envio real via rota da API
     const response = await fetch("/api/send-email", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify({
         to: targetEmail,
         subject,

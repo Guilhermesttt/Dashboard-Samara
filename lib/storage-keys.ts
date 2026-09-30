@@ -4,6 +4,8 @@
  * Em produção, utiliza `samara_prod_` garantindo um ambiente limpo e zerado no primeiro acesso.
  */
 
+import { hashPassword } from "./security-crypto.ts";
+
 export const isProduction = process.env.NODE_ENV === "production";
 const PREFIX = isProduction ? "samara_prod_" : "samara_dev_";
 
@@ -12,6 +14,7 @@ export const STORAGE_KEYS = {
   PATIENTS: `${PREFIX}patients`,
   AUTH_SESSION: `${PREFIX}auth_session`,
   AUTH_USERS: `${PREFIX}auth_users`,
+  JWT_TOKEN: `${PREFIX}jwt_token`,
   USER_PROFILE: `${PREFIX}user_profile`,
   CLINIC_SCHEDULE: `${PREFIX}clinic_schedule`,
   ONBOARDING_DONE: `${PREFIX}onboarding_done`,
@@ -168,7 +171,8 @@ export function clearDevTestData(): void {
 export interface UserAccount {
   name: string;
   email: string;
-  password: string;
+  passwordHash: string; // Hash criptográfico PBKDF2 (nunca plain text)
+  role?: "admin" | "funcionaria";
   createdAt: string;
 }
 
@@ -181,11 +185,13 @@ export function getStoredAccounts(): UserAccount[] {
   return [];
 }
 
-export function saveRegisteredUser(account: {
+export async function saveRegisteredUser(account: {
   name: string;
   email: string;
-  password: string;
-}): { success: boolean; error?: string } {
+  password?: string;
+  passwordHash?: string;
+  role?: "admin" | "funcionaria";
+}): Promise<{ success: boolean; error?: string }> {
   if (typeof window === "undefined") return { success: false, error: "Ambiente inválido" };
   try {
     const accounts = getStoredAccounts();
@@ -197,10 +203,21 @@ export function saveRegisteredUser(account: {
       return { success: false, error: "Já existe uma conta cadastrada com este e-mail." };
     }
 
+    // Garante hash criptográfico seguro (senhas NUNCA são salvas em texto puro)
+    let finalHash = account.passwordHash;
+    if (!finalHash && account.password) {
+      finalHash = await hashPassword(account.password);
+    }
+
+    if (!finalHash) {
+      return { success: false, error: "Hash de senha ausente ou inválido." };
+    }
+
     const newAcc: UserAccount = {
       name: account.name.trim(),
       email: cleanEmail,
-      password: account.password,
+      passwordHash: finalHash,
+      role: account.role || "funcionaria",
       createdAt: new Date().toISOString(),
     };
 
@@ -210,5 +227,33 @@ export function saveRegisteredUser(account: {
   } catch (e) {
     return { success: false, error: "Falha ao salvar conta localmente." };
   }
+}
+
+/**
+ * Lê o token JWT de sessão ativo
+ */
+export function getStoredJwtToken(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return localStorage.getItem(STORAGE_KEYS.JWT_TOKEN);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Persiste ou limpa o token JWT de sessão ativo
+ */
+export function setStoredJwtToken(token: string | null): void {
+  if (typeof window === "undefined") return;
+  try {
+    if (token) {
+      localStorage.setItem(STORAGE_KEYS.JWT_TOKEN, token);
+      document.cookie = `samara_jwt=${token}; path=/; max-age=86400; SameSite=Lax`;
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.JWT_TOKEN);
+      document.cookie = "samara_jwt=; path=/; max-age=0; SameSite=Lax";
+    }
+  } catch {}
 }
 
