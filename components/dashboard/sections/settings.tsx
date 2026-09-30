@@ -559,7 +559,7 @@ export function SettingsSection() {
                 <Switch
                   checked={isDarkMode}
                   onCheckedChange={handleToggleDarkMode}
-                  className="shrink-0 p-3 -m-3"
+                  className="shrink-0"
                 />
               </div>
             </CardContent>
@@ -657,7 +657,7 @@ export function SettingsSection() {
                       soundEnabled: c,
                     })
                   }
-                  className="shrink-0 p-3 -m-3"
+                  className="shrink-0"
                 />
               </div>
             </CardContent>
@@ -769,7 +769,7 @@ export function SettingsSection() {
                       upcomingAppointmentAlert: c,
                     })
                   }
-                  className="shrink-0 p-3 -m-3 mt-0.5 sm:mt-0"
+                  className="shrink-0"
                 />
               </div>
 
@@ -797,7 +797,7 @@ export function SettingsSection() {
                       return15DaysAlert: c,
                     })
                   }
-                  className="shrink-0 p-3 -m-3 mt-0.5 sm:mt-0"
+                  className="shrink-0"
                 />
               </div>
 
@@ -825,7 +825,7 @@ export function SettingsSection() {
                       newBookingAlert: c,
                     })
                   }
-                  className="shrink-0 p-3 -m-3 mt-0.5 sm:mt-0"
+                  className="shrink-0"
                 />
               </div>
 
@@ -853,7 +853,7 @@ export function SettingsSection() {
                       pendingAnamneseAlert: c,
                     })
                   }
-                  className="shrink-0 p-3 -m-3 mt-0.5 sm:mt-0"
+                  className="shrink-0"
                 />
               </div>
 
@@ -881,7 +881,7 @@ export function SettingsSection() {
                       birthdayAlert: c,
                     })
                   }
-                  className="shrink-0 p-3 -m-3 mt-0.5 sm:mt-0"
+                  className="shrink-0"
                 />
               </div>
             </CardContent>
