@@ -23,11 +23,20 @@ export function formatPhone(value: string): string {
 
   const areaCode = digits.slice(0, 2)
   const local = digits.slice(2)
-  const prefixLength = digits.length === 11 ? 5 : Math.min(4, local.length)
-  const prefix = local.slice(0, prefixLength)
-  const suffix = local.slice(prefixLength)
 
-  return `(${areaCode}) ${prefix}${suffix ? `-${suffix}` : ""}`
+  // Celular no Brasil (começa com 9 e tem bloco inicial de 5 dígitos)
+  if (local.startsWith("9")) {
+    if (local.length <= 5) {
+      return `(${areaCode}) ${local}`
+    }
+    return `(${areaCode}) ${local.slice(0, 5)}-${local.slice(5)}`
+  }
+
+  // Telefone fixo (bloco inicial de 4 dígitos)
+  if (local.length <= 4) {
+    return `(${areaCode}) ${local}`
+  }
+  return `(${areaCode}) ${local.slice(0, 4)}-${local.slice(4)}`
 }
 
 export function isCompleteCpf(value: string): boolean {

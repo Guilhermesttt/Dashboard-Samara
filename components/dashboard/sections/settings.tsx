@@ -52,6 +52,7 @@ import {
 } from "@/lib/storage-keys";
 import { saveUserProfileToFirestore } from "@/lib/firebase-service";
 import { changeUserPassword } from "@/lib/auth-service";
+import { formatPhone } from "@/lib/customer-input";
 
 export function SettingsSection() {
   const [activeTab, setActiveTab] = useState("profile");
@@ -504,8 +505,10 @@ export function SettingsSection() {
                   <Input
                     id="profPhone"
                     value={profile.phone}
+                    maxLength={15}
+                    placeholder="(82) 98765-4321"
                     onChange={(e) =>
-                      setProfile({ ...profile, phone: e.target.value })
+                      setProfile({ ...profile, phone: formatPhone(e.target.value) })
                     }
                     className="bg-secondary/50 border-border text-base sm:text-xs text-foreground h-10 sm:h-9 rounded-xl"
                   />

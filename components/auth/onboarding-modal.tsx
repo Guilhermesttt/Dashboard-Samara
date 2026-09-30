@@ -27,6 +27,7 @@ import {
 } from "@/lib/storage-keys";
 import { saveUserProfileToFirestore } from "@/lib/firebase-service";
 import { toast } from "sonner";
+import { formatPhone } from "@/lib/customer-input";
 
 interface OnboardingModalProps {
   isOpen: boolean;
@@ -350,9 +351,10 @@ export function OnboardingModal({
                   <input
                     type="text"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    maxLength={15}
+                    onChange={(e) => setPhone(formatPhone(e.target.value))}
                     className="w-full h-10 px-3.5 rounded-xl bg-[#fafafa] dark:bg-[#232323] border border-black/[0.08] dark:border-white/[0.08] focus:border-[#A8B29A] text-xs text-black dark:text-white outline-none"
-                    placeholder="(11) 98844-2200"
+                    placeholder="(82) 98765-4321"
                   />
                 </div>
               </div>

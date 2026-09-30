@@ -104,30 +104,56 @@ export function CustomerFormModal({
 
   const handleCpfChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatCpf(event.currentTarget.value);
-    event.currentTarget.setCustomValidity(
-      isCompleteCpf(formatted) || !formatted ? "" : "Informe os 11 dígitos do CPF.",
-    );
+    event.currentTarget.setCustomValidity("");
     setCpf(formatted);
+  };
+
+  const handleCpfBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    if (cpf && !isCompleteCpf(cpf)) {
+      event.currentTarget.setCustomValidity("Informe os 11 dígitos do CPF.");
+    } else {
+      event.currentTarget.setCustomValidity("");
+    }
   };
 
   const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatPhone(event.currentTarget.value);
-    event.currentTarget.setCustomValidity(
-      isCompletePhone(formatted) || !formatted
-        ? ""
-        : "Informe um telefone com DDD e 10 ou 11 dígitos.",
-    );
+    event.currentTarget.setCustomValidity("");
     setPhone(formatted);
+  };
+
+  const handlePhoneBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    if (phone && !isCompletePhone(phone)) {
+      event.currentTarget.setCustomValidity(
+        "Informe um telefone com DDD e 10 ou 11 dígitos.",
+      );
+    } else {
+      event.currentTarget.setCustomValidity("");
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (
-      !isCompleteCpf(cpf) ||
-      !isCompletePhone(phone) ||
-      !ALAGOAS_LOCATIONS.includes(location)
-    ) {
+    if (!isCompleteCpf(cpf)) {
+      const cpfInput = document.getElementById("customer-cpf") as HTMLInputElement;
+      if (cpfInput) {
+        cpfInput.setCustomValidity("Informe os 11 dígitos do CPF.");
+        cpfInput.reportValidity();
+      }
+      return;
+    }
+
+    if (!isCompletePhone(phone)) {
+      const phoneInput = document.getElementById("customer-phone") as HTMLInputElement;
+      if (phoneInput) {
+        phoneInput.setCustomValidity("Informe um telefone com DDD e 10 ou 11 dígitos.");
+        phoneInput.reportValidity();
+      }
+      return;
+    }
+
+    if (!ALAGOAS_LOCATIONS.includes(location)) {
       (e.currentTarget as HTMLFormElement).reportValidity();
       return;
     }
@@ -237,6 +263,7 @@ export function CustomerFormModal({
                 placeholder="000.000.000-00"
                 value={cpf}
                 onChange={handleCpfChange}
+                onBlur={handleCpfBlur}
                 className="w-full h-11 sm:h-10 px-3.5 rounded-xl bg-[#f7f7f7] border border-transparent focus:border-black text-base sm:text-xs text-black outline-none transition-all placeholder:text-[#8f8f8f]"
               />
               <p id="customer-cpf-help" className="text-[11px] text-[#767676]">
@@ -258,6 +285,7 @@ export function CustomerFormModal({
                 placeholder="(82) 98765-4321"
                 value={phone}
                 onChange={handlePhoneChange}
+                onBlur={handlePhoneBlur}
                 className="w-full h-11 sm:h-10 px-3.5 rounded-xl bg-[#f7f7f7] border border-transparent focus:border-black text-base sm:text-xs text-black outline-none transition-all placeholder:text-[#8f8f8f]"
               />
               <p id="customer-phone-help" className="text-[11px] text-[#767676]">

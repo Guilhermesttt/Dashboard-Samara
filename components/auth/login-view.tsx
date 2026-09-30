@@ -164,7 +164,7 @@ export function LoginView({ onLoginSuccess, onRegisterSuccess }: LoginViewProps)
         className="hidden lg:flex lg:w-1/2 relative rounded-[28px] xl:rounded-[32px] overflow-hidden bg-[#161616] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_24px_64px_-16px_rgba(0,0,0,0.9)] flex-col justify-between p-8 xl:p-12 select-none group"
       >
         <img
-          src="/relaxing-spa.jpg"
+          src="/login-clinic.png"
           alt="Ambiente Relaxante da Clínica Dra. Sâmara Souza"
           className="absolute inset-0 w-full h-full object-cover object-center scale-100 transition-transform duration-1000 ease-out group-hover:scale-105"
         />
@@ -207,7 +207,7 @@ export function LoginView({ onLoginSuccess, onRegisterSuccess }: LoginViewProps)
           {/* Card visual compacto para telas mobile (< lg) */}
           <div className="lg:hidden w-full h-36 sm:h-44 rounded-2xl sm:rounded-3xl overflow-hidden relative mb-1 border border-white/[0.1] shadow-lg shrink-0">
             <img
-              src="/relaxing-spa.jpg"
+              src="/login-clinic.png"
               alt="Ambiente Relaxante Dra. Sâmara Souza"
               className="w-full h-full object-cover object-center"
             />
