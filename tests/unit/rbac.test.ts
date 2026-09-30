@@ -27,14 +27,17 @@ test("navItems visibility filter hides admin-only routes from staff", () => {
     { id: "customers", label: "Clientes" },
     { id: "procedures", label: "Procedimentos" },
     { id: "reports", label: "Relatórios", isAdminOnly: true },
+    { id: "team", label: "Equipe", isAdminOnly: true },
     { id: "settings", label: "Configurações" },
   ];
 
   const staffNav = navItems.filter((item) => !item.isAdminOnly || ("funcionaria" as string) === "admin");
   assert.equal(staffNav.some((i) => i.id === "reports"), false);
+  assert.equal(staffNav.some((i) => i.id === "team"), false);
   assert.equal(staffNav.length, 5);
 
   const adminNav = navItems.filter((item) => !item.isAdminOnly || ("admin" as string) === "admin");
   assert.equal(adminNav.some((i) => i.id === "reports"), true);
-  assert.equal(adminNav.length, 6);
+  assert.equal(adminNav.some((i) => i.id === "team"), true);
+  assert.equal(adminNav.length, 7);
 });

@@ -16,6 +16,7 @@ import {
   Building2,
   X,
   Shield,
+  ShieldCheck,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -41,6 +42,7 @@ const navItems: {
   { id: "customers", label: "Clientes", icon: Users },
   { id: "procedures", label: "Procedimentos", icon: Sparkles },
   { id: "reports", label: "Relatórios", icon: BarChart3, isAdminOnly: true },
+  { id: "team", label: "Equipe", icon: ShieldCheck, isAdminOnly: true },
   { id: "settings", label: "Configurações", icon: Settings },
 ];
 

@@ -37,7 +37,7 @@ export async function POST(request: Request) {
       }
     }
 
-    // Se houver chave do Resend configurada no ambiente (.env.local), envia via Resend:
+    // Se houver chave do Resend configurada no ambiente (.env.local ou Vercel), envia via Resend:
     const resendApiKey = process.env.RESEND_API_KEY;
 
     if (resendApiKey) {
@@ -49,41 +49,70 @@ export async function POST(request: Request) {
             Authorization: `Bearer ${resendApiKey}`,
           },
           body: JSON.stringify({
-            from: "Dra. Sâmara Souza <notificacoes@samaraestetica.com.br>",
+            from:
+              process.env.RESEND_FROM_EMAIL ||
+              "Dra. Sâmara Souza <onboarding@resend.dev>",
             to: [to],
             subject,
             text: content,
           }),
         });
 
+        const resData = await res.json().catch(() => ({}));
+
         if (res.ok) {
           return NextResponse.json({
             success: true,
-            message: `E-mail enviado via Resend para ${to}`,
+            message: `E-mail enviado com sucesso via Resend para ${to}`,
+            resendId: resData?.id,
           });
         }
-      } catch (err) {
-        console.warn("Falha no provedor Resend, fallback para simulador:", err);
+
+        console.warn("Falha no provedor Resend:", resData);
+        return NextResponse.json(
+          {
+            success: false,
+            configured: true,
+            message:
+              resData?.message ||
+              "A API do Resend rejeitou o envio do e-mail. Verifique o domínio remetente e a chave.",
+            details: resData,
+          },
+          { status: res.status }
+        );
+      } catch (err: any) {
+        console.warn("Falha de conexão com Resend:", err);
+        return NextResponse.json(
+          {
+            success: false,
+            configured: true,
+            message: "Falha de rede ao conectar com a API do Resend.",
+            error: err?.message,
+          },
+          { status: 502 }
+        );
       }
     }
 
-    // Registro no console do servidor
-    console.log("-----------------------------------------");
-    console.log(`[DISPARO DE E-MAIL CLÍNICO]`);
-    console.log(`Destinatário: ${to}`);
-    console.log(`Assunto: ${subject}`);
-    console.log(`Conteúdo:\n${content}`);
-    console.log("-----------------------------------------");
+    // Se RESEND_API_KEY não estiver configurada no servidor:
+    console.warn(
+      `[ALERTA DE SISTEMA] RESEND_API_KEY não configurada. E-mail para ${to} ('${subject}') não foi despachado para a caixa postal externa.`
+    );
 
-    return NextResponse.json({
-      success: true,
-      message: `E-mail processado e enviado com sucesso para ${to}!`,
-      details: {
-        to,
-        subject,
-        timestamp: new Date().toISOString(),
+    return NextResponse.json(
+      {
+        success: false,
+        configured: false,
+        message:
+          "RESEND_API_KEY não configurada no servidor (.env.local). Adicione sua chave para ativar o envio real de alertas clínicos para a Dra. Sâmara.",
+        details: {
+          to,
+          subject,
+          timestamp: new Date().toISOString(),
+        },
       },
-    });
+      { status: 422 }
+    );
   } catch (error: any) {
     return NextResponse.json(
       { success: false, message: error?.message || "Erro ao processar envio" },

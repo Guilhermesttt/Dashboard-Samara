@@ -47,21 +47,26 @@ export async function sendEmailNotification(payload: EmailAlertPayload): Promise
       }),
     });
 
-    if (response.ok) {
-      const data = await response.json();
+    const data = await response.json().catch(() => ({}));
+
+    if (response.ok && data.success) {
       return {
         success: true,
         message: data.message || `E-mail enviado com sucesso para ${targetEmail}`,
       };
     }
-  } catch (error) {
-    console.warn("Aviso na chamada da API de e-mail (usando registro local):", error);
-  }
 
-  // Fallback / Registro de Log
-  console.info(`[E-MAIL DISPARADO] Para: ${targetEmail} | Assunto: ${subject}`);
-  return {
-    success: true,
-    message: `Aviso enviado por e-mail para ${targetEmail}`,
-  };
+    return {
+      success: false,
+      message:
+        data.message ||
+        `Não foi possível enviar e-mail para ${targetEmail}. Verifique a configuração da chave RESEND_API_KEY.`,
+    };
+  } catch (error: any) {
+    console.warn("Falha ao contatar rota de e-mail:", error);
+    return {
+      success: false,
+      message: "Falha de conexão ao tentar enviar notificação por e-mail.",
+    };
+  }
 }

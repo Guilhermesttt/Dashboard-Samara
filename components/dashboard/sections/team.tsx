@@ -1,233 +1,602 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { cn } from "@/lib/utils";
-import { Trophy, Target, TrendingUp, TrendingDown, Mail, Phone, MoreHorizontal } from "lucide-react";
+import React, { useState, useEffect } from "react";
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+  Users,
+  Shield,
+  ShieldCheck,
+  UserPlus,
+  Trash2,
+  Lock,
+  Mail,
+  User,
+  Sparkles,
+  CheckCircle2,
+  AlertCircle,
+  KeyRound,
+  MoreVertical,
+} from "lucide-react";
+import { toast } from "sonner";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from "@/components/ui/table";
+import { ModalPortal } from "@/components/ui/modal-portal";
+import {
+  AppUser,
+  UserRole,
+  subscribeToClinicTeam,
+  registerWithFirebase,
+  updateUserRoleInFirestore,
+  deleteUserFromClinic,
+  isClinicAdminEmail,
+} from "@/lib/auth-service";
 
-interface TeamMember {
-  id: string;
-  name: string;
-  role: string;
-  email: string;
-  avatar: string;
-  deals: number;
-  revenue: number;
-  quota: number;
-  change: number;
-  rank: number;
-}
+export function TeamSection() {
+  const [members, setMembers] = useState<AppUser[]>([]);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [memberToDelete, setMemberToDelete] = useState<AppUser | null>(null);
 
-const teamMembers: TeamMember[] = [
-  { id: "1", name: "Sarah Chen", role: "Senior AE", email: "sarah@company.com", avatar: "SC", deals: 24, revenue: 487500, quota: 450000, change: 15, rank: 1 },
-  { id: "2", name: "Mike Johnson", role: "Account Executive", email: "mike@company.com", avatar: "MJ", deals: 19, revenue: 356200, quota: 400000, change: 8, rank: 2 },
-  { id: "3", name: "Emily Davis", role: "Senior AE", email: "emily@company.com", avatar: "ED", deals: 17, revenue: 312800, quota: 350000, change: 12, rank: 3 },
-  { id: "4", name: "James Wilson", role: "Account Executive", email: "james@company.com", avatar: "JW", deals: 15, revenue: 289400, quota: 350000, change: -5, rank: 4 },
-  { id: "5", name: "Lisa Park", role: "Account Executive", email: "lisa@company.com", avatar: "LP", deals: 14, revenue: 267100, quota: 300000, change: 9, rank: 5 },
-];
+  // Form states
+  const [formName, setFormName] = useState("");
+  const [formEmail, setFormEmail] = useState("");
+  const [formPassword, setFormPassword] = useState("");
+  const [formRole, setFormRole] = useState<UserRole>("funcionaria");
 
-const performanceData = [
-  { name: "Sarah", revenue: 487, quota: 450 },
-  { name: "Mike", revenue: 356, quota: 400 },
-  { name: "Emily", revenue: 312, quota: 350 },
-  { name: "James", revenue: 289, quota: 350 },
-  { name: "Lisa", revenue: 267, quota: 300 },
-];
+  // Assinatura em tempo real da equipe no Firestore
+  useEffect(() => {
+    const unsubscribe = subscribeToClinicTeam((teamList) => {
+      setMembers(teamList);
+    });
+    return () => {
+      if (typeof unsubscribe === "function") unsubscribe();
+    };
+  }, []);
 
-function TeamMemberCard({ member, index }: { member: TeamMember; index: number }) {
-  const quotaPercentage = (member.revenue / member.quota) * 100;
-  const isAboveQuota = quotaPercentage >= 100;
+  const handleCreateMember = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formName.trim() || !formEmail.trim() || !formPassword.trim()) {
+      toast.error("Preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    if (formPassword.length < 6) {
+      toast.error("A senha deve ter no mínimo 6 caracteres.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const res = await registerWithFirebase(
+        formName.trim(),
+        formEmail.trim(),
+        formPassword.trim(),
+        formRole
+      );
+
+      setIsSubmitting(false);
+
+      if (res.success) {
+        toast.success(`Colaboradora ${formName.trim()} cadastrada com sucesso!`, {
+          description: `O acesso (${formRole === "admin" ? "Administradora" : "Atendimento"}) já está disponível no Firebase.`,
+        });
+        setFormName("");
+        setFormEmail("");
+        setFormPassword("");
+        setFormRole("funcionaria");
+        setIsAddModalOpen(false);
+      } else {
+        toast.error(res.error || "Erro ao registrar colaboradora.");
+      }
+    } catch (err: any) {
+      setIsSubmitting(false);
+      toast.error(err?.message || "Erro inesperado ao registrar colaboradora.");
+    }
+  };
+
+  const handleToggleRole = async (member: AppUser) => {
+    if (isClinicAdminEmail(member.email)) {
+      toast.info("A conta principal da clínica é permanentemente Administradora.");
+      return;
+    }
+
+    const nextRole: UserRole = member.role === "admin" ? "funcionaria" : "admin";
+    const ok = await updateUserRoleInFirestore(member.uid, nextRole);
+
+    if (ok) {
+      toast.success(
+        `Nível de ${member.name} alterado para ${nextRole === "admin" ? "Administradora" : "Atendimento"}`
+      );
+    } else {
+      toast.error("Não foi possível atualizar o nível no Firestore.");
+    }
+  };
+
+  const handleDeleteMember = async () => {
+    if (!memberToDelete) return;
+
+    if (isClinicAdminEmail(memberToDelete.email)) {
+      toast.error("A conta principal da Dra. Sâmara não pode ser removida.");
+      setMemberToDelete(null);
+      return;
+    }
+
+    const ok = await deleteUserFromClinic(memberToDelete.uid);
+
+    if (ok) {
+      toast.success(`Acesso de ${memberToDelete.name} removido da clínica.`);
+    } else {
+      toast.error("Erro ao remover colaboradora do Firestore.");
+    }
+
+    setMemberToDelete(null);
+  };
+
+  const totalMembers = members.length;
+  const adminCount = members.filter((m) => m.role === "admin").length;
+  const staffCount = members.filter((m) => m.role === "funcionaria").length;
 
   return (
     <div
-      className="group bg-card border border-border rounded-xl p-5 hover:border-accent/50 transition-all duration-300 animate-in fade-in slide-in-from-bottom-4"
-      style={{ animationDelay: `${index * 100}ms`, animationFillMode: "both" }}
+      data-dashboard-section="team"
+      className="w-full min-w-0 max-w-5xl mx-auto space-y-6 pb-24 md:pb-8"
     >
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-accent/80 to-chart-1 flex items-center justify-center text-sm font-bold text-accent-foreground">
-              {member.avatar}
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-1.5 text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#A8B29A]" />
+            <span>Segurança & Controle de Acessos (RBAC)</span>
+          </div>
+          <h1 className="text-xl sm:text-3xl font-bold text-black dark:text-white">
+            Equipe da Clínica & Permissões
+          </h1>
+          <p className="text-xs sm:text-sm text-[#6c6c6c] dark:text-[#a1a1aa]">
+            Controle quem acessa o painel da clínica, com distinção segura entre
+            Administradora (acesso integral) e Atendimento (operacional).
+          </p>
+        </div>
+
+        <Button
+          onClick={() => setIsAddModalOpen(true)}
+          className="h-10 px-4 rounded-xl text-xs font-semibold gap-2 active:scale-95 shadow-sm"
+        >
+          <UserPlus className="w-4 h-4" />
+          <span>Cadastrar Colaboradora</span>
+        </Button>
+      </div>
+
+      {/* Metrics Overview Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+        <Card>
+          <CardContent className="p-4 sm:p-5 flex items-center justify-between">
+            <div>
+              <span className="text-xs text-[#767676] dark:text-[#8D9B7F] font-medium block">
+                Total de Usuárias
+              </span>
+              <span className="text-2xl sm:text-3xl font-bold text-black dark:text-white mt-1 block">
+                {totalMembers}
+              </span>
+              <span className="text-[11px] text-[#8f8f8f] dark:text-[#a1a1aa]">
+                Contas ativas com login
+              </span>
             </div>
-            {member.rank <= 3 && (
-              <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-warning flex items-center justify-center">
-                <Trophy className="w-3 h-3 text-background" />
+            <div className="w-11 h-11 rounded-xl bg-black/5 dark:bg-white/10 text-black dark:text-white flex items-center justify-center">
+              <Users className="w-5 h-5 text-[#A8B29A]" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4 sm:p-5 flex items-center justify-between">
+            <div>
+              <span className="text-xs text-[#767676] dark:text-[#8D9B7F] font-medium block">
+                Administradoras
+              </span>
+              <span className="text-2xl sm:text-3xl font-bold text-black dark:text-white mt-1 block">
+                {adminCount}
+              </span>
+              <span className="text-[11px] text-[#8f8f8f] dark:text-[#a1a1aa]">
+                Acesso integral e relatórios
+              </span>
+            </div>
+            <div className="w-11 h-11 rounded-xl bg-[#A8B29A]/15 text-[#A8B29A] flex items-center justify-center">
+              <Shield className="w-5 h-5" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4 sm:p-5 flex items-center justify-between">
+            <div>
+              <span className="text-xs text-[#767676] dark:text-[#8D9B7F] font-medium block">
+                Equipe de Atendimento
+              </span>
+              <span className="text-2xl sm:text-3xl font-bold text-black dark:text-white mt-1 block">
+                {staffCount}
+              </span>
+              <span className="text-[11px] text-[#8f8f8f] dark:text-[#a1a1aa]">
+                Agendamentos, pacientes e catálogo
+              </span>
+            </div>
+            <div className="w-11 h-11 rounded-xl bg-white/10 text-white flex items-center justify-center">
+              <KeyRound className="w-5 h-5 text-[#8D9B7F]" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Regras e Diferenciais de Acesso */}
+      <Card className="border-border bg-card">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm font-semibold flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-[#A8B29A]" />
+            <span>Matriz de Acessos & Privacidade Médica</span>
+          </CardTitle>
+          <CardDescription className="text-xs">
+            Como o sistema protege os dados clínicos e financeiros da clínica:
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="text-xs space-y-2 text-[#767676] dark:text-[#a1a1aa]">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.06] space-y-1">
+              <div className="font-semibold text-black dark:text-white flex items-center gap-1.5">
+                <Shield className="w-3.5 h-3.5 text-[#A8B29A]" />
+                <span>Nível Administradora (Dra. Sâmara)</span>
               </div>
+              <p className="text-[11px] leading-relaxed">
+                Acesso irrestrito a Relatórios Financeiros, Faturamento, Gestão da Equipe,
+                edição de tabela de procedimentos/preços e permissão para excluir prontuários.
+              </p>
+            </div>
+            <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.06] space-y-1">
+              <div className="font-semibold text-black dark:text-white flex items-center gap-1.5">
+                <Users className="w-3.5 h-3.5 text-[#8D9B7F]" />
+                <span>Nível Atendimento / Recepção</span>
+              </div>
+              <p className="text-[11px] leading-relaxed">
+                Acesso aos Agendamentos (Kanban e Retorno de 15 dias), Fichas de Pacientes,
+                Anamnese e Catálogo de Procedimentos. Menu financeiro e equipe ocultos.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Tabela de Colaboradoras */}
+      <div className="w-full bg-white dark:bg-[#121212] border border-black/[0.08] dark:border-white/[0.08] rounded-2xl overflow-hidden shadow-sm">
+        <Table>
+          <TableHeader>
+            <TableRow className="border-b border-black/[0.06] dark:border-white/[0.06] bg-[#fafafa]/80 dark:bg-[#18181b]/80">
+              <TableHead className="font-semibold text-black dark:text-white whitespace-nowrap">
+                Colaboradora
+              </TableHead>
+              <TableHead className="font-semibold text-black dark:text-white whitespace-nowrap">
+                E-mail de Acesso
+              </TableHead>
+              <TableHead className="font-semibold text-black dark:text-white whitespace-nowrap">
+                Nível de Permissão
+              </TableHead>
+              <TableHead className="font-semibold text-black dark:text-white whitespace-nowrap">
+                Cadastro
+              </TableHead>
+              <TableHead className="font-semibold text-black dark:text-white text-right whitespace-nowrap">
+                Ações
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+
+          <TableBody className="divide-y divide-black/[0.04] dark:divide-white/[0.04]">
+            {members.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="py-10 text-center text-xs text-[#767676] dark:text-[#a1a1aa]"
+                >
+                  Carregando equipe do Firebase...
+                </TableCell>
+              </TableRow>
+            ) : (
+              members.map((member) => {
+                const isMainAdmin = isClinicAdminEmail(member.email);
+
+                return (
+                  <TableRow
+                    key={member.uid}
+                    className="hover:bg-[#fbfbfb] dark:hover:bg-[#1a1a1c] transition-colors duration-150"
+                  >
+                    {/* Nome & Avatar */}
+                    <TableCell className="whitespace-nowrap">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-black dark:bg-[#A8B29A] text-white dark:text-[#111111] font-bold flex items-center justify-center shrink-0 text-xs shadow-sm">
+                          {member.name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .slice(0, 2)
+                            .join("")}
+                        </div>
+                        <div>
+                          <div className="font-semibold text-black dark:text-white text-sm">
+                            {member.name}
+                          </div>
+                          <div className="text-[11px] text-[#8f8f8f] dark:text-[#a1a1aa]">
+                            {member.title || (member.role === "admin" ? "Responsável Técnica" : "Recepção / Atendimento")}
+                          </div>
+                        </div>
+                      </div>
+                    </TableCell>
+
+                    {/* Email */}
+                    <TableCell className="whitespace-nowrap text-xs text-[#525252] dark:text-[#d4d4d8]">
+                      <div className="flex items-center gap-1.5">
+                        <Mail className="w-3.5 h-3.5 text-[#8f8f8f]" />
+                        <span>{member.email}</span>
+                      </div>
+                    </TableCell>
+
+                    {/* Nível de Permissão */}
+                    <TableCell className="whitespace-nowrap">
+                      <Badge
+                        variant={member.role === "admin" ? "sage" : "secondary"}
+                        className="text-[11px] font-semibold gap-1.5"
+                      >
+                        {member.role === "admin" ? (
+                          <>
+                            <Shield className="w-3 h-3" />
+                            <span>Administradora</span>
+                          </>
+                        ) : (
+                          <>
+                            <Users className="w-3 h-3" />
+                            <span>Atendimento</span>
+                          </>
+                        )}
+                      </Badge>
+                    </TableCell>
+
+                    {/* Data de Cadastro */}
+                    <TableCell className="whitespace-nowrap text-xs text-[#767676] dark:text-[#a1a1aa]">
+                      {member.createdAt
+                        ? new Date(member.createdAt).toLocaleDateString("pt-BR")
+                        : "Principal"}
+                    </TableCell>
+
+                    {/* Ações */}
+                    <TableCell className="text-right whitespace-nowrap">
+                      {isMainAdmin ? (
+                        <span className="text-[11px] text-[#8f8f8f] dark:text-[#a1a1aa] italic pr-2">
+                          Conta Titular
+                        </span>
+                      ) : (
+                        <div className="inline-flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleToggleRole(member)}
+                            className="h-8 px-2.5 text-xs rounded-lg active:scale-95"
+                            title="Alternar entre Administradora e Atendimento"
+                          >
+                            {member.role === "admin"
+                              ? "Tornar Atendimento"
+                              : "Promover Admin"}
+                          </Button>
+
+                          <Button
+                            variant="destructive"
+                            size="icon"
+                            onClick={() => setMemberToDelete(member)}
+                            className="w-8 h-8 rounded-lg active:scale-95"
+                            title="Remover acesso da colaboradora"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </Button>
+                        </div>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             )}
-          </div>
-          <div>
-            <h4 className="text-sm font-semibold text-foreground">{member.name}</h4>
-            <p className="text-xs text-muted-foreground">{member.role}</p>
-          </div>
-        </div>
-        <button className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary opacity-0 group-hover:opacity-100 transition-all duration-200">
-          <MoreHorizontal className="w-4 h-4" />
-        </button>
+          </TableBody>
+        </Table>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <div>
-          <p className="text-xs text-muted-foreground mb-1">Revenue</p>
-          <p className="text-lg font-bold text-foreground">${(member.revenue / 1000).toFixed(0)}k</p>
-        </div>
-        <div>
-          <p className="text-xs text-muted-foreground mb-1">Deals Closed</p>
-          <p className="text-lg font-bold text-foreground">{member.deals}</p>
-        </div>
-      </div>
-
-      {/* Quota progress */}
-      <div className="mb-4">
-        <div className="flex items-center justify-between text-xs mb-1.5">
-          <span className="text-muted-foreground">Quota Attainment</span>
-          <span className={cn("font-medium", isAboveQuota ? "text-success" : "text-foreground")}>
-            {quotaPercentage.toFixed(0)}%
-          </span>
-        </div>
-        <div className="h-2 bg-secondary rounded-full overflow-hidden">
+      {/* Modal de Cadastro de Nova Colaboradora */}
+      <ModalPortal isOpen={isAddModalOpen}>
+        <div
+          className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/65 backdrop-blur-sm animate-in fade-in duration-200 select-none"
+          onClick={() => !isSubmitting && setIsAddModalOpen(false)}
+        >
           <div
-            className={cn("h-full rounded-full transition-all duration-700", isAboveQuota ? "bg-success" : "bg-accent")}
-            style={{ width: `${Math.min(quotaPercentage, 100)}%` }}
-          />
-        </div>
-      </div>
-
-      {/* Change indicator */}
-      <div className="flex items-center justify-between pt-4 border-t border-border">
-        <div className="flex items-center gap-2">
-          <button className="w-8 h-8 flex items-center justify-center rounded-lg bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-colors">
-            <Mail className="w-4 h-4" />
-          </button>
-          <button className="w-8 h-8 flex items-center justify-center rounded-lg bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-colors">
-            <Phone className="w-4 h-4" />
-          </button>
-        </div>
-        <div className={cn("flex items-center gap-1 text-sm font-medium", member.change >= 0 ? "text-success" : "text-destructive")}>
-          {member.change >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-          {member.change >= 0 ? "+" : ""}{member.change}%
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export function TeamSection() {
-  const [chartLoaded, setChartLoaded] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setChartLoaded(true), 400);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const totalRevenue = teamMembers.reduce((acc, m) => acc + m.revenue, 0);
-  const totalDeals = teamMembers.reduce((acc, m) => acc + m.deals, 0);
-  const avgQuotaAttainment = teamMembers.reduce((acc, m) => acc + (m.revenue / m.quota) * 100, 0) / teamMembers.length;
-
-  return (
-    <div className="space-y-6">
-      {/* Header stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-card border border-border rounded-xl p-5 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
-              <Target className="w-5 h-5 text-accent" />
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white dark:bg-[#1a1a1a] rounded-t-[28px] sm:rounded-[24px] border-t sm:border border-black/[0.08] dark:border-white/[0.08] shadow-2xl w-full max-w-[480px] p-6 space-y-5 animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-150"
+          >
+            <div className="flex items-start gap-3.5">
+              <div className="w-11 h-11 rounded-2xl bg-[#A8B29A]/15 text-[#A8B29A] flex items-center justify-center shrink-0">
+                <UserPlus className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-black dark:text-white">
+                  Cadastrar Nova Colaboradora
+                </h3>
+                <p className="text-xs text-[#767676] dark:text-[#a1a1aa] mt-0.5">
+                  Crie uma credencial de acesso oficial vinculada ao Firebase Auth da clínica.
+                </p>
+              </div>
             </div>
-            <span className="text-sm text-muted-foreground">Team Revenue</span>
-          </div>
-          <p className="text-2xl font-bold text-foreground">${(totalRevenue / 1000000).toFixed(2)}M</p>
-        </div>
-        <div className="bg-card border border-border rounded-xl p-5 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-lg bg-chart-1/10 flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-chart-1" />
-            </div>
-            <span className="text-sm text-muted-foreground">Total Deals</span>
-          </div>
-          <p className="text-2xl font-bold text-foreground">{totalDeals}</p>
-        </div>
-        <div className="bg-card border border-border rounded-xl p-5 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center">
-              <Trophy className="w-5 h-5 text-success" />
-            </div>
-            <span className="text-sm text-muted-foreground">Avg Quota Attainment</span>
-          </div>
-          <p className="text-2xl font-bold text-foreground">{avgQuotaAttainment.toFixed(0)}%</p>
-        </div>
-      </div>
 
-      {/* Performance chart */}
-      <div className="bg-card border border-border rounded-xl p-5 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-150">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h3 className="text-base font-semibold text-foreground">Revenue vs Quota</h3>
-            <p className="text-sm text-muted-foreground mt-0.5">Individual performance comparison</p>
-          </div>
-          <div className="flex items-center gap-4 text-xs">
-            <div className="flex items-center gap-1.5">
-              <div className="w-2.5 h-2.5 rounded-full bg-chart-1" />
-              <span className="text-muted-foreground">Revenue (k)</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-2.5 h-2.5 rounded-full bg-muted-foreground/30" />
-              <span className="text-muted-foreground">Quota (k)</span>
-            </div>
-          </div>
-        </div>
-        <div className={`h-[250px] transition-opacity duration-700 ${chartLoaded ? 'opacity-100' : 'opacity-0'}`}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={performanceData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.22 0.005 260)" vertical={false} />
-              <XAxis
-                dataKey="name"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: "oklch(0.65 0 0)", fontSize: 12 }}
-                dy={10}
-              />
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: "oklch(0.65 0 0)", fontSize: 12 }}
-                tickFormatter={(value) => `$${value}k`}
-                dx={-10}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "oklch(0.12 0.005 260)",
-                  border: "1px solid oklch(0.22 0.005 260)",
-                  borderRadius: "8px",
-                  fontSize: "12px",
-                }}
-                labelStyle={{ color: "oklch(0.95 0 0)", fontWeight: 600 }}
-                itemStyle={{ color: "oklch(0.65 0 0)" }}
-                formatter={(value: number) => [`$${value}k`, ""]}
-              />
-              <Bar dataKey="quota" fill="oklch(0.65 0 0 / 0.2)" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="revenue" fill="oklch(0.7 0.18 220)" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+            <form onSubmit={handleCreateMember} className="space-y-4 text-xs">
+              <div className="space-y-1.5">
+                <Label htmlFor="memName" className="font-semibold text-black dark:text-white">
+                  Nome Completo
+                </Label>
+                <Input
+                  id="memName"
+                  placeholder="Ex: Maria Eduarda Silva"
+                  value={formName}
+                  onChange={(e) => setFormName(e.target.value)}
+                  className="rounded-xl h-10"
+                  required
+                />
+              </div>
 
-      {/* Team members grid */}
-      <div>
-        <h3 className="text-base font-semibold text-foreground mb-4">Team Members</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {teamMembers.map((member, index) => (
-            <TeamMemberCard key={member.id} member={member} index={index} />
-          ))}
+              <div className="space-y-1.5">
+                <Label htmlFor="memEmail" className="font-semibold text-black dark:text-white">
+                  E-mail de Login
+                </Label>
+                <Input
+                  id="memEmail"
+                  type="email"
+                  placeholder="colaboradora@samaraestetica.com.br"
+                  value={formEmail}
+                  onChange={(e) => setFormEmail(e.target.value)}
+                  className="rounded-xl h-10"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="memPass" className="font-semibold text-black dark:text-white">
+                  Senha Provisória
+                </Label>
+                <Input
+                  id="memPass"
+                  type="password"
+                  placeholder="Mínimo de 6 caracteres"
+                  value={formPassword}
+                  onChange={(e) => setFormPassword(e.target.value)}
+                  className="rounded-xl h-10"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="font-semibold text-black dark:text-white">
+                  Nível de Permissão
+                </Label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setFormRole("funcionaria")}
+                    className={`p-3 rounded-xl border text-left cursor-pointer transition-all ${
+                      formRole === "funcionaria"
+                        ? "bg-[#A8B29A]/15 border-[#A8B29A] text-black dark:text-white"
+                        : "bg-black/[0.02] dark:bg-white/[0.04] border-black/[0.08] dark:border-white/[0.08] text-[#767676] dark:text-[#a1a1aa]"
+                    }`}
+                  >
+                    <div className="font-semibold text-xs text-black dark:text-white">
+                      Atendimento
+                    </div>
+                    <div className="text-[10px] mt-0.5">Operacional (Agendamentos e Fichas)</div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setFormRole("admin")}
+                    className={`p-3 rounded-xl border text-left cursor-pointer transition-all ${
+                      formRole === "admin"
+                        ? "bg-[#A8B29A]/15 border-[#A8B29A] text-black dark:text-white"
+                        : "bg-black/[0.02] dark:bg-white/[0.04] border-black/[0.08] dark:border-white/[0.08] text-[#767676] dark:text-[#a1a1aa]"
+                    }`}
+                  >
+                    <div className="font-semibold text-xs text-black dark:text-white">
+                      Administradora
+                    </div>
+                    <div className="text-[10px] mt-0.5">Acesso integral + Financeiro</div>
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsAddModalOpen(false)}
+                  disabled={isSubmitting}
+                  className="rounded-xl text-xs h-10 px-4"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="rounded-xl text-xs h-10 px-5 font-semibold"
+                >
+                  {isSubmitting ? "Criando no Firebase..." : "Criar Colaboradora"}
+                </Button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
+      </ModalPortal>
+
+      {/* Modal de Exclusão de Acesso */}
+      <ModalPortal isOpen={!!memberToDelete}>
+        <div
+          className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/65 backdrop-blur-sm animate-in fade-in duration-200 select-none"
+          onClick={() => setMemberToDelete(null)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white dark:bg-[#1a1a1a] rounded-t-[28px] sm:rounded-[24px] border-t sm:border border-black/[0.08] dark:border-white/[0.08] shadow-2xl w-full max-w-[420px] p-6 space-y-4 animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-150"
+          >
+            <div className="flex items-start gap-3.5">
+              <div className="w-11 h-11 rounded-2xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+                <Trash2 className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-black dark:text-white">
+                  Remover Acesso da Colaboradora?
+                </h3>
+                <p className="text-xs text-[#767676] dark:text-[#a1a1aa] mt-1">
+                  Tem certeza que deseja revogar o acesso de{" "}
+                  <strong className="text-black dark:text-white">
+                    {memberToDelete?.name}
+                  </strong>
+                  ? Esta colaboradora não conseguirá mais entrar na plataforma da clínica.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setMemberToDelete(null)}
+                className="rounded-xl text-xs h-9 px-4"
+              >
+                Cancelar
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleDeleteMember}
+                className="rounded-xl text-xs h-9 px-4 font-semibold"
+              >
+                Sim, Remover Acesso
+              </Button>
+            </div>
+          </div>
+        </div>
+      </ModalPortal>
     </div>
   );
 }

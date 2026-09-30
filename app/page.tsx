@@ -9,6 +9,7 @@ import { AppointmentsSection, Appointment } from "@/components/dashboard/section
 import { CustomersSection } from "@/components/dashboard/sections/customers";
 import { ProceduresSection } from "@/components/dashboard/sections/procedures";
 import { ReportsSection } from "@/components/dashboard/sections/reports";
+import { TeamSection } from "@/components/dashboard/sections/team";
 import { SettingsSection } from "@/components/dashboard/sections/settings";
 import { MobileBottomNav } from "@/components/dashboard/mobile-bottom-nav";
 import { RemindersModal } from "@/components/dashboard/reminders-modal";
@@ -39,6 +40,7 @@ export type Section =
   | "customers"
   | "procedures"
   | "reports"
+  | "team"
   | "settings";
 
 export default function Dashboard() {
@@ -89,9 +91,12 @@ export default function Dashboard() {
     return () => unsubscribe();
   }, []);
 
-  // 2. Proteção de Acesso por Papel (RBAC): Funcionária não acessa financeiro/relatórios
+  // 2. Proteção de Acesso por Papel (RBAC): Funcionária não acessa relatórios nem gestão de equipe
   useEffect(() => {
-    if (currentUser?.role === "funcionaria" && activeSection === "reports") {
+    if (
+      currentUser?.role === "funcionaria" &&
+      (activeSection === "reports" || activeSection === "team")
+    ) {
       setActiveSection("overview");
     }
   }, [currentUser?.role, activeSection]);
@@ -231,6 +236,8 @@ export default function Dashboard() {
         return <ProceduresSection />;
       case "reports":
         return <ReportsSection />;
+      case "team":
+        return <TeamSection />;
       case "settings":
         return <SettingsSection />;
       default:

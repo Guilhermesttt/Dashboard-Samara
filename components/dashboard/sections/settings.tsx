@@ -51,6 +51,7 @@ import {
   DEFAULT_CLINIC_SCHEDULE,
 } from "@/lib/storage-keys";
 import { saveUserProfileToFirestore } from "@/lib/firebase-service";
+import { changeUserPassword } from "@/lib/auth-service";
 
 export function SettingsSection() {
   const [activeTab, setActiveTab] = useState("profile");
@@ -241,14 +242,16 @@ export function SettingsSection() {
     }
   };
 
-  const handleSavePassword = (e: React.FormEvent) => {
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+
+  const handleSavePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!passwordState.currentPassword) {
       setPasswordFeedback("Por favor, informe a senha atual.");
       return;
     }
-    if (passwordState.newPassword.length < 4) {
-      setPasswordFeedback("A nova senha deve ter no mínimo 4 caracteres.");
+    if (passwordState.newPassword.length < 6) {
+      setPasswordFeedback("A nova senha deve ter no mínimo 6 caracteres.");
       return;
     }
     if (passwordState.newPassword !== passwordState.confirmPassword) {
@@ -258,13 +261,34 @@ export function SettingsSection() {
       return;
     }
 
-    setPasswordFeedback("Senha atualizada com sucesso!");
-    setPasswordState({
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    });
-    setTimeout(() => setPasswordFeedback(""), 3000);
+    setIsChangingPassword(true);
+    setPasswordFeedback("Atualizando credenciais no Firebase Auth...");
+
+    try {
+      const res = await changeUserPassword(
+        passwordState.currentPassword,
+        passwordState.newPassword
+      );
+
+      setIsChangingPassword(false);
+      if (res.success) {
+        setPasswordFeedback("Senha atualizada com sucesso no Firebase!");
+        toast.success("Senha alterada com sucesso!");
+        setPasswordState({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+        setTimeout(() => setPasswordFeedback(""), 4000);
+      } else {
+        setPasswordFeedback(res.error || "Erro ao atualizar senha.");
+        toast.error(res.error || "Erro ao atualizar senha.");
+      }
+    } catch (err: any) {
+      setIsChangingPassword(false);
+      setPasswordFeedback(err?.message || "Erro inesperado ao alterar senha.");
+      toast.error("Erro inesperado ao alterar senha.");
+    }
   };
 
   return (
@@ -1003,9 +1027,10 @@ export function SettingsSection() {
                 <div className="pt-2">
                   <Button
                     type="submit"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold h-11 sm:h-9 px-5 rounded-xl cursor-pointer w-full sm:w-auto active:scale-95 transition-transform"
+                    disabled={isChangingPassword}
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold h-11 sm:h-9 px-5 rounded-xl cursor-pointer w-full sm:w-auto active:scale-95 transition-transform disabled:opacity-50"
                   >
-                    Salvar Nova Senha
+                    {isChangingPassword ? "Alterando Senha no Firebase..." : "Salvar Nova Senha"}
                   </Button>
                 </div>
               </form>

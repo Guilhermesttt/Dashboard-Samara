@@ -25,6 +25,7 @@ const sectionTitles: Record<Section, string> = {
   customers: "Carteira de Clientes",
   procedures: "Catálogo de Procedimentos",
   reports: "Relatórios Estratégicos",
+  team: "Equipe & Controle de Acesso",
   settings: "Configurações do Sistema",
 };
 

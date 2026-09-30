@@ -4,6 +4,9 @@ import {
   signOut,
   onAuthStateChanged,
   updateProfile,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
   type User as FirebaseUser,
 } from "firebase/auth";
 import {
@@ -11,10 +14,13 @@ import {
   getDoc,
   setDoc,
   updateDoc,
+  deleteDoc,
   collection,
   getDocs,
+  onSnapshot,
   query,
   where,
+  type Unsubscribe,
 } from "firebase/firestore";
 import { auth, db, isFirebaseConfigured } from "./firebase.ts";
 import { STORAGE_KEYS } from "./storage-keys.ts";
@@ -313,4 +319,124 @@ export function subscribeToAuthState(
   });
 
   return unsubscribe;
+}
+
+/**
+ * Altera a senha do usuário autenticado no Firebase Auth
+ */
+export async function changeUserPassword(
+  currentPassword: string,
+  newPassword: string
+): Promise<{ success: boolean; error?: string }> {
+  const user = auth?.currentUser;
+  if (!user || !user.email) {
+    return {
+      success: false,
+      error: "Usuário não autenticado ou sessão expirada.",
+    };
+  }
+
+  try {
+    const userEmail = user.email;
+    // Reautentica para garantir autorização de operação sensível
+    const credential = EmailAuthProvider.credential(
+      userEmail,
+      currentPassword.trim()
+    );
+    await reauthenticateWithCredential(user, credential);
+    await updatePassword(user, newPassword.trim());
+    return { success: true };
+  } catch (err: any) {
+    let message = "Não foi possível atualizar a senha.";
+    switch (err.code) {
+      case "auth/wrong-password":
+      case "auth/invalid-credential":
+        message = "A senha atual informada está incorreta.";
+        break;
+      case "auth/weak-password":
+        message = "A nova senha deve ter pelo menos 6 caracteres.";
+        break;
+      case "auth/requires-recent-login":
+        message = "Por segurança, faça login novamente antes de alterar sua senha.";
+        break;
+      default:
+        if (err.message) message = err.message;
+    }
+    return { success: false, error: message };
+  }
+}
+
+/**
+ * Assina em tempo real todos os membros da equipe clínica em `users`
+ */
+export function subscribeToClinicTeam(
+  onTeamUpdate: (members: AppUser[]) => void
+): Unsubscribe | (() => void) {
+  if (!isFirebaseConfigured || !db) {
+    onTeamUpdate([
+      {
+        uid: "admin-samara",
+        name: "Dra. Sâmara Souza",
+        email: "dra.samara@samaraestetica.com.br",
+        role: "admin",
+        title: "Biomédica Esteta • Responsável Técnica",
+        createdAt: new Date().toISOString(),
+      },
+    ]);
+    return () => {};
+  }
+
+  try {
+    const usersCol = collection(db, "users");
+    return onSnapshot(
+      usersCol,
+      (snapshot) => {
+        const members: AppUser[] = snapshot.docs.map((docSnap) => ({
+          uid: docSnap.id,
+          ...docSnap.data(),
+        })) as AppUser[];
+        onTeamUpdate(members);
+      },
+      (err) => {
+        console.warn("[AuthService] Erro ao assinar equipe:", err);
+      }
+    );
+  } catch (e) {
+    console.warn("[AuthService] Erro de inicialização da equipe:", e);
+    return () => {};
+  }
+}
+
+/**
+ * Atualiza o papel de uma colaboradora (admin <-> funcionaria)
+ */
+export async function updateUserRoleInFirestore(
+  targetUid: string,
+  newRole: UserRole
+): Promise<boolean> {
+  if (!isFirebaseConfigured || !db) return false;
+  try {
+    await updateDoc(doc(db, "users", targetUid), {
+      role: newRole,
+      updatedAt: new Date().toISOString(),
+    });
+    return true;
+  } catch (err) {
+    console.error("Erro ao atualizar papel do usuário:", err);
+    return false;
+  }
+}
+
+/**
+ * Remove o acesso de uma colaboradora da clínica no Firestore
+ */
+export async function deleteUserFromClinic(targetUid: string): Promise<boolean> {
+  if (!isFirebaseConfigured || !db) return false;
+  try {
+    await deleteDoc(doc(db, "users", targetUid));
+    return true;
+  } catch (err) {
+    console.error("Erro ao remover colaboradora:", err);
+    return false;
+  }
 }
