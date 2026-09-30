@@ -5,6 +5,7 @@ import { playNotificationSound } from "./sound";
 import { sendEmailNotification } from "./email-service";
 import { Appointment } from "@/components/dashboard/sections/appointments";
 import { ReminderItem } from "./reminders-service";
+import { getStoredAppointments } from "./storage-keys";
 
 interface AlertAlgorithmOptions {
   appointments: Appointment[];
@@ -38,8 +39,7 @@ export function checkHasTodayAppointments(customApts?: Appointment[]): boolean {
   try {
     let apts: Appointment[] = customApts || [];
     if (!customApts || customApts.length === 0) {
-      const raw = localStorage.getItem("samara_real_appointments");
-      if (raw) apts = JSON.parse(raw);
+      apts = getStoredAppointments();
     }
     if (!Array.isArray(apts) || apts.length === 0) return false;
 

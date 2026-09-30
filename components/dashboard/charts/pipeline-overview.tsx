@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Appointment } from "../sections/appointments";
 import { Users2 } from "lucide-react";
+import { getStoredAppointments } from "@/lib/storage-keys";
 
 export function PipelineOverview() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -15,37 +16,46 @@ export function PipelineOverview() {
   ]);
   const [totalAppointments, setTotalAppointments] = useState(0);
 
-  useEffect(() => {
+  const updatePipeline = () => {
     try {
-      const raw = localStorage.getItem("samara_real_appointments");
-      if (raw) {
-        const apts: Appointment[] = JSON.parse(raw);
-        const total = apts.length;
-        setTotalAppointments(total);
+      const apts: Appointment[] = getStoredAppointments();
+      const total = apts.length;
+      setTotalAppointments(total);
 
-        const agendados = apts.filter((a) => a.status === "agendado").length;
-        const confirmados = apts.filter((a) => a.status === "confirmado").length;
-        const emAtendimento = apts.filter((a) => a.status === "em_atendimento").length;
-        const retornos = apts.filter(
-          (a) => a.status === "retorno_pendente" || a.type === "Retorno de 15 Dias"
-        ).length;
-        const concluidos = apts.filter((a) => a.status === "concluido").length;
+      const agendados = apts.filter((a) => a.status === "agendado").length;
+      const confirmados = apts.filter((a) => a.status === "confirmado").length;
+      const emAtendimento = apts.filter((a) => a.status === "em_atendimento").length;
+      const retornos = apts.filter(
+        (a) => a.status === "retorno_pendente" || a.type === "Retorno de 15 Dias"
+      ).length;
+      const concluidos = apts.filter((a) => a.status === "concluido").length;
 
-        const calcPct = (cnt: number) => (total > 0 ? Math.round((cnt / total) * 100) : 0);
+      const calcPct = (cnt: number) => (total > 0 ? Math.round((cnt / total) * 100) : 0);
 
-          setStagesData([
-            { name: "Agendados / Espera", count: agendados, percentage: calcPct(agendados), color: "bg-[#8D9B7F]" },
-            { name: "Confirmados", count: confirmados, percentage: calcPct(confirmados), color: "bg-[#A8B29A]" },
-            { name: "Em Atendimento", count: emAtendimento, percentage: calcPct(emAtendimento), color: "bg-[#FFFFFF]" },
-            { name: "Retorno 15 Dias", count: retornos, percentage: calcPct(retornos), color: "bg-[#F7F5F0]" },
-            { name: "Concluído", count: concluidos, percentage: calcPct(concluidos), color: "bg-[#333333]" },
-          ]);
-        }
-      } catch (e) {}
+      setStagesData([
+        { name: "Agendados / Espera", count: agendados, percentage: calcPct(agendados), color: "bg-[#8D9B7F]" },
+        { name: "Confirmados", count: confirmados, percentage: calcPct(confirmados), color: "bg-[#A8B29A]" },
+        { name: "Em Atendimento", count: emAtendimento, percentage: calcPct(emAtendimento), color: "bg-[#FFFFFF]" },
+        { name: "Retorno 15 Dias", count: retornos, percentage: calcPct(retornos), color: "bg-[#F7F5F0]" },
+        { name: "Concluído", count: concluidos, percentage: calcPct(concluidos), color: "bg-[#333333]" },
+      ]);
+    } catch (e) {
+      setTotalAppointments(0);
+    }
+  };
 
-      const timer = setTimeout(() => setIsLoaded(true), 300);
-      return () => clearTimeout(timer);
-    }, []);
+  useEffect(() => {
+    updatePipeline();
+    window.addEventListener("samara_appointments_updated", updatePipeline);
+    window.addEventListener("storage", updatePipeline);
+
+    const timer = setTimeout(() => setIsLoaded(true), 300);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("samara_appointments_updated", updatePipeline);
+      window.removeEventListener("storage", updatePipeline);
+    };
+  }, []);
 
     return (
       <div className="bg-white dark:bg-[#232323] border border-border dark:border-white/[0.08] rounded-2xl p-5 h-[380px] shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_20px_rgba(0,0,0,0.4)] flex flex-col justify-between">

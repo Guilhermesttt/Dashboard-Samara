@@ -3,41 +3,50 @@
 import React, { useState, useEffect } from "react";
 import { Sparkles, TrendingUp, Tag } from "lucide-react";
 import { Appointment } from "./sections/appointments";
+import { getStoredAppointments } from "@/lib/storage-keys";
 
 export function TopPerformers() {
   const [topProcedures, setTopProcedures] = useState<
     { name: string; count: number; revenue: number; rank: number }[]
   >([]);
 
-  useEffect(() => {
+  const calculateTopProcedures = () => {
     try {
-      const raw = localStorage.getItem("samara_real_appointments");
-      if (raw) {
-        const apts: Appointment[] = JSON.parse(raw);
-        // Agrupar por nome do procedimento
-        const map = new Map<string, { count: number; revenue: number }>();
-        apts.forEach((a) => {
-          if (!a.procedureName) return;
-          const current = map.get(a.procedureName) || { count: 0, revenue: 0 };
-          current.count += 1;
-          current.revenue += a.value || 0;
-          map.set(a.procedureName, current);
-        });
+      const apts: Appointment[] = getStoredAppointments();
+      const map = new Map<string, { count: number; revenue: number }>();
+      apts.forEach((a) => {
+        if (!a.procedureName) return;
+        const current = map.get(a.procedureName) || { count: 0, revenue: 0 };
+        current.count += 1;
+        current.revenue += a.value || 0;
+        map.set(a.procedureName, current);
+      });
 
-        const list = Array.from(map.entries())
-          .map(([name, data]) => ({
-            name,
-            count: data.count,
-            revenue: data.revenue,
-            rank: 1,
-          }))
-          .sort((a, b) => b.count - a.count)
-          .slice(0, 5)
-          .map((item, index) => ({ ...item, rank: index + 1 }));
+      const list = Array.from(map.entries())
+        .map(([name, data]) => ({
+          name,
+          count: data.count,
+          revenue: data.revenue,
+          rank: 1,
+        }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5)
+        .map((item, index) => ({ ...item, rank: index + 1 }));
 
-        setTopProcedures(list);
-      }
-    } catch (e) {}
+      setTopProcedures(list);
+    } catch (e) {
+      setTopProcedures([]);
+    }
+  };
+
+  useEffect(() => {
+    calculateTopProcedures();
+    window.addEventListener("samara_appointments_updated", calculateTopProcedures);
+    window.addEventListener("storage", calculateTopProcedures);
+    return () => {
+      window.removeEventListener("samara_appointments_updated", calculateTopProcedures);
+      window.removeEventListener("storage", calculateTopProcedures);
+    };
   }, []);
 
   const formatCurrency = (val: number) => {

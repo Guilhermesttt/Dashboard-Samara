@@ -17,6 +17,7 @@ import { OnboardingModal } from "@/components/auth/onboarding-modal";
 import {
   STORAGE_KEYS,
   getStoredUserProfile,
+  getStoredAppointments,
 } from "@/lib/storage-keys";
 import {
   subscribeToAuthState,
@@ -124,12 +125,7 @@ export default function Dashboard() {
 
     const timer = setTimeout(() => {
       try {
-        let appointments: Appointment[] = [];
-        const rawApts = localStorage.getItem("samara_real_appointments");
-        if (rawApts) {
-          appointments = JSON.parse(rawApts);
-        }
-
+        const appointments: Appointment[] = getStoredAppointments();
         const currentReminders = getLocalReminders();
 
         // Roda o algoritmo de verificação clínica de 1 dia de antecedência, retornos e lembretes

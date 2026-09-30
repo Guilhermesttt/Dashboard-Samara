@@ -63,6 +63,7 @@ export interface Appointment {
   notes?: string;
   originAppointmentId?: string;
   completedAt?: string;
+  createdAt?: string;
 }
 
 const initialAppointments: Appointment[] = [];
@@ -124,12 +125,41 @@ export function AppointmentsSection() {
   const [searchQuery, setSearchQuery] = useState("");
   const [autoFlowEnabled, setAutoFlowEnabled] = useState(true);
 
+  // Sincronização reativa com eventos de armazenamento (limpeza de testes, múltiplos painéis)
+  useEffect(() => {
+    const handleAptsUpdate = () => {
+      const stored = getStoredAppointments();
+      const sanitized = sanitizeAppointments(stored || []);
+      setAppointments((prev) => {
+        if (JSON.stringify(prev) === JSON.stringify(sanitized)) return prev;
+        return sanitized;
+      });
+    };
+
+    const handlePatientsUpdate = () => {
+      const stored = getStoredPatients();
+      setPatients((prev) => {
+        if (JSON.stringify(prev) === JSON.stringify(stored || [])) return prev;
+        return stored || [];
+      });
+    };
+
+    window.addEventListener("samara_appointments_updated", handleAptsUpdate);
+    window.addEventListener("samara_patients_updated", handlePatientsUpdate);
+    window.addEventListener("storage", handleAptsUpdate);
+
+    return () => {
+      window.removeEventListener("samara_appointments_updated", handleAptsUpdate);
+      window.removeEventListener("samara_patients_updated", handlePatientsUpdate);
+      window.removeEventListener("storage", handleAptsUpdate);
+    };
+  }, []);
+
   // Persist real appointments locally
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
         setStoredAppointments(appointments);
-        window.dispatchEvent(new Event("samara_appointments_updated"));
       } catch (e) {}
     }
   }, [appointments]);

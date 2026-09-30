@@ -48,6 +48,7 @@ import {
   subscribeToPatients,
 } from "@/lib/firebase-service";
 import { isFirebaseConfigured } from "@/lib/firebase";
+import { getStoredPatients, setStoredPatients } from "@/lib/storage-keys";
 
 export const initialPatients: PatientRecord[] = [];
 
@@ -55,8 +56,8 @@ export function CustomersSection() {
   const [patients, setPatients] = useState<PatientRecord[]>(() => {
     if (typeof window !== "undefined") {
       try {
-        const stored = localStorage.getItem("samara_real_patients");
-        if (stored) return JSON.parse(stored);
+        const stored = getStoredPatients();
+        if (stored && stored.length > 0) return stored;
       } catch (e) {}
     }
     return [];
@@ -82,6 +83,24 @@ export function CustomersSection() {
   const [patientToDelete, setPatientToDelete] = useState<PatientRecord | null>(null);
   const [isDeletingCustomer, setIsDeletingCustomer] = useState(false);
 
+  // Sincronização reativa de pacientes locais (limpeza de testes, múltiplos painéis)
+  useEffect(() => {
+    const handlePatientsUpdate = () => {
+      const stored = getStoredPatients();
+      setPatients((prev) => {
+        if (JSON.stringify(prev) === JSON.stringify(stored || [])) return prev;
+        return stored || [];
+      });
+    };
+
+    window.addEventListener("samara_patients_updated", handlePatientsUpdate);
+    window.addEventListener("storage", handlePatientsUpdate);
+    return () => {
+      window.removeEventListener("samara_patients_updated", handlePatientsUpdate);
+      window.removeEventListener("storage", handlePatientsUpdate);
+    };
+  }, []);
+
   // Realtime Firebase Firestore Sync
   useEffect(() => {
     if (!isFirebaseConfigured) return;
@@ -99,7 +118,7 @@ export function CustomersSection() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
-        localStorage.setItem("samara_real_patients", JSON.stringify(patients));
+        setStoredPatients(patients);
       } catch (e) {}
     }
   }, [patients]);

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Clock, CheckCircle2, RotateCcw, Sparkles, Calendar, Plus } from "lucide-react";
 import { Appointment } from "./sections/appointments";
+import { getStoredAppointments } from "@/lib/storage-keys";
 
 const statusConfig = {
   concluido: {
@@ -41,13 +42,23 @@ const statusConfig = {
 export function RecentDeals() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
 
-  useEffect(() => {
+  const loadAppointments = () => {
     try {
-      const raw = localStorage.getItem("samara_real_appointments");
-      if (raw) {
-        setAppointments(JSON.parse(raw));
-      }
-    } catch (e) {}
+      const apts = getStoredAppointments();
+      setAppointments(apts);
+    } catch (e) {
+      setAppointments([]);
+    }
+  };
+
+  useEffect(() => {
+    loadAppointments();
+    window.addEventListener("samara_appointments_updated", loadAppointments);
+    window.addEventListener("storage", loadAppointments);
+    return () => {
+      window.removeEventListener("samara_appointments_updated", loadAppointments);
+      window.removeEventListener("storage", loadAppointments);
+    };
   }, []);
 
   const formatCurrency = (val: number) => {

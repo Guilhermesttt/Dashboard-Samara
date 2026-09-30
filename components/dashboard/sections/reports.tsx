@@ -38,6 +38,8 @@ import { toast } from "sonner";
 import { playNotificationSound } from "@/lib/sound";
 import { SlidingTabs, AnimatedNumber, KineticHeading, BorderBeam, ThinkingDots, SkeletonReveal } from "@/components/motion";
 
+import { getStoredAppointments, getStoredPatients } from "@/lib/storage-keys";
+
 export function ReportsSection() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [patients, setPatients] = useState<PatientRecord[]>([]);
@@ -49,19 +51,8 @@ export function ReportsSection() {
   useEffect(() => {
     const loadRealData = () => {
       try {
-        const rawApts = localStorage.getItem("samara_real_appointments");
-        if (rawApts) {
-          setAppointments(JSON.parse(rawApts));
-        } else {
-          setAppointments([]);
-        }
-
-        const rawPatients = localStorage.getItem("samara_real_patients");
-        if (rawPatients) {
-          setPatients(JSON.parse(rawPatients));
-        } else {
-          setPatients([]);
-        }
+        setAppointments(getStoredAppointments());
+        setPatients(getStoredPatients());
       } catch (e) {
         console.error("Erro ao carregar dados para relatórios:", e);
       }
@@ -69,12 +60,14 @@ export function ReportsSection() {
 
     loadRealData();
     window.addEventListener("samara_appointments_updated", loadRealData);
+    window.addEventListener("samara_patients_updated", loadRealData);
     window.addEventListener("storage", loadRealData);
 
     const timer = setTimeout(() => setChartsLoaded(true), 300);
     return () => {
       clearTimeout(timer);
       window.removeEventListener("samara_appointments_updated", loadRealData);
+      window.removeEventListener("samara_patients_updated", loadRealData);
       window.removeEventListener("storage", loadRealData);
     };
   }, []);

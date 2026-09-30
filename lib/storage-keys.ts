@@ -159,10 +159,23 @@ export function clearDevTestData(): void {
   try {
     localStorage.removeItem(STORAGE_KEYS.APPOINTMENTS);
     localStorage.removeItem(STORAGE_KEYS.LEGACY_APPOINTMENTS);
+    localStorage.removeItem("samara_dev_appointments");
+    localStorage.removeItem("samara_prod_appointments");
+    localStorage.removeItem("samara_real_appointments");
+
     localStorage.removeItem(STORAGE_KEYS.PATIENTS);
     localStorage.removeItem(STORAGE_KEYS.LEGACY_PATIENTS);
+    localStorage.removeItem("samara_dev_patients");
+    localStorage.removeItem("samara_prod_patients");
+    localStorage.removeItem("samara_real_patients");
+
+    localStorage.removeItem("samara_reminders");
+    sessionStorage.removeItem("samara_last_alert_run");
+
     window.dispatchEvent(new Event("samara_appointments_updated"));
     window.dispatchEvent(new Event("samara_patients_updated"));
+    window.dispatchEvent(new Event("samara_reminders_updated"));
+    window.dispatchEvent(new Event("storage"));
   } catch (e) {
     console.error("Erro ao zerar dados de teste:", e);
   }

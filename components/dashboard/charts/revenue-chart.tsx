@@ -10,39 +10,112 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { getStoredAppointments } from "@/lib/storage-keys";
+import { Appointment } from "../sections/appointments";
 
-const data = [
-  { month: "Jan", revenue: 186000, target: 180000 },
-  { month: "Feb", revenue: 205000, target: 190000 },
-  { month: "Mar", revenue: 237000, target: 200000 },
-  { month: "Apr", revenue: 273000, target: 220000 },
-  { month: "May", revenue: 209000, target: 230000 },
-  { month: "Jun", revenue: 314000, target: 250000 },
-  { month: "Jul", revenue: 352000, target: 270000 },
-  { month: "Aug", revenue: 389000, target: 290000 },
-  { month: "Sep", revenue: 421000, target: 310000 },
-  { month: "Oct", revenue: 458000, target: 330000 },
-  { month: "Nov", revenue: 492000, target: 350000 },
-  { month: "Dec", revenue: 547000, target: 380000 },
+const MONTH_NAMES = [
+  "Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"
 ];
+
+function getAppointmentMonthIndex(apt: Appointment): number {
+  const dateStr = apt.date || apt.completedAt || (apt as any).createdAt;
+  if (!dateStr) return new Date().getMonth();
+
+  const lower = dateStr.toLowerCase().trim();
+  if (lower === "hoje" || lower === "amanhã" || lower === "ontem") {
+    return new Date().getMonth();
+  }
+
+  // YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) {
+    const m = parseInt(dateStr.slice(5, 7), 10) - 1;
+    if (m >= 0 && m <= 11) return m;
+  }
+
+  // DD/MM/YYYY
+  if (/^\d{1,2}\/\d{1,2}\/\d{4}/.test(dateStr)) {
+    const parts = dateStr.split("/");
+    const m = parseInt(parts[1], 10) - 1;
+    if (m >= 0 && m <= 11) return m;
+  }
+
+  const parsed = new Date(dateStr);
+  if (!isNaN(parsed.getTime())) {
+    return parsed.getMonth();
+  }
+
+  return new Date().getMonth();
+}
 
 export function RevenueChart() {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [chartData, setChartData] = useState<
+    { month: string; revenue: number; target: number }[]
+  >([]);
+  const [totalRevenue, setTotalRevenue] = useState(0);
+
+  const calculateMonthlyData = () => {
+    try {
+      const apts: Appointment[] = getStoredAppointments();
+      const monthlyTotals = new Array(12).fill(0);
+      let sum = 0;
+
+      apts.forEach((a) => {
+        if (a.status === "concluido" || a.status === "confirmado") {
+          const val = a.value || 0;
+          const monthIdx = getAppointmentMonthIndex(a);
+          monthlyTotals[monthIdx] += val;
+          sum += val;
+        }
+      });
+
+      setTotalRevenue(sum);
+
+      const formatted = MONTH_NAMES.map((month, index) => {
+        const rev = monthlyTotals[index];
+        const target = sum > 0 ? (rev > 0 ? Math.round(rev * 1.15) : Math.round((sum / 12) * 1.1)) : 0;
+        return {
+          month,
+          revenue: rev,
+          target,
+        };
+      });
+
+      setChartData(formatted);
+    } catch (e) {
+      setChartData(MONTH_NAMES.map((m) => ({ month: m, revenue: 0, target: 0 })));
+    }
+  };
 
   useEffect(() => {
+    calculateMonthlyData();
+    window.addEventListener("samara_appointments_updated", calculateMonthlyData);
+    window.addEventListener("storage", calculateMonthlyData);
+
     const timer = setTimeout(() => setIsLoaded(true), 300);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("samara_appointments_updated", calculateMonthlyData);
+      window.removeEventListener("storage", calculateMonthlyData);
+    };
   }, []);
 
+  const formattedAccumulated = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(totalRevenue);
+
   return (
-    <div className="w-full min-w-0 max-w-full overflow-hidden bg-white dark:bg-[#232323] border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 sm:p-5 h-[300px] sm:h-[360px] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_20px_rgba(0,0,0,0.4)] transition-colors">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+    <div className="w-full min-w-0 max-w-full overflow-hidden bg-white dark:bg-[#232323] border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 sm:p-5 h-[300px] sm:h-[360px] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_20px_rgba(0,0,0,0.4)] transition-colors flex flex-col justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2 sm:mb-4">
         <div>
           <h3 className="text-sm sm:text-base font-semibold text-black dark:text-white">
             Evolução do Consultório
           </h3>
           <p className="text-xs text-[#767676] dark:text-[#8D9B7F] mt-0.5">
-            Faturamento e metas mensais da clínica
+            {totalRevenue > 0
+              ? `${formattedAccumulated} acumulados nos atendimentos`
+              : "Faturamento e metas calculados em tempo real"}
           </p>
         </div>
         <div className="flex items-center gap-3 text-xs">
@@ -57,9 +130,19 @@ export function RevenueChart() {
         </div>
       </div>
 
-      <div className={`h-[210px] min-w-0 sm:h-[260px] transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+      <div className={`relative h-[210px] min-w-0 sm:h-[260px] transition-opacity duration-500 ${isLoaded ? "opacity-100" : "opacity-0"}`}>
+        {totalRevenue === 0 && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none pb-6 z-10 text-center px-4">
+            <p className="text-xs font-semibold text-black dark:text-white">
+              Nenhum faturamento registrado ainda
+            </p>
+            <p className="text-[11px] text-[#767676] dark:text-[#8D9B7F] max-w-sm mt-1">
+              Conforme os atendimentos forem concluídos na Agenda, a curva de crescimento mensal será gerada automaticamente.
+            </p>
+          </div>
+        )}
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#A8B29A" stopOpacity={0.4} />
@@ -81,8 +164,9 @@ export function RevenueChart() {
             <YAxis
               axisLine={false}
               tickLine={false}
+              domain={[0, totalRevenue > 0 ? "auto" : 1000]}
               tick={{ fill: "#888888", fontSize: 10 }}
-              tickFormatter={(value) => `R$${Math.round(value / 1000)}k`}
+              tickFormatter={(value) => (value === 0 ? "R$0" : value >= 1000 ? `R$${Math.round(value / 1000)}k` : `R$${value}`)}
               dx={-2}
             />
             <Tooltip

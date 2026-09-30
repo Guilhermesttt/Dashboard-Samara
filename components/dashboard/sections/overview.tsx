@@ -10,6 +10,7 @@ import { DollarSign, Sparkles, Users, RotateCcw, LayoutDashboard } from "lucide-
 import { Appointment } from "./appointments";
 import { PatientRecord } from "./customer-profile-modal";
 import { KineticHeading } from "@/components/motion";
+import { getStoredAppointments, getStoredPatients } from "@/lib/storage-keys";
 
 export function OverviewSection() {
   const [patientCount, setPatientCount] = useState(0);
@@ -17,39 +18,48 @@ export function OverviewSection() {
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [returnRate, setReturnRate] = useState("100%");
 
-  useEffect(() => {
+  const updateMetrics = () => {
     try {
       // 1. Pacientes Reais
-      const rawPatients = localStorage.getItem("samara_real_patients");
-      if (rawPatients) {
-        const patients: PatientRecord[] = JSON.parse(rawPatients);
-        setPatientCount(patients.length);
-      }
+      const patients: PatientRecord[] = getStoredPatients();
+      setPatientCount(patients.length);
 
       // 2. Agendamentos Reais
-      const rawApts = localStorage.getItem("samara_real_appointments");
-      if (rawApts) {
-        const apts: Appointment[] = JSON.parse(rawApts);
-        
-        // Faturamento real dos atendimentos concluídos (ou confirmados se nenhum concluído)
-        const concluidos = apts.filter((a) => a.status === "concluido");
-        setCompletedCount(concluidos.length);
+      const apts: Appointment[] = getStoredAppointments();
+      const concluidos = apts.filter((a) => a.status === "concluido");
+      setCompletedCount(concluidos.length);
 
-        const rev = concluidos.reduce((acc, curr) => acc + (curr.value || 0), 0);
-        setTotalRevenue(rev);
+      const rev = concluidos.reduce((acc, curr) => acc + (curr.value || 0), 0);
+      setTotalRevenue(rev);
 
-        // Taxa de retorno
-        const totalRetornos = apts.filter(
-          (a) => a.type === "Retorno de 15 Dias" || a.status === "retorno_pendente"
-        ).length;
-        if (apts.length > 0 && totalRetornos > 0) {
-          const rate = Math.round((totalRetornos / apts.length) * 100);
-          setReturnRate(`${rate}%`);
-        } else {
-          setReturnRate(apts.length === 0 ? "100%" : "N/D");
-        }
+      // Taxa de retorno
+      const totalRetornos = apts.filter(
+        (a) => a.type === "Retorno de 15 Dias" || a.status === "retorno_pendente"
+      ).length;
+      if (apts.length > 0 && totalRetornos > 0) {
+        const rate = Math.round((totalRetornos / apts.length) * 100);
+        setReturnRate(`${rate}%`);
+      } else {
+        setReturnRate(apts.length === 0 ? "100%" : "N/D");
       }
-    } catch (e) {}
+    } catch (e) {
+      setPatientCount(0);
+      setCompletedCount(0);
+      setTotalRevenue(0);
+      setReturnRate("100%");
+    }
+  };
+
+  useEffect(() => {
+    updateMetrics();
+    window.addEventListener("samara_appointments_updated", updateMetrics);
+    window.addEventListener("samara_patients_updated", updateMetrics);
+    window.addEventListener("storage", updateMetrics);
+    return () => {
+      window.removeEventListener("samara_appointments_updated", updateMetrics);
+      window.removeEventListener("samara_patients_updated", updateMetrics);
+      window.removeEventListener("storage", updateMetrics);
+    };
   }, []);
 
   const formattedRevenue = new Intl.NumberFormat("pt-BR", {
