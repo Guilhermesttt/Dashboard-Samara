@@ -106,7 +106,7 @@ export function Sidebar({
               <img
                 src="/Samara_Logo_Completa.png"
                 alt="Dra. Sâmara Souza - Estética Avançada"
-                className="h-11 sm:h-12 w-auto max-w-[195px] object-contain object-left dark:invert transition-all drop-shadow-sm select-none"
+                className="h-9 sm:h-[38px] w-auto max-w-[172px] object-contain object-left dark:invert transition-all drop-shadow-sm select-none"
               />
             </div>
           )}
