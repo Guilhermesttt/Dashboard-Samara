@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import type { Section } from "@/app/page";
-import { Bell, Search, Calendar, Menu } from "lucide-react";
+import { Bell, Search, Calendar, Menu, PanelLeft } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getStoredUserProfile, UserProfileData } from "@/lib/storage-keys";
 import { NotificationBadge, StaggerText } from "@/components/motion";
@@ -13,6 +13,8 @@ interface HeaderProps {
   onOpenMobileMenu?: () => void;
   onOpenReminders?: () => void;
   pendingRemindersCount?: number;
+  sidebarCollapsed?: boolean;
+  onToggleSidebar?: () => void;
 }
 
 const sectionTitles: Record<Section, string> = {
@@ -30,6 +32,8 @@ export function Header({
   onOpenMobileMenu,
   onOpenReminders,
   pendingRemindersCount = 0,
+  sidebarCollapsed = false,
+  onToggleSidebar,
 }: HeaderProps) {
   const [searchFocused, setSearchFocused] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfileData | null>(null);
@@ -48,8 +52,8 @@ export function Header({
   }, []);
 
   return (
-    <header className="min-h-[var(--app-header-height)] h-[calc(var(--app-header-height)+env(safe-area-inset-top,0px))] pt-[env(safe-area-inset-top,0px)] border-b border-[#ebebeb] dark:border-[#232323] bg-white/90 dark:bg-[#111111]/90 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between gap-2 px-4 sm:px-6 select-none transition-colors shrink-0">
-      <div className="min-w-0 flex-1 flex items-center gap-2.5 sm:gap-6">
+    <header className="min-h-[var(--app-header-height)] h-[calc(var(--app-header-height)+env(safe-area-inset-top,0px))] pt-[env(safe-area-inset-top,0px)] border-b border-black/15 dark:border-white/20 bg-white/90 dark:bg-[#111111]/90 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between gap-2 px-4 sm:px-6 select-none transition-colors shrink-0">
+      <div className="min-w-0 flex-1 flex items-center gap-2.5 sm:gap-4">
         {/* Mobile menu trigger with 44px touch area */}
         <button
           onClick={onOpenMobileMenu}
@@ -59,6 +63,18 @@ export function Header({
         >
           <Menu className="w-5 h-5" />
         </button>
+
+        {/* Desktop Sidebar Toggle icon (Image 2 style) - visible when sidebar is collapsed */}
+        {onToggleSidebar && sidebarCollapsed && (
+          <button
+            onClick={onToggleSidebar}
+            className="hidden md:flex w-8 h-8 rounded-lg bg-black/[0.04] dark:bg-white/[0.08] hover:bg-black/[0.08] dark:hover:bg-white/[0.14] border border-black/[0.08] dark:border-white/[0.12] items-center justify-center text-[#767676] dark:text-[#A8B29A] hover:text-black dark:hover:text-white transition-all cursor-pointer active:scale-95 shrink-0"
+            title="Expandir menu lateral"
+            aria-label="Expandir menu lateral"
+          >
+            <PanelLeft className="w-4 h-4" />
+          </button>
+        )}
 
         <h1 className="min-w-0 text-base sm:text-xl font-bold text-black dark:text-white tracking-tight truncate font-display">
           <StaggerText>{sectionTitles[activeSection] || "Painel"}</StaggerText>

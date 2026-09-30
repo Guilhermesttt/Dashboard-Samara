@@ -248,6 +248,8 @@ export default function Dashboard() {
           onOpenMobileMenu={() => setMobileMenuOpen(true)}
           onOpenReminders={() => setIsRemindersOpen(true)}
           pendingRemindersCount={pendingRemindersCount}
+          sidebarCollapsed={sidebarCollapsed}
+          onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
         />
         <main
           data-app-scroll-root

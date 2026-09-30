@@ -11,8 +11,7 @@ import {
   Sparkles,
   BarChart3,
   Settings,
-  ChevronLeft,
-  ChevronRight,
+  PanelLeft,
   LogOut,
   Building2,
   X,
@@ -83,26 +82,39 @@ export function Sidebar({
   const navContent = (
     <div className="flex flex-col h-full bg-white dark:bg-[#111111] text-black dark:text-white transition-colors">
       {/* Brand Header */}
-      <div className="h-16 flex items-center justify-between px-4 border-b border-[#ebebeb] dark:border-[#232323]">
-        <div className="flex items-center gap-3 overflow-hidden">
+      <div className="h-[68px] flex items-center justify-between px-3.5 border-b border-black/15 dark:border-white/20">
+        <div className="flex items-center gap-2 overflow-hidden flex-1">
           {collapsed ? (
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
-              <img
-                src="/Samara_logo.png"
-                alt="SS - Dra. Sâmara Souza"
-                className="w-8 h-8 object-contain dark:invert transition-all"
-              />
-            </div>
+            <button
+              onClick={() => onCollapsedChange(false)}
+              className="w-9 h-9 rounded-lg bg-black/[0.04] dark:bg-white/[0.08] hover:bg-black/[0.08] dark:hover:bg-white/[0.14] border border-black/[0.08] dark:border-white/[0.12] flex items-center justify-center shrink-0 transition-all cursor-pointer active:scale-95 mx-auto group"
+              title="Expandir menu lateral"
+              aria-label="Expandir menu lateral"
+            >
+              <PanelLeft className="w-4.5 h-4.5 text-[#767676] dark:text-[#A8B29A] group-hover:text-black dark:group-hover:text-white transition-colors" />
+            </button>
           ) : (
-            <div className="flex items-center">
+            <div className="flex items-center flex-1">
               <img
                 src="/Samara_Logo_Completa.png"
                 alt="Dra. Sâmara Souza - Estética Avançada"
-                className="h-9 max-w-[195px] object-contain object-left dark:invert transition-all"
+                className="h-11 sm:h-12 max-w-[195px] object-contain object-left dark:invert transition-all drop-shadow-sm"
               />
             </div>
           )}
         </div>
+
+        {/* Desktop Sidebar Toggle icon (Image 2 style) */}
+        {!collapsed && (
+          <button
+            onClick={() => onCollapsedChange(true)}
+            className="hidden md:flex w-8 h-8 rounded-lg bg-black/[0.04] dark:bg-white/[0.08] hover:bg-black/[0.08] dark:hover:bg-white/[0.14] border border-black/[0.08] dark:border-white/[0.12] items-center justify-center text-[#767676] dark:text-[#A8B29A] hover:text-black dark:hover:text-white transition-all cursor-pointer active:scale-95 shrink-0"
+            title="Recolher menu lateral"
+            aria-label="Recolher menu lateral"
+          >
+            <PanelLeft className="w-4 h-4" />
+          </button>
+        )}
 
         {/* Close button for mobile drawer */}
         {onMobileClose && (
@@ -184,13 +196,13 @@ export function Sidebar({
       </nav>
 
       {/* Footer Actions */}
-      <div className="p-3 border-t border-[#ebebeb] dark:border-[#232323] space-y-1">
+      <div className="p-3 border-t border-black/15 dark:border-white/20 space-y-1">
         {onLogout && (
           <button
             onClick={onLogout}
             className="w-full flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-medium text-[#767676] dark:text-[#8D9B7F] hover:text-[#d62b11] hover:bg-rose-50/50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer group"
           >
-            <LogOut className="w-4 h-4 text-[#8f8f8f] dark:text-[#8D9B7F] group-hover:text-[#d62b11] transition-colors" />
+            <LogOut className="w-4 h-4 text-[#8f8f8f] dark:text-[#8D9B7F] group-hover:text-[#d62b11] transition-colors shrink-0" />
             <span
               className={cn(
                 "whitespace-nowrap transition-all duration-300",
@@ -201,20 +213,6 @@ export function Sidebar({
             </span>
           </button>
         )}
-
-        <button
-          onClick={() => onCollapsedChange(!collapsed)}
-          className="hidden md:flex w-full items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-[#767676] dark:text-[#8D9B7F] hover:text-black dark:hover:text-white hover:bg-[#f5f5f5] dark:hover:bg-[#232323] transition-colors cursor-pointer"
-        >
-          {collapsed ? (
-            <ChevronRight className="w-4 h-4 text-[#8f8f8f] dark:text-[#8D9B7F] hover:text-black dark:hover:text-white" />
-          ) : (
-            <>
-              <ChevronLeft className="w-4 h-4 text-[#8f8f8f] dark:text-[#8D9B7F] hover:text-black dark:hover:text-white" />
-              <span>Recolher Menu</span>
-            </>
-          )}
-        </button>
       </div>
     </div>
   );
@@ -224,7 +222,7 @@ export function Sidebar({
       {/* 1. Desktop Fixed Sidebar */}
       <aside
         className={cn(
-          "hidden md:flex fixed left-0 top-0 z-40 h-screen bg-white dark:bg-[#111111] border-r border-[#ebebeb] dark:border-[#232323] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] flex-col select-none",
+          "hidden md:flex fixed left-0 top-0 z-40 h-screen bg-white dark:bg-[#111111] border-r border-black/15 dark:border-white/20 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] flex-col select-none",
           collapsed ? "w-[72px]" : "w-[260px]"
         )}
       >

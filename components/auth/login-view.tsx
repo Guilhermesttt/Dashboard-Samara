@@ -243,12 +243,12 @@ export function LoginView({ onLoginSuccess, onRegisterSuccess }: LoginViewProps)
             </div>
           </div>
 
-          {/* Logo da Marca */}
-          <div className="flex items-center gap-3">
+          {/* Logo da Marca - Mais visível e nítida */}
+          <div className="flex items-center gap-3 py-1">
             <img
               src="/Samara_Logo_Completa.png"
               alt="Dra. Sâmara Souza - Estética Avançada"
-              className="h-8 sm:h-9 object-contain dark:invert"
+              className="h-12 sm:h-14 max-w-[270px] object-contain dark:invert drop-shadow-md transition-all"
             />
           </div>
 

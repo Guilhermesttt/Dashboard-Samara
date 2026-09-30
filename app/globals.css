@@ -134,8 +134,8 @@
   --accent-foreground: #111111;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --border: rgba(255, 255, 255, 0.08);
-  --border-subtle: rgba(255, 255, 255, 0.05);
+  --border: rgba(255, 255, 255, 0.18);
+  --border-subtle: rgba(255, 255, 255, 0.10);
   --input: #1a1a1a;
   --ring: #a8b29a;
 
@@ -146,7 +146,7 @@
   --sidebar-primary-foreground: #111111;
   --sidebar-accent: #232323;
   --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-border: rgba(255, 255, 255, 0.18);
   --sidebar-ring: #a8b29a;
 
   --material-shadow:
