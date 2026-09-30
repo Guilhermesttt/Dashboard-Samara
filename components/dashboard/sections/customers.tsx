@@ -284,13 +284,13 @@ export function CustomersSection() {
               Gestão clínica, histórico e prontuários das pacientes da Dra. Sâmara.
             </p>
           </div>
-          <button
+          <Button
             onClick={handleOpenAddCustomer}
-            className="w-full sm:w-auto h-11 sm:h-9 px-4 rounded-xl bg-black dark:bg-[#9ca889] hover:bg-[#262626] dark:hover:bg-[#8f9b7c] active:bg-[#849071] active:scale-[0.98] text-white dark:text-[#070707] text-xs font-semibold flex items-center justify-center gap-2 shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_4px_16px_rgba(156,168,137,0.25)] transition-all duration-150 cursor-pointer min-h-[44px] sm:min-h-0 shrink-0"
+            className="w-full sm:w-auto h-11 sm:h-9 px-4 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 min-h-[44px] sm:min-h-0 shrink-0"
           >
             <Plus className="w-4 h-4 stroke-[2.2]" />
             <span>Cadastrar Cliente</span>
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -440,13 +440,13 @@ export function CustomersSection() {
               Você ainda não tem pacientes cadastrados. Cadastre seu primeiro paciente real para iniciar prontuários de estética e fichas clínicas.
             </p>
           </div>
-          <button
+          <Button
             onClick={handleOpenAddCustomer}
-            className="w-full sm:w-auto h-12 sm:h-9 px-5 rounded-xl bg-black dark:bg-[#9ca889] hover:bg-[#262626] dark:hover:bg-[#8f9b7c] active:bg-[#849071] active:scale-[0.98] text-white dark:text-[#070707] text-xs font-semibold flex items-center justify-center gap-2 shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_4px_16px_rgba(156,168,137,0.25)] transition-all cursor-pointer min-h-[44px] sm:min-h-0"
+            className="w-full sm:w-auto h-12 sm:h-9 px-5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 min-h-[44px] sm:min-h-0"
           >
             <Plus className="w-4 h-4 stroke-[2.2]" />
             <span>Cadastrar Primeira Paciente</span>
-          </button>
+          </Button>
         </div>
       ) : (
         <>

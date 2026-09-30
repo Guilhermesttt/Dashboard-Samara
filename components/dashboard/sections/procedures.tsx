@@ -25,6 +25,14 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from "@/components/ui/table";
 import { SlidingTabs, AnimatedNumber, KineticHeading, BorderBeam } from "@/components/motion";
 import {
   ProcedureItem,
@@ -596,152 +604,153 @@ export function ProceduresSection() {
 
       {/* 5. Desktop Table (Hidden on small screens) */}
       <div className="hidden sm:block w-full bg-white dark:bg-[#121212] border border-black/[0.08] dark:border-white/[0.08] rounded-2xl overflow-hidden shadow-[0_1px_3px_0_rgba(0,0,0,0.02)]">
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-left text-xs">
-            {/* Table Header */}
-            <thead>
-              <tr className="border-b border-black/[0.06] dark:border-white/[0.06] bg-[#fafafa]/80 dark:bg-[#18181b]/80 text-[#767676] dark:text-[#a1a1aa] font-medium">
-                <th className="py-3.5 px-4 w-10 text-center">
-                  <div
-                    onClick={toggleSelectAll}
-                    data-checked={allSelected}
-                    className="w-4 h-4 rounded border border-black/30 dark:border-white/30 flex items-center justify-center cursor-pointer transition-colors"
-                    style={{
-                      backgroundColor: allSelected ? "#000" : "transparent",
-                    }}
-                  >
-                    {allSelected && (
-                      <svg className="w-2.5 h-2.5 text-white stroke-current" viewBox="0 0 24 24" fill="none" strokeWidth="3">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
+        <Table>
+          <TableHeader>
+            <TableRow className="border-b border-black/[0.06] dark:border-white/[0.06] bg-[#fafafa]/80 dark:bg-[#18181b]/80">
+              <TableHead className="py-3.5 px-4 w-10 text-center">
+                <div
+                  onClick={toggleSelectAll}
+                  data-checked={allSelected}
+                  className="w-4 h-4 rounded border border-black/30 dark:border-white/30 flex items-center justify-center cursor-pointer transition-colors"
+                  style={{
+                    backgroundColor: allSelected ? "#000" : "transparent",
+                  }}
+                >
+                  {allSelected && (
+                    <svg className="w-2.5 h-2.5 text-white stroke-current" viewBox="0 0 24 24" fill="none" strokeWidth="3">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  )}
+                </div>
+              </TableHead>
+              <TableHead className="py-3.5 px-4 font-semibold text-[#0d0d0d] dark:text-white whitespace-nowrap">
+                Procedimento
+              </TableHead>
+              <TableHead className="py-3.5 px-4 font-semibold text-[#0d0d0d] dark:text-white whitespace-nowrap">
+                Categoria
+              </TableHead>
+              <TableHead className="py-3.5 px-4 font-semibold text-[#0d0d0d] dark:text-white whitespace-nowrap">
+                Valor (R$)
+              </TableHead>
+              <TableHead className="py-3.5 px-4 font-semibold text-[#0d0d0d] dark:text-white whitespace-nowrap">
+                Observações Técnicas
+              </TableHead>
+              <TableHead className="py-3.5 px-4 font-semibold text-[#0d0d0d] dark:text-white text-right whitespace-nowrap">
+                Ações
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+
+          <TableBody className="divide-y divide-black/[0.04] dark:divide-white/[0.04]">
+            {filteredProcedures.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="py-12 text-center text-xs text-[#767676] dark:text-[#a1a1aa]">
+                  Nenhum procedimento encontrado para o filtro selecionado.
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredProcedures.map((proc) => {
+                const isSelected = !!selectedRows[proc.id];
+
+                return (
+                  <TableRow
+                    key={proc.id}
+                    className={cn(
+                      "transition-colors duration-100 group cursor-pointer",
+                      isSelected
+                        ? "bg-[#f5f8ff] dark:bg-white/[0.06]"
+                        : "hover:bg-[#fbfbfb] dark:hover:bg-[#1a1a1c]"
                     )}
-                  </div>
-                </th>
-                <th className="py-3.5 px-4 font-semibold text-[#0d0d0d] dark:text-white whitespace-nowrap">
-                  Procedimento
-                </th>
-                <th className="py-3.5 px-4 font-semibold text-[#0d0d0d] dark:text-white whitespace-nowrap">
-                  Categoria
-                </th>
-                <th className="py-3.5 px-4 font-semibold text-[#0d0d0d] dark:text-white whitespace-nowrap">
-                  Valor (R$)
-                </th>
-                <th className="py-3.5 px-4 font-semibold text-[#0d0d0d] dark:text-white whitespace-nowrap">
-                  Observações Técnicas
-                </th>
-                <th className="py-3.5 px-4 font-semibold text-[#0d0d0d] dark:text-white text-right whitespace-nowrap">
-                  Ações
-                </th>
-              </tr>
-            </thead>
+                  >
+                    {/* Checkbox */}
+                    <TableCell className="py-3.5 px-4 text-center">
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleSelectRow(proc.id);
+                        }}
+                        className="w-4 h-4 rounded border border-black/30 dark:border-white/30 flex items-center justify-center cursor-pointer transition-colors"
+                        style={{
+                          backgroundColor: isSelected ? "#000" : "transparent",
+                        }}
+                      >
+                        {isSelected && (
+                          <svg className="w-2.5 h-2.5 text-white stroke-current" viewBox="0 0 24 24" fill="none" strokeWidth="3">
+                            <polyline points="20 6 9 17 4 12" />
+                          </svg>
+                        )}
+                      </div>
+                    </TableCell>
 
-            {/* Table Body */}
-            <tbody className="divide-y divide-black/[0.04] dark:divide-white/[0.04]">
-              {filteredProcedures.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-12 text-center text-xs text-[#767676] dark:text-[#a1a1aa]">
-                    Nenhum procedimento encontrado para o filtro selecionado.
-                  </td>
-                </tr>
-              ) : (
-                filteredProcedures.map((proc) => {
-                  const isSelected = !!selectedRows[proc.id];
+                    {/* Nome do Procedimento */}
+                    <TableCell className="py-3.5 px-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-xl bg-[#f5f5f7] dark:bg-[#1c1c1e] flex items-center justify-center text-black dark:text-white shrink-0">
+                          <Sparkles className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <span className="font-semibold text-black dark:text-white block">
+                            {proc.name}
+                          </span>
+                          <span className="text-[11px] text-[#8f8f8f] dark:text-[#a1a1aa]">
+                            Cód: {proc.id.toUpperCase()}
+                          </span>
+                        </div>
+                      </div>
+                    </TableCell>
 
-                  return (
-                    <tr
-                      key={proc.id}
-                      className={cn(
-                        "transition-colors duration-100 group cursor-pointer",
-                        isSelected
-                          ? "bg-[#f5f8ff] dark:bg-white/[0.06]"
-                          : "hover:bg-[#fbfbfb] dark:hover:bg-[#1a1a1c]"
-                      )}
-                    >
-                      {/* Checkbox */}
-                      <td className="py-3.5 px-4 text-center">
-                        <div
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleSelectRow(proc.id);
-                          }}
-                          className="w-4 h-4 rounded border border-black/30 dark:border-white/30 flex items-center justify-center cursor-pointer transition-colors"
-                          style={{
-                            backgroundColor: isSelected ? "#000" : "transparent",
-                          }}
+                    {/* Categoria com Shadcn Badge */}
+                    <TableCell className="py-3.5 px-4">
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          "px-2.5 py-0.5 text-xs font-semibold select-none",
+                          categoryBadgeColor(proc.category)
+                        )}
+                      >
+                        {proc.category}
+                      </Badge>
+                    </TableCell>
+
+                    {/* Valor (R$) */}
+                    <TableCell className="py-3.5 px-4 font-semibold text-[#0d0d0d] dark:text-white whitespace-nowrap">
+                      {formatBRL(proc.price)}
+                    </TableCell>
+
+                    {/* Observações */}
+                    <TableCell className="py-3.5 px-4 text-[#767676] dark:text-[#a1a1aa] max-w-xs truncate">
+                      {proc.observation || "—"}
+                    </TableCell>
+
+                    {/* Ações com Shadcn Button */}
+                    <TableCell className="py-3.5 px-4 text-right">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => handleOpenEdit(proc)}
+                          className="h-8 px-2.5 gap-1"
                         >
-                          {isSelected && (
-                            <svg className="w-2.5 h-2.5 text-white stroke-current" viewBox="0 0 24 24" fill="none" strokeWidth="3">
-                              <polyline points="20 6 9 17 4 12" />
-                            </svg>
-                          )}
-                        </div>
-                      </td>
-
-                      {/* Nome do Procedimento */}
-                      <td className="py-3.5 px-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-xl bg-[#f5f5f7] dark:bg-[#1c1c1e] flex items-center justify-center text-black dark:text-white shrink-0">
-                            <Sparkles className="w-4 h-4" />
-                          </div>
-                          <div>
-                            <span className="font-semibold text-black dark:text-white block">
-                              {proc.name}
-                            </span>
-                            <span className="text-[11px] text-[#8f8f8f] dark:text-[#a1a1aa]">
-                              Cód: {proc.id.toUpperCase()}
-                            </span>
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Categoria */}
-                      <td className="py-3.5 px-4">
-                        <span
-                          className={cn(
-                            "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border",
-                            categoryBadgeColor(proc.category)
-                          )}
+                          <Edit2 className="w-3.5 h-3.5 text-[#8f8f8f]" />
+                          <span>Editar</span>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          onClick={() => handleDeleteProcedure(proc.id)}
+                          className="hover:bg-rose-50 dark:hover:bg-rose-950/40 text-[#8f8f8f] hover:text-rose-600"
+                          title="Excluir procedimento"
                         >
-                          {proc.category}
-                        </span>
-                      </td>
-
-                      {/* Valor (R$) */}
-                      <td className="py-3.5 px-4 font-semibold text-[#0d0d0d] dark:text-white whitespace-nowrap">
-                        {formatBRL(proc.price)}
-                      </td>
-
-                      {/* Observações */}
-                      <td className="py-3.5 px-4 text-[#767676] dark:text-[#a1a1aa] max-w-xs truncate">
-                        {proc.observation || "—"}
-                      </td>
-
-                      {/* Ações */}
-                      <td className="py-3.5 px-4 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            onClick={() => handleOpenEdit(proc)}
-                            className="h-8 px-2.5 rounded-lg bg-[#f5f5f5] dark:bg-[#1c1c1e] hover:bg-[#ebebeb] dark:hover:bg-[#2c2c2e] text-xs font-medium text-black dark:text-white flex items-center gap-1 transition-colors cursor-pointer"
-                          >
-                            <Edit2 className="w-3.5 h-3.5 text-[#8f8f8f]" />
-                            <span>Editar</span>
-                          </button>
-                          <button
-                            onClick={() => handleDeleteProcedure(proc.id)}
-                            className="w-8 h-8 rounded-lg bg-[#f5f5f5] dark:bg-[#1c1c1e] hover:bg-rose-50 dark:hover:bg-rose-950/40 text-[#8f8f8f] hover:text-rose-600 flex items-center justify-center transition-colors cursor-pointer"
-                            title="Excluir procedimento"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            )}
+          </TableBody>
+        </Table>
       </div>
 
       {/* 6. Modal: Adicionar / Editar Procedimento */}

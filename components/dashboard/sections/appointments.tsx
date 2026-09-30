@@ -630,15 +630,17 @@ export function AppointmentsSection() {
             </p>
           </div>
           <div className="flex min-w-0 flex-wrap items-center gap-2 self-start sm:self-auto sm:shrink-0">
-            <button
+            <Button
               type="button"
+              variant="secondary"
+              size="sm"
               onClick={() => playNotificationSound()}
-              className="h-11 sm:h-9 px-2.5 sm:px-3 rounded-xl bg-[#f5f5f5] dark:bg-[#1c1c1e] hover:bg-[#ebebeb] dark:hover:bg-[#2c2c2e] active:scale-[0.98] text-black dark:text-white text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer border border-black/[0.04] dark:border-white/[0.08]"
+              className="gap-1.5"
               title="Testar alerta sonoro do sistema"
             >
               <Volume2 className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Alerta Sonoro</span>
-            </button>
+            </Button>
 
             <ShimmerButton
               onClick={() => setIsAddModalOpen(true)}
@@ -844,9 +846,19 @@ export function AppointmentsSection() {
                     <span className={`w-2 h-2 rounded-full ${stage.color}`} />
                     <span className="text-xs font-bold text-black dark:text-white">{stage.label}</span>
                   </div>
-                  <span className="text-[11px] font-semibold text-[#8f8f8f] dark:text-[#a1a1aa] px-1.5 py-0.5 rounded-md bg-[#eee] dark:bg-[#202022]">
-                    {stageAppointments.length}
-                  </span>
+                  {stage.id === "retorno_pendente" && stageAppointments.length > 0 ? (
+                    <Badge variant="warning" pulse className="text-[10px] px-1.5 py-0">
+                      {stageAppointments.length}
+                    </Badge>
+                  ) : stage.id === "em_atendimento" && stageAppointments.length > 0 ? (
+                    <Badge variant="sage" pulse className="text-[10px] px-1.5 py-0">
+                      {stageAppointments.length}
+                    </Badge>
+                  ) : (
+                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                      {stageAppointments.length}
+                    </Badge>
+                  )}
                 </div>
 
                 {/* Cards Container */}

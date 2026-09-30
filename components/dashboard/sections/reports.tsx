@@ -142,7 +142,8 @@ export function ReportsSection() {
 
   const totalStages = Object.values(stagesCount).reduce((a, b) => a + b, 0);
 
-  const pieColors = ["#3b82f6", "#10b981", "#a855f7", "#f59e0b", "#4b5563"];
+  // Paleta oficial Made By Majid (Olive, Sage, Ivory, Âmbar, Carvão)
+  const pieColors = ["#8D9B7F", "#A8B29A", "#F7F5F0", "#C5A059", "#444444"];
   const stageData = [
     { name: "Agendados", value: stagesCount.agendado, color: pieColors[0] },
     { name: "Confirmados", value: stagesCount.confirmado, color: pieColors[1] },
@@ -335,10 +336,10 @@ export function ReportsSection() {
         {/* 2. Relatório Financeiro */}
         <div
           onClick={() => handleDownloadPdf("financeiro")}
-          className="group bg-white dark:bg-[#121212] border border-border dark:border-white/[0.08] hover:border-emerald-500 rounded-2xl p-4 transition-all duration-200 cursor-pointer shadow-sm flex flex-col justify-between"
+          className="group bg-white dark:bg-[#121212] border border-border dark:border-white/[0.08] hover:border-[#A8B29A] rounded-2xl p-4 transition-all duration-200 cursor-pointer shadow-sm flex flex-col justify-between"
         >
           <div>
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+            <div className="w-9 h-9 rounded-xl bg-[#A8B29A]/15 text-[#A8B29A] flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
               <DollarSign className="w-4 h-4" />
             </div>
             <h4 className="text-xs sm:text-sm font-bold text-black dark:text-white">
@@ -348,7 +349,7 @@ export function ReportsSection() {
               Faturamento real por procedimento, valores recebidos e ticket médio da clínica.
             </p>
           </div>
-          <button className="mt-4 flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 group-hover:gap-2.5 transition-all">
+          <button className="mt-4 flex items-center gap-1.5 text-xs font-semibold text-[#A8B29A] group-hover:gap-2.5 transition-all">
             <Download className="w-3.5 h-3.5" />
             <span>Baixar PDF</span>
           </button>
@@ -357,10 +358,10 @@ export function ReportsSection() {
         {/* 3. Relatório da Carteira de Clientes */}
         <div
           onClick={() => handleDownloadPdf("pacientes")}
-          className="group bg-white dark:bg-[#121212] border border-border dark:border-white/[0.08] hover:border-blue-500 rounded-2xl p-4 transition-all duration-200 cursor-pointer shadow-sm flex flex-col justify-between"
+          className="group bg-white dark:bg-[#121212] border border-border dark:border-white/[0.08] hover:border-[#8D9B7F] rounded-2xl p-4 transition-all duration-200 cursor-pointer shadow-sm flex flex-col justify-between"
         >
           <div>
-            <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+            <div className="w-9 h-9 rounded-xl bg-[#8D9B7F]/15 text-[#8D9B7F] flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
               <Users className="w-4 h-4" />
             </div>
             <h4 className="text-xs sm:text-sm font-bold text-black dark:text-white">
@@ -370,7 +371,7 @@ export function ReportsSection() {
               Lista nominal das pacientes cadastradas, telefones, aniversários e quantidade de sessões.
             </p>
           </div>
-          <button className="mt-4 flex items-center gap-1.5 text-xs font-semibold text-blue-600 dark:text-blue-400 group-hover:gap-2.5 transition-all">
+          <button className="mt-4 flex items-center gap-1.5 text-xs font-semibold text-[#8D9B7F] group-hover:gap-2.5 transition-all">
             <Download className="w-3.5 h-3.5" />
             <span>Baixar PDF</span>
           </button>
@@ -379,10 +380,10 @@ export function ReportsSection() {
         {/* 4. Relatório de Retornos de 15 Dias */}
         <div
           onClick={() => handleDownloadPdf("retornos")}
-          className="group bg-white dark:bg-[#121212] border border-border dark:border-white/[0.08] hover:border-amber-500 rounded-2xl p-4 transition-all duration-200 cursor-pointer shadow-sm flex flex-col justify-between"
+          className="group bg-white dark:bg-[#121212] border border-border dark:border-white/[0.08] hover:border-[#C5A059] rounded-2xl p-4 transition-all duration-200 cursor-pointer shadow-sm flex flex-col justify-between"
         >
           <div>
-            <div className="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+            <div className="w-9 h-9 rounded-xl bg-[#C5A059]/15 text-[#C5A059] flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
               <RotateCcw className="w-4 h-4" />
             </div>
             <h4 className="text-xs sm:text-sm font-bold text-black dark:text-white">
@@ -392,7 +393,7 @@ export function ReportsSection() {
               Controle clínico de revisões de Botox e Harmonização Facial para retoque e simetria.
             </p>
           </div>
-          <button className="mt-4 flex items-center gap-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400 group-hover:gap-2.5 transition-all">
+          <button className="mt-4 flex items-center gap-1.5 text-xs font-semibold text-[#C5A059] group-hover:gap-2.5 transition-all">
             <Download className="w-3.5 h-3.5" />
             <span>Baixar PDF</span>
           </button>
@@ -472,7 +473,7 @@ export function ReportsSection() {
                     labelStyle={{ color: "#ffffff", fontWeight: "bold" }}
                     formatter={(val: number) => [`${val} sessões`, "Demanda"]}
                   />
-                  <Bar dataKey="sessoes" fill="#000000" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="sessoes" fill="#A8B29A" radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
