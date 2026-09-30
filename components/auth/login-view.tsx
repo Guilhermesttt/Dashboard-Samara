@@ -1,50 +1,148 @@
 "use client";
 
 import React, { useState } from "react";
-import { LogIn, Mail, Lock, Eye, EyeOff, CheckCircle2, ArrowRight } from "lucide-react";
+import {
+  Lock,
+  Mail,
+  User,
+  Eye,
+  EyeOff,
+  CheckCircle2,
+  ArrowRight,
+  ShieldCheck,
+  AlertCircle,
+  Sparkles,
+  UserPlus,
+  LogIn,
+} from "lucide-react";
+import { toast } from "sonner";
+import {
+  STORAGE_KEYS,
+  getStoredAccounts,
+  saveRegisteredUser,
+  setStoredUserProfile,
+} from "@/lib/storage-keys";
 
 interface LoginViewProps {
   onLoginSuccess?: () => void;
+  onRegisterSuccess?: (user: { name: string; email: string }) => void;
 }
 
-export function LoginView({ onLoginSuccess }: LoginViewProps) {
+export function LoginView({ onLoginSuccess, onRegisterSuccess }: LoginViewProps) {
+  const [mode, setMode] = useState<"login" | "register">("login");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  const triggerError = (msg: string) => {
+    setIsError(true);
+    setErrorMessage(msg);
+  };
+
+  const handleForgotPassword = () => {
+    toast.info("Recuperação de Acesso", {
+      description:
+        "Entre em contato com o administrador do sistema ou utilize sua chave mestre de recuperação.",
+      duration: 6000,
+    });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Reset error state
     setIsError(false);
-
-    // Validation
-    if (!email.trim() || !password.trim()) {
-      triggerError("Por favor, preencha todos os campos.");
-      return;
-    }
-
-    if (!email.includes("@") || !email.includes(".")) {
-      triggerError("Por favor, insira um e-mail válido.");
-      return;
-    }
-
-    if (password.length < 4) {
-      triggerError("A senha deve ter pelo menos 4 caracteres.");
-      return;
-    }
-
-    setIsLoading(true);
 
     const cleanEmail = email.trim().toLowerCase();
     const cleanPassword = password.trim();
 
-    // Credenciais únicas da Dra. Sâmara
-    const isAuthorized =
+    if (!cleanEmail || !cleanPassword) {
+      triggerError("Por favor, preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    if (!cleanEmail.includes("@") || !cleanEmail.includes(".")) {
+      triggerError("Por favor, insira um endereço de e-mail válido.");
+      return;
+    }
+
+    if (cleanPassword.length < 4) {
+      triggerError("A senha informada deve ter pelo menos 4 caracteres.");
+      return;
+    }
+
+    if (mode === "register") {
+      if (!name.trim()) {
+        triggerError("Por favor, insira seu nome completo.");
+        return;
+      }
+
+      if (cleanPassword !== confirmPassword.trim()) {
+        triggerError("As senhas digitadas não coincidem. Verifique e tente novamente.");
+        return;
+      }
+
+      setIsLoading(true);
+
+      const result = saveRegisteredUser({
+        name: name.trim(),
+        email: cleanEmail,
+        password: cleanPassword,
+      });
+
+      if (!result.success) {
+        setIsLoading(false);
+        triggerError(result.error || "Erro ao cadastrar usuário.");
+        return;
+      }
+
+      // Inicializa perfil e sessão
+      setStoredUserProfile({
+        name: name.trim(),
+        email: cleanEmail,
+        title: "Biomédica Esteta • Harmonização Facial",
+      });
+
+      try {
+        localStorage.setItem(STORAGE_KEYS.AUTH_SESSION, "true");
+        localStorage.setItem("samara_auth_session", "true");
+        localStorage.setItem("samara_user_email", cleanEmail);
+        localStorage.removeItem(STORAGE_KEYS.ONBOARDING_DONE);
+      } catch (e) {}
+
+      setTimeout(() => {
+        setIsLoading(false);
+        setIsSuccess(true);
+        toast.success(`Conta criada com sucesso!`, {
+          description: `Bem-vinda, ${name.trim()}! Vamos configurar seu perfil e preferências.`,
+        });
+
+        setTimeout(() => {
+          if (onRegisterSuccess) {
+            onRegisterSuccess({ name: name.trim(), email: cleanEmail });
+          } else if (onLoginSuccess) {
+            onLoginSuccess();
+          }
+        }, 400);
+      }, 500);
+
+      return;
+    }
+
+    // Modo LOGIN
+    setIsLoading(true);
+
+    const accounts = getStoredAccounts();
+    const matchedAccount = accounts.find(
+      (acc) => acc.email.toLowerCase() === cleanEmail && acc.password === cleanPassword
+    );
+
+    // Fallback de administrador / credenciais padrão
+    const isMasterAdmin =
       (cleanEmail === "samara-nagy@hotmail.com" ||
         cleanEmail === "dra.samara@samaraestetica.com.br" ||
         cleanEmail === "samara@estetica.com" ||
@@ -52,21 +150,21 @@ export function LoginView({ onLoginSuccess }: LoginViewProps) {
         cleanEmail.startsWith("samara")) &&
       (cleanPassword === "samara123" || cleanPassword === "samara2026");
 
-    if (!isAuthorized) {
+    if (!matchedAccount && !isMasterAdmin) {
       setTimeout(() => {
         setIsLoading(false);
-        triggerError("Acesso restrito. E-mail ou senha incorretos para a Dra. Sâmara.");
+        triggerError("Credenciais não reconhecidas. Verifique e-mail e senha ou crie sua conta.");
       }, 400);
       return;
     }
 
-    // Salvar sessão persistente para uso contínuo no celular e desktop
+    // Salvar sessão persistente
     try {
+      localStorage.setItem(STORAGE_KEYS.AUTH_SESSION, "true");
       localStorage.setItem("samara_auth_session", "true");
       localStorage.setItem("samara_user_email", cleanEmail);
     } catch (e) {}
 
-    // Sucesso na autenticação
     setTimeout(() => {
       setIsLoading(false);
       setIsSuccess(true);
@@ -74,179 +172,364 @@ export function LoginView({ onLoginSuccess }: LoginViewProps) {
         if (onLoginSuccess) {
           onLoginSuccess();
         }
-      }, 500);
-    }, 500);
-  };
-
-  const triggerError = (msg: string) => {
-    setIsError(true);
-    setErrorMessage(msg);
-    setTimeout(() => {
-      setIsError(false);
-    }, 3000);
+      }, 400);
+    }, 400);
   };
 
   return (
-    <div className="relative min-h-screen w-full flex flex-col items-center justify-center p-6 bg-gradient-to-b from-[#eaf4fe] via-[#f4f9ff] to-[#ffffff] overflow-hidden select-none">
-      {/* Subtle atmospheric sky ambient circles */}
-      <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-blue-100/40 blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-sky-100/50 blur-3xl pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full border border-sky-100/60 pointer-events-none opacity-50" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1100px] h-[1100px] rounded-full border border-sky-100/40 pointer-events-none opacity-40" />
-
-      {/* Top Bar / Brand header */}
-      <header className="absolute top-6 sm:top-8 left-6 sm:left-8 flex items-center gap-2.5 z-10">
+    <div className="relative w-full min-h-[100dvh] h-[100dvh] bg-[#111111] text-white flex p-3 sm:p-5 lg:p-6 select-none font-sans overflow-x-hidden overflow-y-auto lg:overflow-hidden bg-[radial-gradient(ellipse_at_top,_rgba(255,255,255,0.035)_0%,_transparent_65%)]">
+      {/* 1. Left Visual Hero Card (Desktop & Tablet Landscape) */}
+      <section
+        aria-label="Espaço de Atendimento Relaxante"
+        className="hidden lg:flex lg:w-1/2 relative rounded-[28px] xl:rounded-[32px] overflow-hidden bg-[#161616] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_24px_64px_-16px_rgba(0,0,0,0.9)] flex-col justify-between p-8 xl:p-12 select-none group"
+      >
         <img
-          src="/Samara_Logo_Completa.png"
-          alt="Dra. Sâmara Souza - Estética Avançada"
-          className="h-8 sm:h-9 max-w-[220px] object-contain dark:invert"
+          src="/relaxing-spa.jpg"
+          alt="Ambiente Relaxante da Clínica Dra. Sâmara Souza"
+          className="absolute inset-0 w-full h-full object-cover object-center scale-100 transition-transform duration-1000 ease-out group-hover:scale-105"
         />
-      </header>
 
-      {/* Login Card (Reference: Image 1) */}
-      <main className="relative z-10 w-full max-w-[420px] p8-page-enter">
-        <div className="bg-white/95 backdrop-blur-md rounded-[28px] border border-black/[0.06] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08),0_1px_3px_0_rgba(0,0,0,0.02)] p-8 sm:p-10 flex flex-col items-center">
-          
-          {/* Brand Logo in Login Card */}
-          <div className="w-16 h-16 rounded-[22px] bg-[#f5f5f7] border border-black/[0.04] shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_2px_8px_rgba(0,0,0,0.04)] flex items-center justify-center mb-5 p-2">
+        {/* Gradientes Atmosféricos em Camadas para Legibilidade */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#111111]/95 via-[#111111]/45 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#111111]/60 via-transparent to-transparent pointer-events-none" />
+
+        {/* Tag Superior no Hero */}
+        <div className="relative z-10 self-start">
+          <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#111111]/70 backdrop-blur-md border border-white/15 text-[11px] font-medium tracking-wide text-white/95 shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-[#A8B29A] animate-pulse" />
+            <span>Clínica de Estética Avançada</span>
+          </div>
+        </div>
+
+        {/* Textos Inspiracionais no Rodapé da Imagem */}
+        <div className="relative z-10 space-y-3.5 max-w-lg">
+          <h2 className="text-2xl xl:text-3xl font-bold tracking-tight text-white leading-snug">
+            Harmonia, precisão e bem-estar em cada detalhe.
+          </h2>
+          <p className="text-xs xl:text-sm text-white/85 leading-relaxed font-normal">
+            Ambiente exclusivo de acolhimento, cuidado estético personalizado e acompanhamento clínico de excelência.
+          </p>
+          <div className="pt-3 border-t border-white/15 flex items-center justify-between text-[11px] text-white/60 tracking-wider">
+            <span className="uppercase font-semibold tracking-widest text-[#A8B29A]">
+              Dra. Sâmara Souza
+            </span>
+            <span className="text-[#8D9B7F]">Harmonização Facial & Corporal</span>
+          </div>
+        </div>
+      </section>
+
+      {/* 2. Right Form Column (Responsivo, com Alternância Login / Cadastro) */}
+      <section
+        aria-label="Formulário de Acesso"
+        className="w-full lg:w-1/2 flex flex-col justify-center items-center px-3 sm:px-8 xl:px-16 py-6 sm:py-8 overflow-y-auto scroll-momentum"
+      >
+        <div className="w-full max-w-[390px] sm:max-w-[420px] space-y-5 sm:space-y-6">
+          {/* Card visual compacto para telas mobile (< lg) */}
+          <div className="lg:hidden w-full h-36 sm:h-44 rounded-2xl sm:rounded-3xl overflow-hidden relative mb-1 border border-white/[0.1] shadow-lg shrink-0">
             <img
-              src="/Samara_logo.png"
-              alt="SS - Dra. Sâmara Souza"
-              className="w-11 h-11 object-contain dark:invert"
+              src="/relaxing-spa.jpg"
+              alt="Ambiente Relaxante Dra. Sâmara Souza"
+              className="w-full h-full object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#111111]/95 via-[#111111]/40 to-transparent" />
+            <div className="absolute bottom-3 left-4 right-4 text-left">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#111111]/70 backdrop-blur-md border border-white/10 text-[9px] font-semibold uppercase tracking-wider text-[#A8B29A] mb-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#A8B29A]" />
+                <span>Estética Avançada</span>
+              </div>
+              <span className="text-base font-bold text-white block">
+                Dra. Sâmara Souza
+              </span>
+            </div>
+          </div>
+
+          {/* Logo da Marca */}
+          <div className="flex items-center gap-3">
+            <img
+              src="/Samara_Logo_Completa.png"
+              alt="Dra. Sâmara Souza - Estética Avançada"
+              className="h-8 sm:h-9 object-contain dark:invert"
             />
           </div>
 
-          {/* Heading and Description */}
-          <h1 className="text-2xl font-bold text-black text-center tracking-tight mb-2">
-            Acesso Exclusivo
-          </h1>
-          <p className="text-[13px] text-[#6c6c6c] text-center leading-relaxed max-w-[310px] mb-6">
-            Prontuários clínicos, fichas de procedimentos e gestão estética da <strong>Dra. Sâmara Souza</strong>.
-          </p>
-
-          {/* Dica de credenciais para facilitar no celular */}
-          <div className="w-full mb-5 p-2.5 rounded-xl bg-[#f5f5f7] border border-black/[0.04] text-[11px] text-[#767676] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1.5 sm:gap-0">
-            <span className="break-all">Login: <strong>samara-nagy@hotmail.com</strong></span>
-            <span className="font-mono bg-white px-1.5 py-0.5 rounded border border-black/10 text-[10px] text-black font-semibold self-start sm:self-auto">samara123</span>
+          {/* Abas Alternadoras: Entrar vs Criar Conta */}
+          <div className="p-1 rounded-xl bg-[#232323] border border-white/[0.08] flex items-center">
+            <button
+              type="button"
+              onClick={() => {
+                setMode("login");
+                setIsError(false);
+              }}
+              className={`flex-1 h-10 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                mode === "login"
+                  ? "bg-[#A8B29A] text-[#111111] shadow-sm font-bold"
+                  : "text-[#8D9B7F] hover:text-white"
+              }`}
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              <span>Fazer Login</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMode("register");
+                setIsError(false);
+              }}
+              className={`flex-1 h-10 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                mode === "register"
+                  ? "bg-[#A8B29A] text-[#111111] shadow-sm font-bold"
+                  : "text-[#8D9B7F] hover:text-white"
+              }`}
+            >
+              <UserPlus className="w-3.5 h-3.5" />
+              <span>Criar Conta</span>
+            </button>
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="w-full space-y-4">
-            {/* Email Field */}
+          {/* Cabeçalho do Formulário */}
+          <div className="space-y-1">
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+              {mode === "login" ? "Acesse sua conta" : "Cadastre seu usuário"}
+            </h1>
+            <p className="text-xs sm:text-sm text-[#8D9B7F] leading-relaxed">
+              {mode === "login"
+                ? "Entre com suas credenciais para gerenciar sua clínica, agenda e prontuários."
+                : "Crie seu acesso profissional para personalizar seus horários, foto e serviços."}
+            </p>
+          </div>
+
+          {/* Banner de Erro com Animação Fluida */}
+          {isError && (
+            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-300 text-xs flex items-start gap-2.5 animate-in fade-in duration-200">
+              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <span className="font-semibold block">Atenção</span>
+                <span className="text-[11px] text-rose-200/90 leading-tight">
+                  {errorMessage}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Formulário */}
+          <form onSubmit={handleSubmit} className="space-y-3.5 pt-0.5">
+            {/* Campo Nome (Apenas em Modo Cadastro) */}
+            {mode === "register" && (
+              <div className="space-y-1.5 animate-in fade-in duration-200">
+                <label
+                  htmlFor="register-name"
+                  className="text-xs font-semibold text-[#F7F5F0] block"
+                >
+                  Nome profissional completo *
+                </label>
+                <div className="relative flex items-center h-[48px] px-3.5 rounded-xl bg-[#232323] border border-white/10 focus-within:border-[#A8B29A] focus-within:ring-2 focus-within:ring-[#A8B29A]/25 transition-all">
+                  <User className="w-4 h-4 text-[#8D9B7F] shrink-0 mr-3 pointer-events-none" />
+                  <input
+                    id="register-name"
+                    type="text"
+                    value={name}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                      if (isError) setIsError(false);
+                    }}
+                    placeholder="Ex: Dra. Sâmara Souza"
+                    className="w-full h-full bg-transparent text-sm text-white placeholder:text-[#666666] outline-none font-normal"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Campo E-mail */}
             <div className="space-y-1.5">
+              <label
+                htmlFor="login-email"
+                className="text-xs font-semibold text-[#F7F5F0] block"
+              >
+                E-mail profissional *
+              </label>
               <div
-                className={`relative flex items-center h-12 px-4 rounded-[14px] bg-[#f6f6f6] border transition-all duration-200 ${
+                className={`relative flex items-center h-[48px] px-3.5 rounded-xl bg-[#232323] border transition-all duration-200 ${
                   isError && (!email.trim() || !email.includes("@"))
-                    ? "border-[#e23014] is-shaking bg-red-50/20"
-                    : "border-transparent focus-within:border-black focus-within:bg-white focus-within:shadow-[0_2px_8px_rgba(0,0,0,0.04)]"
+                    ? "border-rose-500/50 bg-rose-950/20"
+                    : "border-white/10 focus-within:border-[#A8B29A] focus-within:ring-2 focus-within:ring-[#A8B29A]/25"
                 }`}
               >
-                <Mail className="w-4 h-4 text-[#8f8f8f] shrink-0 mr-3 pointer-events-none transition-colors" />
+                <Mail className="w-4 h-4 text-[#8D9B7F] shrink-0 mr-3 pointer-events-none" />
                 <input
+                  id="login-email"
                   type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="E-mail"
-                  className="w-full h-full bg-transparent text-[14px] text-black placeholder:text-[#8f8f8f] outline-none font-normal"
+                  inputMode="email"
                   autoComplete="email"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (isError) setIsError(false);
+                  }}
+                  placeholder="exemplo@samaraestetica.com.br"
+                  className="w-full h-full bg-transparent text-sm text-white placeholder:text-[#666666] outline-none font-normal"
                 />
               </div>
             </div>
 
-            {/* Password Field */}
+            {/* Campo Senha */}
             <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label
+                  htmlFor="login-password"
+                  className="text-xs font-semibold text-[#F7F5F0] block"
+                >
+                  Senha *
+                </label>
+                {mode === "login" && (
+                  <button
+                    type="button"
+                    onClick={handleForgotPassword}
+                    className="text-xs text-[#8D9B7F] hover:text-[#A8B29A] transition-colors cursor-pointer"
+                  >
+                    Esqueceu a senha?
+                  </button>
+                )}
+              </div>
+
               <div
-                className={`relative flex items-center h-12 px-4 rounded-[14px] bg-[#f6f6f6] border transition-all duration-200 ${
+                className={`relative flex items-center h-[48px] pl-3.5 pr-1 rounded-xl bg-[#232323] border transition-all duration-200 ${
                   isError && !password.trim()
-                    ? "border-[#e23014] is-shaking bg-red-50/20"
-                    : "border-transparent focus-within:border-black focus-within:bg-white focus-within:shadow-[0_2px_8px_rgba(0,0,0,0.04)]"
+                    ? "border-rose-500/50 bg-rose-950/20"
+                    : "border-white/10 focus-within:border-[#A8B29A] focus-within:ring-2 focus-within:ring-[#A8B29A]/25"
                 }`}
               >
-                <Lock className="w-4 h-4 text-[#8f8f8f] shrink-0 mr-3 pointer-events-none transition-colors" />
+                <Lock className="w-4 h-4 text-[#8D9B7F] shrink-0 mr-3 pointer-events-none" />
                 <input
+                  id="login-password"
                   type={showPassword ? "text" : "password"}
+                  autoComplete={mode === "login" ? "current-password" : "new-password"}
+                  spellCheck={false}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Senha"
-                  className="w-full h-full bg-transparent text-[14px] text-black placeholder:text-[#8f8f8f] outline-none font-normal"
-                  autoComplete="current-password"
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (isError) setIsError(false);
+                  }}
+                  placeholder="••••••••••••"
+                  className="w-full h-full bg-transparent text-sm text-white placeholder:text-[#666666] outline-none font-normal"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   tabIndex={-1}
-                  className="p-1 text-[#8f8f8f] hover:text-black transition-colors"
+                  className="w-10 h-10 flex items-center justify-center text-[#8D9B7F] hover:text-[#A8B29A] transition-colors cursor-pointer shrink-0 active:scale-90"
                   aria-label={showPassword ? "Ocultar senha" : "Ver senha"}
                 >
-                  {showPassword ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
-            {/* Error Message (transitions.dev P12 fade in/out) */}
-            {isError && (
-              <p className="text-[12px] text-[#d62b11] font-medium pt-1 animate-in fade-in duration-200">
-                {errorMessage}
-              </p>
+            {/* Campo Confirmar Senha (Modo Cadastro) */}
+            {mode === "register" && (
+              <div className="space-y-1.5 animate-in fade-in duration-200">
+                <label
+                  htmlFor="register-confirm-password"
+                  className="text-xs font-semibold text-[#F7F5F0] block"
+                >
+                  Confirmar senha *
+                </label>
+                <div className="relative flex items-center h-[48px] px-3.5 rounded-xl bg-[#232323] border border-white/10 focus-within:border-[#A8B29A] focus-within:ring-2 focus-within:ring-[#A8B29A]/25 transition-all">
+                  <Lock className="w-4 h-4 text-[#8D9B7F] shrink-0 mr-3 pointer-events-none" />
+                  <input
+                    id="register-confirm-password"
+                    type="password"
+                    autoComplete="new-password"
+                    value={confirmPassword}
+                    onChange={(e) => {
+                      setConfirmPassword(e.target.value);
+                      if (isError) setIsError(false);
+                    }}
+                    placeholder="Repita a senha criada"
+                    className="w-full h-full bg-transparent text-sm text-white placeholder:text-[#666666] outline-none font-normal"
+                  />
+                </div>
+              </div>
             )}
 
-            {/* Forgot Password Link */}
-            <div className="flex justify-end pt-1 pb-2">
+            {/* Botão de Ação Primário (Sage Green) */}
+            <div className="pt-2">
               <button
-                type="button"
-                onClick={() => alert("Instruções de recuperação foram enviadas para o seu e-mail cadastrado.")}
-                className="text-[13px] text-[#767676] hover:text-black font-medium transition-colors"
+                type="submit"
+                disabled={isLoading || isSuccess}
+                className="w-full h-[50px] rounded-xl bg-[#A8B29A] hover:bg-[#8D9B7F] active:bg-[#7a886c] text-[#111111] text-sm font-semibold flex items-center justify-center gap-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_8px_20px_-4px_rgba(168,178,154,0.25)] transition-all duration-150 active:scale-[0.98] cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
               >
-                Esqueceu a senha?
-              </button>
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading || isSuccess}
-              className="w-full h-12 rounded-[16px] bg-[#0d0d0d] hover:bg-[#262626] active:bg-black text-white text-[14px] font-medium flex items-center justify-center gap-2 shadow-[0_4px_14px_rgba(0,0,0,0.12)] transition-all duration-200 active:scale-[0.98] cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
-            >
-              {isLoading ? (
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : isSuccess ? (
-                <>
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  <span>Acesso autorizado</span>
-                </>
-              ) : (
-                <>
-                  <span>Começar</span>
-                  <ArrowRight className="w-4 h-4 opacity-70 group-hover:translate-x-0.5 transition-transform" />
-                </>
-              )}
-            </button>
-
-            {/* Quick Demo Fill Shortcut */}
-            <div className="pt-2 text-center">
-              <button
-                type="button"
-                onClick={() => {
-                  setEmail("samara-nagy@hotmail.com");
-                  setPassword("samara123");
-                }}
-                className="text-[12px] text-[#8f8f8f] hover:text-black transition-colors underline underline-offset-4"
-              >
-                Preencher credenciais da Dra. Sâmara
+                {isLoading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                    <span>{mode === "login" ? "Validando acesso..." : "Criando sua conta..."}</span>
+                  </div>
+                ) : isSuccess ? (
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#111111] stroke-[2.5]" />
+                    <span>{mode === "login" ? "Acesso Autorizado" : "Conta Criada!"}</span>
+                  </div>
+                ) : (
+                  <>
+                    <span>
+                      {mode === "login" ? "Entrar na plataforma" : "Criar Minha Conta e Configurar"}
+                    </span>
+                    <ArrowRight className="w-4 h-4 stroke-[2.2]" />
+                  </>
+                )}
               </button>
             </div>
           </form>
-        </div>
-      </main>
 
-      {/* Subtle footer credit */}
-      <footer className="absolute bottom-6 text-[12px] text-[#8f8f8f]">
-        © 2026 Dashboard Samara. Todos os direitos reservados.
-      </footer>
+          {/* Troca de modo no rodapé */}
+          <div className="text-center pt-1">
+            {mode === "login" ? (
+              <p className="text-xs text-[#8D9B7F]">
+                Não tem uma conta ainda?{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode("register");
+                    setIsError(false);
+                  }}
+                  className="text-white hover:text-[#A8B29A] font-semibold underline underline-offset-4 cursor-pointer"
+                >
+                  Cadastre-se agora
+                </button>
+              </p>
+            ) : (
+              <p className="text-xs text-[#8D9B7F]">
+                Já possui conta cadastrada?{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode("login");
+                    setIsError(false);
+                  }}
+                  className="text-white hover:text-[#A8B29A] font-semibold underline underline-offset-4 cursor-pointer"
+                >
+                  Faça login
+                </button>
+              </p>
+            )}
+          </div>
+
+          {/* Selo de Segurança e Criptografia */}
+          <div className="pt-2 flex items-center justify-center gap-2 text-[11px] text-[#8D9B7F]">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#A8B29A]" />
+            <span>Ambiente seguro com criptografia clínica ponta a ponta</span>
+          </div>
+
+          {/* Rodapé Institucional */}
+          <div className="pt-3 border-t border-white/[0.06] text-center space-y-1">
+            <p className="text-[10px] text-[#8D9B7F]">
+              © 2026 Dra. Sâmara Souza — Estética Avançada. Todos os direitos reservados.
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

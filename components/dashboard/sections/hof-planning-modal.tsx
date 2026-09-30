@@ -323,11 +323,11 @@ export function HofPlanningModal({
             </div>
 
             {/* 4. Ficha de Bioestimulador (Imagem 4: Área Trabalhada | ML) */}
-            <div className="space-y-3 p-4 rounded-2xl bg-purple-50/30 border border-purple-200">
+            <div className="space-y-3 p-4 rounded-2xl bg-[#A8B29A]/10 border border-[#A8B29A]/25">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-purple-700" />
-                  <h4 className="text-xs font-bold text-purple-950 uppercase tracking-wider">
+                  <Sparkles className="w-4 h-4 text-[#A8B29A]" />
+                  <h4 className="text-xs font-bold text-black dark:text-white uppercase tracking-wider">
                     Ficha de Bioestimulador (Áreas Trabalhadas & Dosagem em ML)
                   </h4>
                 </div>
@@ -343,7 +343,7 @@ export function HofPlanningModal({
 
               <div className="space-y-2">
                 {bioestimuladorSessions.map((session, idx) => (
-                  <div key={idx} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-white p-2.5 rounded-xl border border-purple-100 text-xs">
+                  <div key={idx} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-white dark:bg-[#1c1c1c] p-2.5 rounded-xl border border-black/[0.08] dark:border-white/[0.08] text-xs">
                     <input
                       type="text"
                       placeholder="Área trabalhada (ex: Terço Médio, Mandíbula)"

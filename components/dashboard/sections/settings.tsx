@@ -33,11 +33,24 @@ import {
   Server,
   CheckCircle2,
   BellRing,
+  Upload,
 } from "lucide-react";
 import { playNotificationSound } from "@/lib/sound";
 import { isFirebaseConfigured, firebaseConfig } from "@/lib/firebase";
 import { toast } from "sonner";
 import { KineticHeading, SuccessCheck, ThinkingDots, BorderBeam } from "@/components/motion";
+import {
+  isProduction,
+  clearDevTestData,
+  getStoredUserProfile,
+  setStoredUserProfile,
+  getStoredClinicSchedule,
+  setStoredClinicSchedule,
+  UserProfileData,
+  ClinicScheduleData,
+  DEFAULT_CLINIC_SCHEDULE,
+} from "@/lib/storage-keys";
+import { saveUserProfileToFirestore } from "@/lib/firebase-service";
 
 export function SettingsSection() {
   const [activeTab, setActiveTab] = useState("profile");
@@ -67,7 +80,16 @@ export function SettingsSection() {
   };
 
   // Profile State
-  const [profile, setProfile] = useState({
+  const [profile, setProfile] = useState<{
+    name: string;
+    role: string;
+    email: string;
+    phone: string;
+    crbm: string;
+    clinicAddress: string;
+    businessHours: string;
+    photoUrl?: string;
+  }>({
     name: "Dra. Sâmara",
     role: "Biomédica Esteta • Harmonização Facial e Corporal",
     email: "samara-nagy@hotmail.com",
@@ -76,6 +98,49 @@ export function SettingsSection() {
     clinicAddress: "Rua Oscar Freire, 1200 - Sala 42, Jardins - São Paulo, SP",
     businessHours: "Segunda a Sexta: 08:00 às 19:00 | Sábado: 08:00 às 14:00",
   });
+
+  // Clinic Schedule State
+  const [schedule, setSchedule] = useState<ClinicScheduleData>(DEFAULT_CLINIC_SCHEDULE);
+
+  useEffect(() => {
+    const savedProf = getStoredUserProfile();
+    if (savedProf) {
+      setProfile((prev) => ({
+        ...prev,
+        name: savedProf.name || prev.name,
+        email: savedProf.email || prev.email,
+        role: savedProf.title || prev.role,
+        crbm: savedProf.crm || prev.crbm,
+        phone: savedProf.phone || prev.phone,
+        photoUrl: savedProf.photoUrl || prev.photoUrl,
+      }));
+    }
+    const savedSched = getStoredClinicSchedule();
+    if (savedSched) {
+      setSchedule(savedSched);
+    }
+  }, []);
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const b64 = event.target?.result as string;
+      setProfile((prev) => ({ ...prev, photoUrl: b64 }));
+      setStoredUserProfile({
+        name: profile.name,
+        email: profile.email,
+        title: profile.role,
+        crm: profile.crbm,
+        phone: profile.phone,
+        photoUrl: b64,
+      });
+      saveUserProfileToFirestore({ photoUrl: b64 });
+      toast.success("Foto de perfil atualizada com sucesso!");
+    };
+    reader.readAsDataURL(file);
+  };
 
   // Notifications State
   const [notificationConfig, setNotificationConfig] = useState({
@@ -143,14 +208,37 @@ export function SettingsSection() {
     }
   };
 
-  const handleSaveProfile = () => {
+  const handleSaveProfile = async () => {
     setIsSaving(true);
     setSaveSuccess(false);
-    setTimeout(() => {
+
+    try {
+      const userProf: UserProfileData = {
+        name: profile.name,
+        email: profile.email,
+        title: profile.role,
+        crm: profile.crbm,
+        phone: profile.phone,
+        photoUrl: profile.photoUrl,
+        bio: profile.businessHours,
+      };
+      setStoredUserProfile(userProf);
+      setStoredClinicSchedule(schedule);
+      await saveUserProfileToFirestore({
+        ...userProf,
+        clinicAddress: profile.clinicAddress,
+        businessHours: profile.businessHours,
+        schedule,
+      });
+
       setIsSaving(false);
       setSaveSuccess(true);
+      toast.success("Perfil e preferências salvos com sucesso!");
       setTimeout(() => setSaveSuccess(false), 2500);
-    }, 800);
+    } catch (e) {
+      setIsSaving(false);
+      toast.error("Erro ao salvar perfil.");
+    }
   };
 
   const handleSavePassword = (e: React.FormEvent) => {
@@ -257,11 +345,17 @@ export function SettingsSection() {
               {/* Avatar e Identidade Profissional */}
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5">
                 <div className="flex items-center gap-3.5">
-                  <Avatar className="w-14 h-14 sm:w-16 sm:h-16 bg-black text-white shadow-sm border border-black/10 shrink-0">
-                    <AvatarFallback className="bg-black text-white text-base sm:text-lg font-bold">
-                      DS
-                    </AvatarFallback>
-                  </Avatar>
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden bg-black text-white shadow-sm border-2 border-[#A8B29A] shrink-0 flex items-center justify-center">
+                    {profile.photoUrl ? (
+                      <img
+                        src={profile.photoUrl}
+                        alt={profile.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-base sm:text-lg font-bold">DS</span>
+                    )}
+                  </div>
                   <div className="space-y-1 sm:hidden">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-bold text-foreground">
@@ -271,13 +365,18 @@ export function SettingsSection() {
                         Administradora
                       </span>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-7 px-2.5 text-[11px] font-medium cursor-pointer active:scale-95"
-                    >
-                      Alterar Foto
-                    </Button>
+                    <label className="cursor-pointer inline-block">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handlePhotoUpload}
+                      />
+                      <span className="h-7 px-2.5 text-[11px] font-medium border border-border rounded-lg inline-flex items-center gap-1 hover:bg-secondary/60 transition-colors">
+                        <Upload className="w-3 h-3" />
+                        Alterar Foto
+                      </span>
+                    </label>
                   </div>
                 </div>
 
@@ -293,13 +392,18 @@ export function SettingsSection() {
                   <p className="text-xs text-muted-foreground leading-relaxed break-words">
                     {profile.role}
                   </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="hidden sm:inline-flex h-7 text-xs font-medium mt-1 cursor-pointer active:scale-95"
-                  >
-                    Alterar Foto
-                  </Button>
+                  <label className="hidden sm:inline-block cursor-pointer mt-1">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handlePhotoUpload}
+                    />
+                    <span className="h-7 px-2.5 text-xs font-medium border border-border rounded-lg inline-flex items-center gap-1 hover:bg-secondary/60 transition-colors">
+                      <Upload className="w-3 h-3" />
+                      Alterar Foto de Perfil
+                    </span>
+                  </label>
                 </div>
               </div>
 
@@ -502,7 +606,7 @@ export function SettingsSection() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <CardTitle className="text-sm font-bold text-foreground flex items-center gap-2">
-                    <Volume2 className="w-4 h-4 text-purple-600" />
+                    <Volume2 className="w-4 h-4 text-[#A8B29A]" />
                     Som de Notificação Oficial
                   </CardTitle>
                   <CardDescription className="text-xs mt-0.5">
@@ -520,13 +624,13 @@ export function SettingsSection() {
                     onClick={handleTestSound}
                     className="h-9 sm:h-8 px-3 rounded-xl text-xs font-semibold border-border hover:bg-secondary flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95 flex-1 sm:flex-none justify-center"
                   >
-                    <Volume2 className="w-3.5 h-3.5 text-purple-600" />
+                    <Volume2 className="w-3.5 h-3.5 text-[#A8B29A]" />
                     <span>Ouvir Som</span>
                   </Button>
                   <Button
                     type="button"
                     onClick={() => handleTestToast("today")}
-                    className="h-9 sm:h-8 px-3 rounded-xl text-xs font-semibold bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95 flex-1 sm:flex-none justify-center"
+                    className="h-9 sm:h-8 px-3 rounded-xl text-xs font-semibold bg-[#A8B29A] hover:bg-[#8D9B7F] text-[#111111] flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95 flex-1 sm:flex-none justify-center"
                   >
                     <Bell className="w-3.5 h-3.5" />
                     <span>Testar Toast</span>
@@ -560,12 +664,12 @@ export function SettingsSection() {
           </Card>
 
           {/* Card: Teste Completo de Notificações em Tela (Toast) */}
-          <Card className="border-border bg-card shadow-sm rounded-2xl border-l-4 border-l-purple-600">
+          <Card className="border-border bg-card shadow-sm rounded-2xl border-l-4 border-l-[#A8B29A]">
             <CardHeader className="pb-3">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <CardTitle className="text-sm font-bold text-foreground flex items-center gap-2">
-                    <BellRing className="w-4 h-4 text-purple-600" />
+                    <BellRing className="w-4 h-4 text-[#A8B29A]" />
                     Central de Teste de Notificações (Toast)
                   </CardTitle>
                   <CardDescription className="text-xs mt-0.5">
@@ -672,7 +776,7 @@ export function SettingsSection() {
               {/* 2. Retorno de 15 Dias */}
               <div className="flex items-start sm:items-center justify-between p-3.5 rounded-xl bg-secondary/30 border border-border gap-3">
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-8 h-8 rounded-lg bg-[#A8B29A]/15 text-[#A8B29A] flex items-center justify-center shrink-0 mt-0.5">
                     <Sparkles className="w-4 h-4" />
                   </div>
                   <div>
@@ -1022,6 +1126,69 @@ export function SettingsSection() {
                     </span>
                   </div>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Card de Isolamento de Dados: Dev vs Produção */}
+          <Card className="border-border bg-card shadow-sm rounded-2xl">
+            <CardHeader className="pb-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <CardTitle className="text-sm font-bold text-foreground flex items-center gap-2">
+                    <Server className="w-4 h-4 text-black dark:text-white" />
+                    Isolamento de Dados & Ambiente
+                  </CardTitle>
+                  <CardDescription className="text-xs mt-1">
+                    Separação estrita dos dados de teste locais e a base clínica real de produção.
+                  </CardDescription>
+                </div>
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-bold shrink-0 self-start sm:self-auto ${
+                    isProduction
+                      ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800"
+                      : "bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800"
+                  }`}
+                >
+                  {isProduction ? "🟢 Modo Produção (Clínica Real)" : "🟡 Modo Desenvolvimento (Testes)"}
+                </span>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="p-3.5 rounded-xl bg-secondary/40 border border-border text-xs leading-relaxed text-muted-foreground">
+                {isProduction ? (
+                  <p>
+                    O sistema está operando em <strong>Produção</strong> com isolamento <code>samara_prod_*</code>. Todos os dados contabilizados nos relatórios e prontuários pertencem exclusivamente a atendimentos reais da Dra. Sâmara.
+                  </p>
+                ) : (
+                  <p>
+                    O sistema está operando em <strong>Desenvolvimento</strong> (<code>samara_dev_*</code>). Agendamentos e faturamentos de teste estão isolados e nunca poluirão o build ou banco final da clínica.
+                  </p>
+                )}
+              </div>
+
+              <div className="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-border">
+                <div>
+                  <span className="text-xs font-bold text-foreground block">
+                    Resetar Atendimentos e Dados de Teste
+                  </span>
+                  <span className="text-[11px] text-muted-foreground">
+                    Zera os agendamentos e pacientes de teste locais sem afetar procedimentos ou configurações.
+                  </span>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    if (confirm("Tem certeza de que deseja limpar todos os agendamentos e clientes de teste locais?")) {
+                      clearDevTestData();
+                      toast.success("Dados de teste resetados com sucesso! O Kanban e relatórios foram limpos.");
+                    }
+                  }}
+                  className="text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 border-rose-200 dark:border-rose-900/50 cursor-pointer h-9 px-4 shrink-0 active:scale-95"
+                >
+                  Limpar Dados de Teste
+                </Button>
               </div>
             </CardContent>
           </Card>

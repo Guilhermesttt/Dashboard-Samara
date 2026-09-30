@@ -7,11 +7,11 @@ import { Users2 } from "lucide-react";
 export function PipelineOverview() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [stagesData, setStagesData] = useState([
-    { name: "Agendados / Espera", count: 0, percentage: 0, color: "bg-blue-600" },
-    { name: "Confirmados", count: 0, percentage: 0, color: "bg-emerald-600" },
-    { name: "Em Atendimento", count: 0, percentage: 0, color: "bg-purple-600" },
-    { name: "Retorno 15 Dias", count: 0, percentage: 0, color: "bg-amber-600" },
-    { name: "Concluído", count: 0, percentage: 0, color: "bg-neutral-800 dark:bg-neutral-200" },
+    { name: "Agendados / Espera", count: 0, percentage: 0, color: "bg-[#8D9B7F]" },
+    { name: "Confirmados", count: 0, percentage: 0, color: "bg-[#A8B29A]" },
+    { name: "Em Atendimento", count: 0, percentage: 0, color: "bg-[#FFFFFF]" },
+    { name: "Retorno 15 Dias", count: 0, percentage: 0, color: "bg-[#F7F5F0]" },
+    { name: "Concluído", count: 0, percentage: 0, color: "bg-[#333333]" },
   ]);
   const [totalAppointments, setTotalAppointments] = useState(0);
 
@@ -33,22 +33,22 @@ export function PipelineOverview() {
 
         const calcPct = (cnt: number) => (total > 0 ? Math.round((cnt / total) * 100) : 0);
 
-        setStagesData([
-          { name: "Agendados / Espera", count: agendados, percentage: calcPct(agendados), color: "bg-blue-600" },
-          { name: "Retorno 15 Dias", count: retornos, percentage: calcPct(retornos), color: "bg-amber-600" },
-          { name: "Confirmados", count: confirmados, percentage: calcPct(confirmados), color: "bg-emerald-600" },
-          { name: "Em Atendimento", count: emAtendimento, percentage: calcPct(emAtendimento), color: "bg-purple-600" },
-          { name: "Concluído", count: concluidos, percentage: calcPct(concluidos), color: "bg-neutral-800 dark:bg-neutral-200" },
-        ]);
-      }
-    } catch (e) {}
+          setStagesData([
+            { name: "Agendados / Espera", count: agendados, percentage: calcPct(agendados), color: "bg-[#8D9B7F]" },
+            { name: "Confirmados", count: confirmados, percentage: calcPct(confirmados), color: "bg-[#A8B29A]" },
+            { name: "Em Atendimento", count: emAtendimento, percentage: calcPct(emAtendimento), color: "bg-[#FFFFFF]" },
+            { name: "Retorno 15 Dias", count: retornos, percentage: calcPct(retornos), color: "bg-[#F7F5F0]" },
+            { name: "Concluído", count: concluidos, percentage: calcPct(concluidos), color: "bg-[#333333]" },
+          ]);
+        }
+      } catch (e) {}
 
-    const timer = setTimeout(() => setIsLoaded(true), 300);
-    return () => clearTimeout(timer);
-  }, []);
+      const timer = setTimeout(() => setIsLoaded(true), 300);
+      return () => clearTimeout(timer);
+    }, []);
 
-  return (
-    <div className="bg-white dark:bg-[#121212] border border-border dark:border-white/[0.08] rounded-2xl p-5 h-[380px] shadow-sm flex flex-col justify-between">
+    return (
+      <div className="bg-white dark:bg-[#232323] border border-border dark:border-white/[0.08] rounded-2xl p-5 h-[380px] shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_20px_rgba(0,0,0,0.4)] flex flex-col justify-between">
       <div>
         <div className="mb-4">
           <h3 className="text-base font-semibold text-black dark:text-white">

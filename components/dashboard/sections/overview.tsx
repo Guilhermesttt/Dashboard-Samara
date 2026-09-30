@@ -59,17 +59,18 @@ export function OverviewSection() {
 
   return (
     <div data-dashboard-section="overview" className="w-full min-w-0 max-w-full space-y-6 pb-24 md:pb-8">
-      {/* Header — mesmo padrão das demais seções */}
+      {/* Header — mesmo padrão editorial da tela de login */}
       <div className="space-y-2">
-        <div className="flex items-center gap-1.5 text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">
-          <LayoutDashboard className="w-3.5 h-3.5 text-black dark:text-white" />
-          <span>Painel da Clínica</span>
+        <div className="flex items-center gap-2 text-xs text-[#767676] dark:text-[#8D9B7F] font-medium">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#A8B29A] animate-pulse" />
+          <LayoutDashboard className="w-3.5 h-3.5 text-black dark:text-[#A8B29A]" />
+          <span>Painel da Clínica • Dra. Sâmara Souza</span>
         </div>
         <KineticHeading
           text="Visão Geral"
-          className="text-2xl sm:text-3xl font-bold text-black dark:text-white"
+          className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-black dark:text-white"
         />
-        <p className="text-xs sm:text-sm text-[#6c6c6c] dark:text-[#a1a1aa] leading-relaxed">
+        <p className="text-xs sm:text-sm text-[#6c6c6c] dark:text-[#8D9B7F] leading-relaxed">
           Faturamento, pacientes e fluxo de atendimentos da Dra. Sâmara.
         </p>
       </div>

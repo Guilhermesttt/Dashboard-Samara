@@ -120,83 +120,83 @@ export function BotoxApplicationModal({
       >
         <div
           onClick={(e) => e.stopPropagation()}
-          className="bg-white rounded-t-[28px] sm:rounded-[24px] border-t sm:border border-black/[0.08] shadow-[0_24px_48px_-16px_rgba(0,0,0,0.25)] w-full max-w-[760px] max-h-[92vh] flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-150"
+          className="bg-white dark:bg-[#121214] rounded-t-[28px] sm:rounded-[24px] border-t sm:border border-black/[0.08] dark:border-white/[0.08] shadow-[0_24px_48px_-16px_rgba(0,0,0,0.25)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_32px_64px_rgba(0,0,0,0.8)] w-full max-w-[760px] max-h-[92vh] flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-150"
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-black/[0.06] bg-white">
+          <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-[#121214]">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-black text-white flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-[#9ca889] text-[#070707] flex items-center justify-center shrink-0 font-bold shadow-sm">
                 <Sparkles className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base sm:text-lg font-bold text-black tracking-tight">
+                <h3 className="text-base sm:text-lg font-bold text-black dark:text-white tracking-tight">
                   Ficha de Aplicação BOTOX (Modelo Clínico)
                 </h3>
-                <p className="text-xs text-[#767676]">
-                  Paciente: <strong className="text-black">{patientName}</strong> • Mapeamento Muscular de Unidades
+                <p className="text-xs text-[#767676] dark:text-[#a0a0a0]">
+                  Paciente: <strong className="text-black dark:text-white">{patientName}</strong> • Mapeamento Muscular de Unidades
                 </p>
               </div>
             </div>
 
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-full bg-[#f4f4f4] hover:bg-[#ebebeb] flex items-center justify-center text-[#8f8f8f] hover:text-black transition-colors cursor-pointer"
+              className="w-8 h-8 rounded-full bg-[#f4f4f4] dark:bg-[#1c1c1e] hover:bg-[#ebebeb] dark:hover:bg-[#2c2c2e] flex items-center justify-center text-[#8f8f8f] hover:text-black dark:hover:text-white transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
           {/* Body */}
-          <form onSubmit={handleSave} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
+          <form onSubmit={handleSave} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 bg-white dark:bg-[#0c0c0e]">
             {/* Dados do Produto (Imagem 2) */}
-            <div className="p-4 rounded-2xl bg-[#fafafa] border border-black/[0.06] space-y-3">
-              <h4 className="text-xs font-bold text-black uppercase tracking-wider">
+            <div className="p-4 rounded-2xl bg-[#fafafa] dark:bg-[#141416] border border-black/[0.06] dark:border-white/[0.08] space-y-3">
+              <h4 className="text-xs font-bold text-black dark:text-white uppercase tracking-wider">
                 Dados do Produto & Rastreabilidade
               </h4>
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-xs">
                 <div>
-                  <label className="text-[11px] text-[#767676] block mb-1">Data Diluição</label>
+                  <label className="text-[11px] text-[#767676] dark:text-[#a0a0a0] block mb-1">Data Diluição</label>
                   <input
                     type="text"
                     value={dilutionDate}
                     onChange={(e) => setDilutionDate(e.target.value)}
-                    className="w-full h-11 sm:h-8 px-2 rounded-lg bg-white border border-black/10 text-base sm:text-xs text-black font-medium"
+                    className="w-full h-11 sm:h-8 px-2 rounded-lg bg-white dark:bg-[#1c1c1e] border border-black/10 dark:border-white/10 text-base sm:text-xs text-black dark:text-white font-medium focus:border-[#9ca889] outline-none"
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] text-[#767676] block mb-1">Volume Diluição</label>
+                  <label className="text-[11px] text-[#767676] dark:text-[#a0a0a0] block mb-1">Volume Diluição</label>
                   <input
                     type="text"
                     value={dilutionVolume}
                     onChange={(e) => setDilutionVolume(e.target.value)}
-                    className="w-full h-11 sm:h-8 px-2 rounded-lg bg-white border border-black/10 text-base sm:text-xs text-black font-medium"
+                    className="w-full h-11 sm:h-8 px-2 rounded-lg bg-white dark:bg-[#1c1c1e] border border-black/10 dark:border-white/10 text-base sm:text-xs text-black dark:text-white font-medium focus:border-[#9ca889] outline-none"
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] text-[#767676] block mb-1">Nº do Lote</label>
+                  <label className="text-[11px] text-[#767676] dark:text-[#a0a0a0] block mb-1">Nº do Lote</label>
                   <input
                     type="text"
                     value={lotNumber}
                     onChange={(e) => setLotNumber(e.target.value)}
-                    className="w-full h-11 sm:h-8 px-2 rounded-lg bg-white border border-black/10 text-base sm:text-xs text-black font-mono font-medium"
+                    className="w-full h-11 sm:h-8 px-2 rounded-lg bg-white dark:bg-[#1c1c1e] border border-black/10 dark:border-white/10 text-base sm:text-xs text-black dark:text-white font-mono font-medium focus:border-[#9ca889] outline-none"
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] text-[#767676] block mb-1">Validade</label>
+                  <label className="text-[11px] text-[#767676] dark:text-[#a0a0a0] block mb-1">Validade</label>
                   <input
                     type="text"
                     value={expiryDate}
                     onChange={(e) => setExpiryDate(e.target.value)}
-                    className="w-full h-11 sm:h-8 px-2 rounded-lg bg-white border border-black/10 text-base sm:text-xs text-black font-medium"
+                    className="w-full h-11 sm:h-8 px-2 rounded-lg bg-white dark:bg-[#1c1c1e] border border-black/10 dark:border-white/10 text-base sm:text-xs text-black dark:text-white font-medium focus:border-[#9ca889] outline-none"
                   />
                 </div>
                 <div className="col-span-2 sm:col-span-1">
-                  <label className="text-[11px] text-[#767676] block mb-1">Data Aplicação</label>
+                  <label className="text-[11px] text-[#767676] dark:text-[#a0a0a0] block mb-1">Data Aplicação</label>
                   <input
                     type="text"
                     value={applicationDate}
                     onChange={(e) => setApplicationDate(e.target.value)}
-                    className="w-full h-11 sm:h-8 px-2 rounded-lg bg-white border border-black/10 text-base sm:text-xs text-black font-medium"
+                    className="w-full h-11 sm:h-8 px-2 rounded-lg bg-white dark:bg-[#1c1c1e] border border-black/10 dark:border-white/10 text-base sm:text-xs text-black dark:text-white font-medium focus:border-[#9ca889] outline-none"
                   />
                 </div>
               </div>
@@ -206,23 +206,23 @@ export function BotoxApplicationModal({
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-xs font-bold text-black uppercase tracking-wider">
+                  <h4 className="text-xs font-bold text-black dark:text-white uppercase tracking-wider">
                     Regiões & Pontos de Aplicação (Músculos Faciais)
                   </h4>
-                  <p className="text-[11px] text-[#767676]">
+                  <p className="text-[11px] text-[#767676] dark:text-[#a0a0a0]">
                     Conforme Ficha Oficial de Aplicação BOTOX (Imagem 2). Total calculado em tempo real.
                   </p>
                 </div>
-                <div className="flex items-center gap-2 bg-black text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm">
+                <div className="flex items-center gap-2 bg-[#9ca889] text-[#070707] px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm">
                   <span>Total Aplicado:</span>
-                  <span className="text-sm font-black text-emerald-400">{totalUnits} U</span>
+                  <span className="text-sm font-black text-[#070707]">{totalUnits} U</span>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
                 {/* Tabela dos 14 Músculos (Imagem 2) */}
-                <div className="lg:col-span-7 border border-black/[0.08] rounded-2xl overflow-hidden divide-y divide-black/[0.04] bg-white shadow-sm">
-                  <div className="grid grid-cols-12 bg-[#f6f6f6] px-3.5 py-2 text-xs font-bold text-black">
+                <div className="lg:col-span-7 border border-black/[0.08] dark:border-white/[0.08] rounded-2xl overflow-hidden divide-y divide-black/[0.04] dark:divide-white/[0.04] bg-white dark:bg-[#141416] shadow-sm">
+                  <div className="grid grid-cols-12 bg-[#f6f6f6] dark:bg-[#1c1c1e] px-3.5 py-2 text-xs font-bold text-black dark:text-white">
                     <span className="col-span-7">Músculo Facial</span>
                     <span className="col-span-5 text-right">Dosagem (Unidades U)</span>
                   </div>
@@ -234,16 +234,16 @@ export function BotoxApplicationModal({
                         <div
                           key={m.key}
                           className={`grid grid-cols-12 items-center px-3.5 py-1.5 text-xs transition-colors ${
-                            isActive ? "bg-purple-50/20" : "hover:bg-[#fafafa]"
+                            isActive ? "bg-[#9ca889]/10" : "hover:bg-[#fafafa] dark:hover:bg-white/[0.03]"
                           }`}
                         >
                           <div className="col-span-7 flex items-center gap-2">
                             <span
                               className={`w-2 h-2 rounded-full ${
-                                isActive ? "bg-purple-600" : "bg-black/20"
+                                isActive ? "bg-[#9ca889]" : "bg-black/20 dark:bg-white/20"
                               }`}
                             />
-                            <span className={`font-medium ${isActive ? "text-black font-semibold" : "text-[#525252]"}`}>
+                            <span className={`font-medium ${isActive ? "text-black dark:text-white font-semibold" : "text-[#525252] dark:text-[#a0a0a0]"}`}>
                               {m.label}
                             </span>
                           </div>
@@ -256,7 +256,7 @@ export function BotoxApplicationModal({
                                   [m.key]: Math.max(0, val - 2),
                                 })
                               }
-                              className="w-6 h-6 rounded bg-[#f4f4f4] hover:bg-[#e8e8e8] text-xs font-bold text-black flex items-center justify-center cursor-pointer"
+                              className="w-6 h-6 rounded bg-[#f4f4f4] dark:bg-[#222] hover:bg-[#e8e8e8] dark:hover:bg-[#333] text-xs font-bold text-black dark:text-white flex items-center justify-center cursor-pointer"
                             >
                               -
                             </button>
@@ -271,7 +271,7 @@ export function BotoxApplicationModal({
                                   [m.key]: parseInt(e.target.value) || 0,
                                 })
                               }
-                              className="w-14 h-7 text-center px-1 font-bold text-black bg-[#f7f7f7] border border-black/10 rounded-lg focus:border-black outline-none text-xs"
+                              className="w-14 h-7 text-center px-1 font-bold text-black dark:text-white bg-[#f7f7f7] dark:bg-[#1c1c1e] border border-black/10 dark:border-white/10 rounded-lg focus:border-[#9ca889] outline-none text-xs"
                             />
                             <button
                               type="button"
@@ -281,11 +281,11 @@ export function BotoxApplicationModal({
                                   [m.key]: val + 2,
                                 })
                               }
-                              className="w-6 h-6 rounded bg-[#f4f4f4] hover:bg-[#e8e8e8] text-xs font-bold text-black flex items-center justify-center cursor-pointer"
+                              className="w-6 h-6 rounded bg-[#f4f4f4] dark:bg-[#222] hover:bg-[#e8e8e8] dark:hover:bg-[#333] text-xs font-bold text-black dark:text-white flex items-center justify-center cursor-pointer"
                             >
                               +
                             </button>
-                            <span className="text-[11px] font-bold text-[#8f8f8f] w-3 text-right">U</span>
+                            <span className="text-[11px] font-bold text-[#8f8f8f] dark:text-[#666] w-3 text-right">U</span>
                           </div>
                         </div>
                       );
@@ -294,17 +294,17 @@ export function BotoxApplicationModal({
                 </div>
 
                 {/* Mapa Anatômico Ilustrado: PONTOS DE APLICAÇÃO (Imagem 2) */}
-                <div className="lg:col-span-5 p-4 rounded-2xl bg-[#fafafa] border border-black/[0.08] flex flex-col items-center justify-center space-y-3">
-                  <div className="w-full flex items-center justify-between pb-2 border-b border-black/[0.06]">
-                    <span className="text-[11px] font-bold text-black uppercase tracking-wider flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+                <div className="lg:col-span-5 p-4 rounded-2xl bg-[#fafafa] dark:bg-[#141416] border border-black/[0.08] dark:border-white/[0.08] flex flex-col items-center justify-center space-y-3">
+                  <div className="w-full flex items-center justify-between pb-2 border-b border-black/[0.06] dark:border-white/[0.08]">
+                    <span className="text-[11px] font-bold text-black dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-[#9ca889]" />
                       Pontos de Aplicação Facial
                     </span>
-                    <span className="text-[10px] text-[#8f8f8f]">Mapa Anatômico</span>
+                    <span className="text-[10px] text-[#8f8f8f] dark:text-[#a0a0a0]">Mapa Anatômico</span>
                   </div>
 
                   {/* Face Vector Visualizer with Real Points */}
-                  <div className="relative w-[220px] h-[270px] bg-white rounded-2xl border border-black/[0.06] shadow-inner p-2 flex items-center justify-center overflow-hidden">
+                  <div className="relative w-[220px] h-[270px] bg-white dark:bg-[#070707] rounded-2xl border border-black/[0.06] dark:border-white/[0.08] shadow-inner p-2 flex items-center justify-center overflow-hidden">
                     {/* SVG Base Face Contour */}
                     <svg viewBox="0 0 200 250" className="w-full h-full text-black/[0.15]">
                       {/* Cranium & Jaw Outline */}
@@ -344,7 +344,7 @@ export function BotoxApplicationModal({
                         muscles.frontal > 0 ? "scale-105" : "opacity-40"
                       }`}
                     >
-                      <span className="w-4 h-4 rounded-full bg-purple-600 text-white font-bold text-[9px] flex items-center justify-center shadow-md">
+                      <span className="w-4 h-4 rounded-full bg-[#A8B29A] text-[#111111] font-bold text-[9px] flex items-center justify-center shadow-md">
                         {muscles.frontal > 0 ? muscles.frontal : "F"}
                       </span>
                     </div>
@@ -356,7 +356,7 @@ export function BotoxApplicationModal({
                         muscles.procero > 0 ? "scale-110" : "opacity-40"
                       }`}
                     >
-                      <span className="w-3.5 h-3.5 rounded-full bg-indigo-600 text-white font-bold text-[8px] flex items-center justify-center shadow">
+                      <span className="w-3.5 h-3.5 rounded-full bg-[#8D9B7F] text-white font-bold text-[8px] flex items-center justify-center shadow">
                         {muscles.procero > 0 ? muscles.procero : "P"}
                       </span>
                     </div>
@@ -368,7 +368,7 @@ export function BotoxApplicationModal({
                         muscles.corrugadorEsq > 0 ? "scale-110" : "opacity-40"
                       }`}
                     >
-                      <span className="w-3.5 h-3.5 rounded-full bg-indigo-600 text-white font-bold text-[8px] flex items-center justify-center shadow">
+                      <span className="w-3.5 h-3.5 rounded-full bg-[#8D9B7F] text-white font-bold text-[8px] flex items-center justify-center shadow">
                         {muscles.corrugadorEsq > 0 ? muscles.corrugadorEsq : "C"}
                       </span>
                     </div>
@@ -378,7 +378,7 @@ export function BotoxApplicationModal({
                         muscles.corrugadorDir > 0 ? "scale-110" : "opacity-40"
                       }`}
                     >
-                      <span className="w-3.5 h-3.5 rounded-full bg-indigo-600 text-white font-bold text-[8px] flex items-center justify-center shadow">
+                      <span className="w-3.5 h-3.5 rounded-full bg-[#8D9B7F] text-white font-bold text-[8px] flex items-center justify-center shadow">
                         {muscles.corrugadorDir > 0 ? muscles.corrugadorDir : "C"}
                       </span>
                     </div>
@@ -390,7 +390,7 @@ export function BotoxApplicationModal({
                         muscles.orbicularOlhoEsq > 0 ? "scale-110" : "opacity-40"
                       }`}
                     >
-                      <span className="w-3.5 h-3.5 rounded-full bg-rose-600 text-white font-bold text-[8px] flex items-center justify-center shadow">
+                      <span className="w-3.5 h-3.5 rounded-full bg-[#A8B29A] text-[#111111] font-bold text-[8px] flex items-center justify-center shadow">
                         {muscles.orbicularOlhoEsq > 0 ? muscles.orbicularOlhoEsq : "O"}
                       </span>
                     </div>
@@ -400,7 +400,7 @@ export function BotoxApplicationModal({
                         muscles.orbicularOlhoDir > 0 ? "scale-110" : "opacity-40"
                       }`}
                     >
-                      <span className="w-3.5 h-3.5 rounded-full bg-rose-600 text-white font-bold text-[8px] flex items-center justify-center shadow">
+                      <span className="w-3.5 h-3.5 rounded-full bg-[#A8B29A] text-[#111111] font-bold text-[8px] flex items-center justify-center shadow">
                         {muscles.orbicularOlhoDir > 0 ? muscles.orbicularOlhoDir : "O"}
                       </span>
                     </div>
@@ -412,7 +412,7 @@ export function BotoxApplicationModal({
                         muscles.nasal > 0 ? "scale-110" : "opacity-30"
                       }`}
                     >
-                      <span className="w-3.5 h-3.5 rounded-full bg-amber-600 text-white font-bold text-[8px] flex items-center justify-center shadow">
+                      <span className="w-3.5 h-3.5 rounded-full bg-[#F7F5F0] text-[#111111] font-bold text-[8px] flex items-center justify-center shadow">
                         {muscles.nasal > 0 ? muscles.nasal : "N"}
                       </span>
                     </div>
@@ -424,7 +424,7 @@ export function BotoxApplicationModal({
                         muscles.mentoniano > 0 ? "scale-110" : "opacity-30"
                       }`}
                     >
-                      <span className="w-3.5 h-3.5 rounded-full bg-emerald-600 text-white font-bold text-[8px] flex items-center justify-center shadow">
+                      <span className="w-3.5 h-3.5 rounded-full bg-[#A8B29A] text-[#111111] font-bold text-[8px] flex items-center justify-center shadow">
                         {muscles.mentoniano > 0 ? muscles.mentoniano : "M"}
                       </span>
                     </div>
@@ -436,7 +436,7 @@ export function BotoxApplicationModal({
                         muscles.masseter > 0 ? "scale-110" : "opacity-30"
                       }`}
                     >
-                      <span className="w-3.5 h-3.5 rounded-full bg-blue-600 text-white font-bold text-[8px] flex items-center justify-center shadow">
+                      <span className="w-3.5 h-3.5 rounded-full bg-[#8D9B7F] text-white font-bold text-[8px] flex items-center justify-center shadow">
                         {muscles.masseter > 0 ? muscles.masseter : "M"}
                       </span>
                     </div>
@@ -446,7 +446,7 @@ export function BotoxApplicationModal({
                         muscles.masseter > 0 ? "scale-110" : "opacity-30"
                       }`}
                     >
-                      <span className="w-3.5 h-3.5 rounded-full bg-blue-600 text-white font-bold text-[8px] flex items-center justify-center shadow">
+                      <span className="w-3.5 h-3.5 rounded-full bg-[#8D9B7F] text-white font-bold text-[8px] flex items-center justify-center shadow">
                         {muscles.masseter > 0 ? muscles.masseter : "M"}
                       </span>
                     </div>
@@ -458,7 +458,7 @@ export function BotoxApplicationModal({
                         muscles.platisma > 0 ? "scale-110" : "opacity-30"
                       }`}
                     >
-                      <span className="w-3.5 h-3.5 rounded-full bg-teal-600 text-white font-bold text-[8px] flex items-center justify-center shadow">
+                      <span className="w-3.5 h-3.5 rounded-full bg-[#333333] text-white font-bold text-[8px] flex items-center justify-center shadow">
                         {muscles.platisma > 0 ? muscles.platisma : "PL"}
                       </span>
                     </div>
@@ -473,28 +473,28 @@ export function BotoxApplicationModal({
 
             {/* Observações da Aplicação */}
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-black">Anotações da Aplicação</label>
+              <label className="text-xs font-semibold text-black dark:text-white">Anotações da Aplicação</label>
               <textarea
                 rows={2}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Observações técnicas sobre agulhas, diluição ou recomendações pós-procedimento..."
-                className="w-full p-2.5 rounded-xl bg-[#f7f7f7] border border-transparent focus:border-black text-xs text-black outline-none resize-none"
+                className="w-full p-2.5 rounded-xl bg-[#f7f7f7] dark:bg-[#1c1c1e] border border-transparent focus:border-[#9ca889] text-xs text-black dark:text-white outline-none resize-none placeholder:text-[#767676] dark:placeholder:text-[#666]"
               />
             </div>
 
             {/* Footer */}
-            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 pt-3 border-t border-black/[0.06]">
+            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 pt-3 border-t border-black/[0.06] dark:border-white/[0.08]">
               <button
                 type="button"
                 onClick={onClose}
-                className="h-11 sm:h-9 px-4 rounded-xl text-xs font-medium text-[#767676] hover:text-black hover:bg-[#f4f4f4] transition-colors cursor-pointer text-center active:scale-95"
+                className="h-11 sm:h-9 px-4 rounded-xl text-xs font-medium text-[#767676] dark:text-[#a0a0a0] hover:text-black dark:hover:text-white hover:bg-[#f4f4f4] dark:hover:bg-[#1c1c1e] transition-colors cursor-pointer text-center active:scale-95"
               >
                 Fechar
               </button>
               <button
                 type="submit"
-                className="h-11 sm:h-9 px-5 rounded-xl bg-black hover:bg-[#262626] text-white text-xs font-semibold shadow-sm transition-all cursor-pointer active:scale-[0.98] w-full sm:w-auto"
+                className="h-11 sm:h-9 px-5 rounded-xl bg-[#9ca889] hover:bg-[#8f9b7c] text-[#070707] text-xs font-bold shadow-sm transition-all cursor-pointer active:scale-[0.98] w-full sm:w-auto"
               >
                 Salvar Ficha de Botox
               </button>

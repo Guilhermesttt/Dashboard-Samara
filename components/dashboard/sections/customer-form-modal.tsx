@@ -501,7 +501,7 @@ export function CustomerFormModal({
             </button>
             <button
               type="submit"
-              className="h-11 sm:h-10 px-5 rounded-xl bg-black hover:bg-[#262626] text-white text-xs font-semibold shadow-sm transition-all duration-150 active:scale-[0.98] cursor-pointer w-full sm:w-auto"
+              className="h-11 sm:h-10 px-5 rounded-xl bg-black dark:bg-[#9ca889] hover:bg-[#262626] dark:hover:bg-[#8f9b7c] active:bg-[#849071] text-white dark:text-[#070707] text-xs font-semibold shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_4px_16px_rgba(156,168,137,0.25)] transition-all duration-150 active:scale-[0.98] cursor-pointer w-full sm:w-auto"
             >
               {patientToEdit ? "Salvar Alterações" : "Cadastrar Cliente"}
             </button>

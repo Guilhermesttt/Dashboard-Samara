@@ -71,7 +71,7 @@ export function MobileBottomNav({
   return (
     <nav
       aria-label="Navegação Inferior Mobile"
-      className="md:hidden fixed inset-x-0 bottom-0 z-40 bg-white/95 dark:bg-[#0c0c0c]/95 backdrop-blur-xl border-t border-black/[0.08] dark:border-white/[0.08] flex items-center justify-around min-h-[var(--mobile-nav-height)] h-[calc(var(--mobile-nav-height)+env(safe-area-inset-bottom,0px))] pb-[env(safe-area-inset-bottom,0px)] pl-[max(0.5rem,env(safe-area-inset-left,0px))] pr-[max(0.5rem,env(safe-area-inset-right,0px))] select-none shadow-[0_-4px_20px_rgba(0,0,0,0.04)] transition-colors"
+      className="md:hidden fixed inset-x-0 bottom-0 z-40 bg-white/95 dark:bg-[#111111]/95 backdrop-blur-xl border-t border-black/[0.08] dark:border-[#232323] flex items-center justify-around min-h-[var(--mobile-nav-height)] h-[calc(var(--mobile-nav-height)+env(safe-area-inset-bottom,0px))] pb-[env(safe-area-inset-bottom,0px)] pl-[max(0.5rem,env(safe-area-inset-left,0px))] pr-[max(0.5rem,env(safe-area-inset-right,0px))] select-none shadow-[0_-4px_20px_rgba(0,0,0,0.04)] transition-colors"
     >
       {tabs.map((tab) => {
         const Icon = tab.icon;
@@ -85,15 +85,15 @@ export function MobileBottomNav({
             className={cn(
               "flex flex-col items-center justify-center flex-1 min-h-[44px] h-full py-1 text-[10px] font-medium transition-all duration-150 cursor-pointer relative active:scale-95",
               isActive
-                ? "text-black dark:text-white font-bold"
-                : "text-[#8f8f8f] hover:text-black dark:hover:text-white"
+                ? "text-black dark:text-[#A8B29A] font-bold"
+                : "text-[#8f8f8f] hover:text-black dark:hover:text-[#F7F5F0]"
             )}
           >
             <div className="relative">
               <Icon
                 className={cn(
                   "w-5 h-5 mb-0.5 transition-colors",
-                  isActive ? "text-black dark:text-white stroke-[2.5]" : "text-[#8f8f8f]"
+                  isActive ? "text-black dark:text-[#A8B29A] stroke-[2.5]" : "text-[#8f8f8f]"
                 )}
               />
               {tab.hasBadge && (

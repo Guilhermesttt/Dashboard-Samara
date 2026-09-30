@@ -221,7 +221,7 @@ export function ReportsSection() {
           <button
             onClick={() => handleDownloadPdf("geral")}
             disabled={isGeneratingPdf}
-            className="flex items-center justify-center gap-2 h-11 sm:h-10 px-4 rounded-xl bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 text-xs font-semibold shadow-sm transition-all cursor-pointer disabled:opacity-50 w-full sm:w-auto active:scale-95 min-h-[44px] sm:min-h-0"
+            className="flex items-center justify-center gap-2 h-11 sm:h-10 px-4 rounded-xl bg-black text-white hover:bg-neutral-800 dark:bg-[#9ca889] dark:text-[#070707] dark:hover:bg-[#8f9b7c] active:bg-[#849071] text-xs font-semibold shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_4px_16px_rgba(156,168,137,0.25)] transition-all cursor-pointer disabled:opacity-50 w-full sm:w-auto active:scale-95 min-h-[44px] sm:min-h-0"
           >
             {isGeneratingPdf ? (
               <>
@@ -241,7 +241,7 @@ export function ReportsSection() {
 
       {/* Cards de Métricas Reais do Relatório */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="bg-white dark:bg-[#121212] border border-border dark:border-white/[0.08] rounded-2xl p-3.5 sm:p-4 shadow-sm">
+        <div className="bg-white dark:bg-[#121214] border border-border dark:border-white/[0.08] rounded-2xl p-3.5 sm:p-4 shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_16px_rgba(0,0,0,0.4)]">
           <div className="flex items-center justify-between mb-1.5 sm:mb-2">
             <span className="text-xs font-medium text-[#767676] dark:text-[#a0a0a0]">
               Faturamento
@@ -258,7 +258,7 @@ export function ReportsSection() {
           </span>
         </div>
 
-        <div className="bg-white dark:bg-[#121212] border border-border dark:border-white/[0.08] rounded-2xl p-3.5 sm:p-4 shadow-sm">
+        <div className="bg-white dark:bg-[#121214] border border-border dark:border-white/[0.08] rounded-2xl p-3.5 sm:p-4 shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_16px_rgba(0,0,0,0.4)]">
           <div className="flex items-center justify-between mb-1.5 sm:mb-2">
             <span className="text-xs font-medium text-[#767676] dark:text-[#a0a0a0]">
               Pacientes
@@ -275,24 +275,24 @@ export function ReportsSection() {
           </span>
         </div>
 
-        <div className="bg-white dark:bg-[#121212] border border-border dark:border-white/[0.08] rounded-2xl p-3.5 sm:p-4 shadow-sm">
+        <div className="bg-white dark:bg-[#121214] border border-border dark:border-white/[0.08] rounded-2xl p-3.5 sm:p-4 shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_16px_rgba(0,0,0,0.4)]">
           <div className="flex items-center justify-between mb-1.5 sm:mb-2">
             <span className="text-xs font-medium text-[#767676] dark:text-[#a0a0a0]">
               Atendimentos
             </span>
-            <div className="w-7 h-7 rounded-lg bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400 flex items-center justify-center shrink-0">
+            <div className="w-7 h-7 rounded-lg bg-[#A8B29A]/15 text-[#A8B29A] flex items-center justify-center shrink-0">
               <Sparkles className="w-4 h-4" />
             </div>
           </div>
           <p className="text-lg sm:text-xl font-bold text-black dark:text-white">
             <AnimatedNumber value={filteredAppointments.length} ariaLabel={`${filteredAppointments.length} atendimentos`} />
           </p>
-          <span className="text-[11px] text-purple-600 dark:text-purple-400 font-medium truncate block">
+          <span className="text-[11px] text-[#A8B29A] font-medium truncate block">
             No fluxo clínico
           </span>
         </div>
 
-        <div className="bg-white dark:bg-[#121212] border border-border dark:border-white/[0.08] rounded-2xl p-3.5 sm:p-4 shadow-sm">
+        <div className="bg-white dark:bg-[#121214] border border-border dark:border-white/[0.08] rounded-2xl p-3.5 sm:p-4 shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_16px_rgba(0,0,0,0.4)]">
           <div className="flex items-center justify-between mb-1.5 sm:mb-2">
             <span className="text-xs font-medium text-[#767676] dark:text-[#a0a0a0]">
               Retornos (15d)
@@ -590,20 +590,20 @@ export function ReportsSection() {
               </thead>
               <tbody className="divide-y divide-border dark:divide-white/[0.06]">
                 {filteredAppointments.map((apt) => {
-                  let badgeBg = "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400";
+                  let badgeBg = "bg-[#8D9B7F]/15 text-[#8D9B7F] border border-[#8D9B7F]/30";
                   let statusText = "Agendado";
 
                   if (apt.status === "confirmado") {
-                    badgeBg = "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400";
+                    badgeBg = "bg-[#A8B29A]/15 text-[#A8B29A] border border-[#A8B29A]/30";
                     statusText = "Confirmado";
                   } else if (apt.status === "em_atendimento") {
-                    badgeBg = "bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400";
+                    badgeBg = "bg-white/10 text-white border border-white/20";
                     statusText = "Em Sala";
                   } else if (apt.status === "retorno_pendente") {
-                    badgeBg = "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400";
+                    badgeBg = "bg-[#F7F5F0]/15 text-[#F7F5F0] border border-[#F7F5F0]/30";
                     statusText = "Retorno 15d";
                   } else if (apt.status === "concluido") {
-                    badgeBg = "bg-neutral-100 text-neutral-800 dark:bg-white/[0.1] dark:text-white";
+                    badgeBg = "bg-[#333333] text-white border border-white/10";
                     statusText = "Concluído";
                   }
 

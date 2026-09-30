@@ -81,9 +81,9 @@ export function Sidebar({
   };
 
   const navContent = (
-    <div className="flex flex-col h-full bg-white dark:bg-[#0c0c0c] text-black dark:text-white transition-colors">
+    <div className="flex flex-col h-full bg-white dark:bg-[#111111] text-black dark:text-white transition-colors">
       {/* Brand Header */}
-      <div className="h-16 flex items-center justify-between px-4 border-b border-[#ebebeb] dark:border-[#27272a]">
+      <div className="h-16 flex items-center justify-between px-4 border-b border-[#ebebeb] dark:border-[#232323]">
         <div className="flex items-center gap-3 overflow-hidden">
           {collapsed ? (
             <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
@@ -108,7 +108,7 @@ export function Sidebar({
         {onMobileClose && (
           <button
             onClick={onMobileClose}
-            className="md:hidden w-10 h-10 rounded-xl bg-[#f5f5f5] dark:bg-[#1c1c1e] flex items-center justify-center text-[#767676] dark:text-[#a1a1aa] hover:text-black dark:hover:text-white cursor-pointer active:scale-95 transition-all"
+            className="md:hidden w-10 h-10 rounded-xl bg-[#f5f5f5] dark:bg-[#232323] flex items-center justify-center text-[#767676] dark:text-[#8D9B7F] hover:text-black dark:hover:text-white cursor-pointer active:scale-95 transition-all"
             aria-label="Fechar menu"
           >
             <X className="w-4 h-4" />
@@ -129,22 +129,22 @@ export function Sidebar({
               className={cn(
                 "w-full flex items-center justify-between px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-medium transition-all duration-150 group relative cursor-pointer active:scale-[0.99]",
                 isActive
-                  ? "bg-[#f4f4f4] dark:bg-[#1c1c1e] text-black dark:text-white font-semibold shadow-[inset_0_0_0_1px_rgba(0,0,0,0.04)] dark:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]"
-                  : "text-[#767676] dark:text-[#a1a1aa] hover:text-black dark:hover:text-white hover:bg-[#f8f8f8] dark:hover:bg-[#151517]"
+                  ? "bg-[#f4f4f4] dark:bg-[#232323] text-black dark:text-[#A8B29A] font-semibold shadow-[inset_0_0_0_1px_rgba(0,0,0,0.04)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_2px_8px_rgba(0,0,0,0.3)]"
+                  : "text-[#767676] dark:text-[#8D9B7F] hover:text-black dark:hover:text-[#F7F5F0] hover:bg-[#f8f8f8] dark:hover:bg-[#232323]/50"
               )}
             >
               <div className="flex items-center gap-3">
-                {/* Active bar indicator */}
+                {/* Active bar indicator in Sage Green */}
                 <span
                   className={cn(
-                    "absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-black dark:bg-white transition-all duration-200",
+                    "absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-black dark:bg-[#A8B29A] transition-all duration-200",
                     isActive ? "opacity-100" : "opacity-0"
                   )}
                 />
                 <Icon
                   className={cn(
                     "w-4 h-4 shrink-0 transition-colors duration-150",
-                    isActive ? "text-black dark:text-white" : "text-[#8f8f8f] dark:text-[#a1a1aa] group-hover:text-black dark:group-hover:text-white"
+                    isActive ? "text-black dark:text-[#A8B29A]" : "text-[#8f8f8f] dark:text-[#8D9B7F] group-hover:text-black dark:group-hover:text-[#F7F5F0]"
                   )}
                 />
                 <span
@@ -184,13 +184,13 @@ export function Sidebar({
       </nav>
 
       {/* Footer Actions */}
-      <div className="p-3 border-t border-[#ebebeb] dark:border-[#27272a] space-y-1">
+      <div className="p-3 border-t border-[#ebebeb] dark:border-[#232323] space-y-1">
         {onLogout && (
           <button
             onClick={onLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-medium text-[#767676] dark:text-[#a1a1aa] hover:text-[#d62b11] hover:bg-rose-50/50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer group"
+            className="w-full flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-medium text-[#767676] dark:text-[#8D9B7F] hover:text-[#d62b11] hover:bg-rose-50/50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer group"
           >
-            <LogOut className="w-4 h-4 text-[#8f8f8f] dark:text-[#a1a1aa] group-hover:text-[#d62b11] transition-colors" />
+            <LogOut className="w-4 h-4 text-[#8f8f8f] dark:text-[#8D9B7F] group-hover:text-[#d62b11] transition-colors" />
             <span
               className={cn(
                 "whitespace-nowrap transition-all duration-300",
@@ -204,13 +204,13 @@ export function Sidebar({
 
         <button
           onClick={() => onCollapsedChange(!collapsed)}
-          className="hidden md:flex w-full items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-[#767676] dark:text-[#a1a1aa] hover:text-black dark:hover:text-white hover:bg-[#f5f5f5] dark:hover:bg-[#1c1c1e] transition-colors cursor-pointer"
+          className="hidden md:flex w-full items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-[#767676] dark:text-[#8D9B7F] hover:text-black dark:hover:text-white hover:bg-[#f5f5f5] dark:hover:bg-[#232323] transition-colors cursor-pointer"
         >
           {collapsed ? (
-            <ChevronRight className="w-4 h-4 text-[#8f8f8f] dark:text-[#a1a1aa] hover:text-black dark:hover:text-white" />
+            <ChevronRight className="w-4 h-4 text-[#8f8f8f] dark:text-[#8D9B7F] hover:text-black dark:hover:text-white" />
           ) : (
             <>
-              <ChevronLeft className="w-4 h-4 text-[#8f8f8f] dark:text-[#a1a1aa] hover:text-black dark:hover:text-white" />
+              <ChevronLeft className="w-4 h-4 text-[#8f8f8f] dark:text-[#8D9B7F] hover:text-black dark:hover:text-white" />
               <span>Recolher Menu</span>
             </>
           )}
@@ -224,7 +224,7 @@ export function Sidebar({
       {/* 1. Desktop Fixed Sidebar */}
       <aside
         className={cn(
-          "hidden md:flex fixed left-0 top-0 z-40 h-screen bg-white dark:bg-[#0c0c0c] border-r border-[#ebebeb] dark:border-[#27272a] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] flex-col select-none",
+          "hidden md:flex fixed left-0 top-0 z-40 h-screen bg-white dark:bg-[#111111] border-r border-[#ebebeb] dark:border-[#232323] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] flex-col select-none",
           collapsed ? "w-[72px]" : "w-[260px]"
         )}
       >
@@ -241,7 +241,7 @@ export function Sidebar({
           />
 
           {/* Drawer panel with safe area padding */}
-          <div className="relative w-[280px] max-w-[85vw] h-full bg-white dark:bg-[#0c0c0c] z-10 shadow-2xl animate-in slide-in-from-left duration-200 flex flex-col pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]">
+          <div className="relative w-[280px] max-w-[85vw] h-full bg-white dark:bg-[#111111] z-10 shadow-2xl animate-in slide-in-from-left duration-200 flex flex-col pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]">
             {navContent}
           </div>
         </div>

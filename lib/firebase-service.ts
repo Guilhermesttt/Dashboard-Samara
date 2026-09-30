@@ -211,3 +211,33 @@ export async function seedInitialDataToFirestore(
     };
   }
 }
+
+// ==========================================
+// 4. PERFIL DO USUÁRIO & HORÁRIOS CLÍNICOS
+// ==========================================
+
+export async function saveUserProfileToFirestore(profile: any): Promise<boolean> {
+  if (!isFirebaseConfigured || !db) return false;
+  try {
+    const profileRef = doc(db, "user_profile", "samara_profile");
+    await setDoc(profileRef, JSON.parse(JSON.stringify(profile)), { merge: true });
+    return true;
+  } catch (error) {
+    console.error("Erro ao salvar perfil no Firestore:", error);
+    return false;
+  }
+}
+
+export async function fetchUserProfileFromFirestore(): Promise<any | null> {
+  if (!isFirebaseConfigured || !db) return null;
+  try {
+    const profileRef = doc(db, "user_profile", "samara_profile");
+    const snap = await getDoc(profileRef);
+    if (snap.exists()) return snap.data();
+    return null;
+  } catch (error) {
+    console.error("Erro ao buscar perfil no Firestore:", error);
+    return null;
+  }
+}
+

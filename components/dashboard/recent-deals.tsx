@@ -8,32 +8,32 @@ import { Appointment } from "./sections/appointments";
 const statusConfig = {
   concluido: {
     icon: CheckCircle2,
-    color: "text-emerald-700 dark:text-emerald-400",
-    bg: "bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/50 dark:border-emerald-800/40",
+    color: "text-[#8D9B7F]",
+    bg: "bg-[#8D9B7F]/15 border border-[#8D9B7F]/30",
     label: "Concluído",
   },
   em_atendimento: {
     icon: Sparkles,
-    color: "text-purple-700 dark:text-purple-400",
-    bg: "bg-purple-50 dark:bg-purple-950/40 border border-purple-200/50 dark:border-purple-800/40",
+    color: "text-[#FFFFFF]",
+    bg: "bg-[#333333] border border-white/20",
     label: "Em Sala",
   },
   retorno_pendente: {
     icon: RotateCcw,
-    color: "text-amber-700 dark:text-amber-400",
-    bg: "bg-amber-50 dark:bg-amber-950/40 border border-amber-200/50 dark:border-amber-800/40",
+    color: "text-[#F7F5F0]",
+    bg: "bg-[#F7F5F0]/15 border border-[#F7F5F0]/30",
     label: "Retorno 15d",
   },
   confirmado: {
     icon: Calendar,
-    color: "text-emerald-700 dark:text-emerald-400",
-    bg: "bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/50 dark:border-emerald-800/40",
+    color: "text-[#A8B29A]",
+    bg: "bg-[#A8B29A]/15 border border-[#A8B29A]/30",
     label: "Confirmado",
   },
   agendado: {
     icon: Clock,
-    color: "text-blue-700 dark:text-blue-400",
-    bg: "bg-blue-50 dark:bg-blue-950/40 border border-blue-200/50 dark:border-blue-800/40",
+    color: "text-[#8D9B7F]",
+    bg: "bg-[#8D9B7F]/10 border border-[#8D9B7F]/25",
     label: "Agendado",
   },
 };
@@ -60,7 +60,7 @@ export function RecentDeals() {
   const recent = appointments.slice(0, 5);
 
   return (
-    <div className="bg-white dark:bg-[#121212] border border-border dark:border-white/[0.08] rounded-2xl p-4 sm:p-5 shadow-sm">
+    <div className="bg-white dark:bg-[#232323] border border-border dark:border-white/[0.08] rounded-2xl p-4 sm:p-5 shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_20px_rgba(0,0,0,0.4)]">
       <div className="flex items-center justify-between mb-4 sm:mb-5">
         <div>
           <h3 className="text-sm sm:text-base font-semibold text-black dark:text-white">
@@ -94,10 +94,10 @@ export function RecentDeals() {
             return (
               <div
                 key={item.id}
-                className="group flex flex-col sm:flex-row sm:items-center justify-between p-2.5 sm:p-3 rounded-xl hover:bg-[#f7f7f7] dark:hover:bg-white/[0.04] transition-all duration-150 gap-2 border border-black/[0.03] dark:border-white/[0.03]"
+                className="group flex flex-col sm:flex-row sm:items-center justify-between p-2.5 sm:p-3 rounded-xl hover:bg-[#f7f7f7] dark:hover:bg-[#18181b] transition-all duration-150 gap-2 border border-black/[0.03] dark:border-white/[0.05] dark:hover:border-white/[0.1]"
               >
                 <div className="flex items-center gap-2.5 sm:gap-3">
-                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-black text-white dark:bg-white dark:text-black flex items-center justify-center text-xs font-semibold shrink-0">
+                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-black text-white dark:bg-[#9ca889] dark:text-[#070707] flex items-center justify-center text-xs font-bold shrink-0 shadow-sm">
                     {item.patientName ? item.patientName.charAt(0).toUpperCase() : "P"}
                   </div>
                   <div>

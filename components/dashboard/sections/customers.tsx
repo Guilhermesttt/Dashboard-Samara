@@ -275,9 +275,9 @@ export function CustomersSection() {
           </div>
           <button
             onClick={handleOpenAddCustomer}
-            className="w-full sm:w-auto h-11 sm:h-9 px-4 rounded-xl bg-black dark:bg-white hover:bg-[#262626] dark:hover:bg-[#ededed] active:scale-[0.98] text-white dark:text-black text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition-all duration-150 cursor-pointer min-h-[44px] sm:min-h-0 shrink-0"
+            className="w-full sm:w-auto h-11 sm:h-9 px-4 rounded-xl bg-black dark:bg-[#9ca889] hover:bg-[#262626] dark:hover:bg-[#8f9b7c] active:bg-[#849071] active:scale-[0.98] text-white dark:text-[#070707] text-xs font-semibold flex items-center justify-center gap-2 shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_4px_16px_rgba(156,168,137,0.25)] transition-all duration-150 cursor-pointer min-h-[44px] sm:min-h-0 shrink-0"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4 stroke-[2.2]" />
             <span>Cadastrar Cliente</span>
           </button>
         </div>
@@ -285,7 +285,7 @@ export function CustomersSection() {
 
       {/* 2. Overview Metrics Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5">
-        <div className="bg-white dark:bg-[#121212] p-3.5 sm:p-4 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] transition-all hover:border-black/20">
+        <div className="bg-white dark:bg-[#121214] p-3.5 sm:p-4 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_16px_rgba(0,0,0,0.4)] transition-all hover:border-black/20">
           <div className="flex items-center justify-between">
             <span className="text-[11px] sm:text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">Total Pacientes</span>
             <span className="w-7 h-7 rounded-lg bg-[#f6f6f6] dark:bg-[#1c1c1e] flex items-center justify-center text-black dark:text-white">
@@ -296,18 +296,18 @@ export function CustomersSection() {
           <span className="text-[11px] text-[#8f8f8f] dark:text-[#a1a1aa] mt-0.5 block truncate">Cadastradas na clínica</span>
         </div>
 
-        <div className="bg-white dark:bg-[#121212] p-3.5 sm:p-4 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] transition-all hover:border-black/20">
+        <div className="bg-white dark:bg-[#121214] p-3.5 sm:p-4 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_16px_rgba(0,0,0,0.4)] transition-all hover:border-black/20">
           <div className="flex items-center justify-between">
             <span className="text-[11px] sm:text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">Em Tratamento</span>
-            <span className="w-7 h-7 rounded-lg bg-purple-50 dark:bg-purple-950/40 flex items-center justify-center text-purple-700 dark:text-purple-300">
+            <span className="w-7 h-7 rounded-lg bg-[#A8B29A]/15 flex items-center justify-center text-[#A8B29A]">
               <Sparkles className="w-3.5 h-3.5" />
             </span>
           </div>
           <div className="text-2xl sm:text-3xl font-bold text-black dark:text-white mt-1.5 tracking-tight"><AnimatedNumber value={inTreatment} ariaLabel={`${inTreatment} em tratamento`} /></div>
-          <span className="text-[11px] text-purple-700 dark:text-purple-300 mt-0.5 block font-medium truncate">Sessões ativas</span>
+          <span className="text-[11px] text-[#A8B29A] mt-0.5 block font-medium truncate">Sessões ativas</span>
         </div>
 
-        <div className="bg-white dark:bg-[#121212] p-3.5 sm:p-4 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] transition-all hover:border-black/20">
+        <div className="bg-white dark:bg-[#121214] p-3.5 sm:p-4 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_16px_rgba(0,0,0,0.4)] transition-all hover:border-black/20">
           <div className="flex items-center justify-between">
             <span className="text-[11px] sm:text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">Anamneses Feitas</span>
             <span className="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center text-emerald-700 dark:text-emerald-300">
@@ -318,7 +318,7 @@ export function CustomersSection() {
           <span className="text-[11px] text-emerald-700 dark:text-emerald-300 mt-0.5 block font-medium truncate">Fichas validadas</span>
         </div>
 
-        <div className="bg-white dark:bg-[#121212] p-3.5 sm:p-4 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] transition-all hover:border-black/20">
+        <div className="bg-white dark:bg-[#121214] p-3.5 sm:p-4 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_16px_rgba(0,0,0,0.4)] transition-all hover:border-black/20">
           <div className="flex items-center justify-between">
             <span className="text-[11px] sm:text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">Alertas Ativos</span>
             <span className="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/40 flex items-center justify-center text-rose-600 dark:text-rose-400">
@@ -423,9 +423,9 @@ export function CustomersSection() {
           </div>
           <button
             onClick={handleOpenAddCustomer}
-            className="w-full sm:w-auto h-12 sm:h-9 px-5 rounded-xl bg-black dark:bg-white hover:bg-[#262626] dark:hover:bg-[#ededed] active:scale-[0.98] text-white dark:text-black text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer min-h-[44px] sm:min-h-0"
+            className="w-full sm:w-auto h-12 sm:h-9 px-5 rounded-xl bg-black dark:bg-[#9ca889] hover:bg-[#262626] dark:hover:bg-[#8f9b7c] active:bg-[#849071] active:scale-[0.98] text-white dark:text-[#070707] text-xs font-semibold flex items-center justify-center gap-2 shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_4px_16px_rgba(156,168,137,0.25)] transition-all cursor-pointer min-h-[44px] sm:min-h-0"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4 stroke-[2.2]" />
             <span>Cadastrar Primeira Paciente</span>
           </button>
         </div>
@@ -455,7 +455,7 @@ export function CustomersSection() {
                   }}
                   tabIndex={0}
                   aria-label={`Abrir prontuário de ${patient.name}`}
-                  className="w-full min-w-0 max-w-full bg-white dark:bg-[#121212] border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] active:scale-[0.99] transition-all cursor-pointer space-y-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black dark:focus-visible:outline-white"
+                  className="w-full min-w-0 max-w-full bg-white dark:bg-[#121214] border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_16px_rgba(0,0,0,0.4)] active:scale-[0.99] transition-all cursor-pointer space-y-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black dark:focus-visible:outline-white"
                 >
                   {/* Top: Avatar, Name, CPF & Status */}
                   <div className="flex min-w-0 flex-wrap items-start justify-between gap-2.5">
@@ -479,12 +479,12 @@ export function CustomersSection() {
                     <span
                       className={`max-w-full shrink-0 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
                         patient.status === "Em Tratamento"
-                          ? "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/40 dark:text-purple-300 dark:border-purple-800/40"
+                          ? "bg-white/10 text-white border-white/20"
                           : patient.status === "Ativo"
-                          ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/40"
+                          ? "bg-[#A8B29A]/15 text-[#A8B29A] border-[#A8B29A]/30"
                           : patient.status === "Retorno Agendado"
-                          ? "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/40"
-                          : "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700"
+                          ? "bg-[#F7F5F0]/15 text-[#F7F5F0] border-[#F7F5F0]/30"
+                          : "bg-[#232323] text-[#8D9B7F] border border-white/10"
                       }`}
                     >
                       {patient.status}
@@ -657,12 +657,12 @@ export function CustomersSection() {
                               <span
                                 className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${
                                   patient.status === "Em Tratamento"
-                                    ? "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/40 dark:text-purple-300 dark:border-purple-800/40"
+                                    ? "bg-white/10 text-white border-white/20"
                                     : patient.status === "Ativo"
-                                    ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/40"
+                                    ? "bg-[#A8B29A]/15 text-[#A8B29A] border-[#A8B29A]/30"
                                     : patient.status === "Retorno Agendado"
-                                    ? "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/40"
-                                    : "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700"
+                                    ? "bg-[#F7F5F0]/15 text-[#F7F5F0] border-[#F7F5F0]/30"
+                                    : "bg-[#232323] text-[#8D9B7F] border border-white/10"
                                 }`}
                               >
                                 {patient.status}
@@ -818,8 +818,8 @@ export function CustomersSection() {
                           <span
                             className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
                               patient.status === "Em Tratamento"
-                                ? "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/40 dark:text-purple-300 dark:border-purple-800/40"
-                                : "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/40"
+                                ? "bg-white/10 text-white border-white/20"
+                                : "bg-[#A8B29A]/15 text-[#A8B29A] border-[#A8B29A]/30"
                             }`}
                           >
                             {patient.status}

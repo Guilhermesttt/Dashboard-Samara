@@ -366,7 +366,7 @@ export function AnamneseFormModal({
             <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-[#f2f2f2] space-y-4">
               <div className="flex items-center justify-between bg-white p-3.5 rounded-2xl border border-black/[0.08] shadow-sm">
                 <div className="flex items-center gap-2">
-                  <Printer className="w-4 h-4 text-purple-700" />
+                  <Printer className="w-4 h-4 text-[#A8B29A]" />
                   <span className="text-xs font-bold text-black">
                     Visualização Fiel ao Modelo Impresso (Imagem 1: Ficha do Paciente + Anamnese + Termo)
                   </span>
@@ -394,7 +394,7 @@ export function AnamneseFormModal({
               <div className="bg-white max-w-[760px] mx-auto p-6 sm:p-10 rounded-xl border border-black/10 shadow-lg text-black font-sans space-y-5">
                 {/* Header Sheet 1 */}
                 <div className="flex items-baseline justify-between border-b border-black/10 pb-2">
-                  <h1 className="text-2xl font-serif font-bold text-purple-900 tracking-tight">
+                  <h1 className="text-2xl font-bold text-black tracking-tight">
                     Ficha do Paciente
                   </h1>
                   <span className="text-xs text-gray-700">
@@ -486,7 +486,7 @@ export function AnamneseFormModal({
 
                 {/* Section Anamnese 17 Questions */}
                 <div className="pt-2 border-t border-black/10 space-y-1.5">
-                  <h2 className="text-xl font-serif font-bold text-purple-900 tracking-tight">
+                  <h2 className="text-xl font-bold text-black tracking-tight">
                     Anamnese
                   </h2>
                   <div className="space-y-1 text-xs text-gray-800">
@@ -512,13 +512,13 @@ export function AnamneseFormModal({
                       <div key={idx} className="flex items-center justify-between gap-2 border-b border-gray-100 py-0.5">
                         <div className="flex-1 flex items-baseline gap-1">
                           <span className="font-medium text-black">{item.q}</span>
-                          {item.val && <span className="font-semibold text-purple-950 underline">{item.val}</span>}
+                          {item.val && <span className="font-semibold text-black underline">{item.val}</span>}
                         </div>
                         <div className="flex items-center gap-1 font-mono text-[10px] shrink-0">
-                          <span className={`w-4 h-4 rounded border flex items-center justify-center font-bold ${item.resp ? "bg-purple-900 text-white border-purple-900" : "border-gray-400 text-gray-500"}`}>
+                          <span className={`w-4 h-4 rounded border flex items-center justify-center font-bold ${item.resp ? "bg-black text-white border-black" : "border-gray-400 text-gray-500"}`}>
                             S
                           </span>
-                          <span className={`w-4 h-4 rounded border flex items-center justify-center font-bold ${!item.resp ? "bg-purple-900 text-white border-purple-900" : "border-gray-400 text-gray-500"}`}>
+                          <span className={`w-4 h-4 rounded border flex items-center justify-center font-bold ${!item.resp ? "bg-black text-white border-black" : "border-gray-400 text-gray-500"}`}>
                             N
                           </span>
                         </div>
@@ -529,7 +529,7 @@ export function AnamneseFormModal({
 
                 {/* Section Termo de Consentimento */}
                 <div className="pt-2 border-t border-black/10 space-y-1.5">
-                  <h2 className="text-sm font-serif font-bold text-purple-900 tracking-tight text-center">
+                  <h2 className="text-sm font-bold text-black tracking-tight text-center">
                     Termo de Consentimento Livre e Esclarecido
                   </h2>
                   <p className="text-[9.5px] text-gray-700 leading-tight text-justify">
@@ -556,7 +556,7 @@ export function AnamneseFormModal({
                       </div>
                       <div className="flex items-baseline gap-1">
                         <span className="font-semibold text-gray-700">Assinatura:</span>
-                        <div className="border-b border-gray-400 flex-1 text-center font-serif italic text-purple-900">
+                        <div className="border-b border-gray-400 flex-1 text-center italic text-black">
                           {formData.assinaturaUrl ? (
                             <img src={formData.assinaturaUrl} alt="Assinatura" className="h-6 mx-auto inline-block" />
                           ) : (

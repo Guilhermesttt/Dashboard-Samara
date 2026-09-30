@@ -3,51 +3,71 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ============================================================ */
+/* Typeface: Nohemi (Geometric Grotesque by Rajesh Rajput)      */
+/* ============================================================ */
+@font-face {
+  font-family: 'Nohemi';
+  src: url('/fonts/Nohemi-Regular.woff2') format('woff2'),
+       url('https://db.onlinewebfonts.com/t/29ddb4605533a38e086b48fa105e0d12.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  /* Light Mode Palette per user specification */
-  --background: #ffffff;
-  --foreground: #0d0d0d;
-  --card: #ffffff;
-  --card-foreground: #0d0d0d;
-  --popover: #ffffff;
-  --popover-foreground: #0d0d0d;
-  --primary: #000000;
-  --primary-foreground: #ffffff;
-  --secondary: #f6f6f6;
-  --secondary-foreground: #0d0d0d;
-  --muted: #f4f4f5;
+  /* Brand Color Palette - Made By Majid */
+  --color-deep-black: #111111;
+  --color-charcoal: #232323;
+  --color-sage-green: #A8B29A;
+  --color-olive-sage: #8D9B7F;
+  --color-soft-ivory: #F7F5F0;
+  --color-pure-white: #FFFFFF;
+
+  /* Light Mode Palette */
+  --background: #FFFFFF;
+  --foreground: #111111;
+  --card: #FFFFFF;
+  --card-foreground: #111111;
+  --popover: #FFFFFF;
+  --popover-foreground: #111111;
+  --primary: #8D9B7F;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F7F5F0;
+  --secondary-foreground: #111111;
+  --muted: #F7F5F0;
   --muted-foreground: #6c6c6c;
   --text-subtle: #767676;
   --text-faint: #8f8f8f;
-  --accent: #000000;
-  --accent-foreground: #ffffff;
+  --accent: #A8B29A;
+  --accent-foreground: #111111;
   --destructive: #e23014;
-  --destructive-foreground: #ffffff;
+  --destructive-foreground: #FFFFFF;
   --border: #eaeaea;
   --border-subtle: rgba(0, 0, 0, 0.06);
   --input: #e5e5e5;
-  --ring: #000000;
-  --chart-1: #000000;
-  --chart-2: #525252;
-  --chart-3: #737373;
-  --chart-4: #a3a3a3;
-  --chart-5: #d4d4d4;
+  --ring: #A8B29A;
+  --chart-1: #111111;
+  --chart-2: #232323;
+  --chart-3: #8D9B7F;
+  --chart-4: #A8B29A;
+  --chart-5: #F7F5F0;
   --radius: 0.75rem;
 
   /* Sidebar Tokens (Light Mode) */
-  --sidebar: #ffffff;
-  --sidebar-foreground: #0d0d0d;
-  --sidebar-primary: #000000;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f5f5f5;
-  --sidebar-accent-foreground: #000000;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #111111;
+  --sidebar-primary: #A8B29A;
+  --sidebar-primary-foreground: #111111;
+  --sidebar-accent: #F7F5F0;
+  --sidebar-accent-foreground: #111111;
   --sidebar-border: #ebebeb;
-  --sidebar-ring: #000000;
+  --sidebar-ring: #A8B29A;
 
-  /* Status Colors */
-  --success: #10b981;
-  --success-bg: rgba(16, 185, 129, 0.1);
-  --success-text: #047857;
+  /* Status Colors (Harmonized) */
+  --success: #8D9B7F;
+  --success-bg: rgba(141, 155, 127, 0.15);
+  --success-text: #6f7c62;
   --warning: #f59e0b;
   --warning-bg: rgba(245, 158, 11, 0.1);
   --warning-text: #b45309;
@@ -78,50 +98,68 @@
   /* Material and Shadows */
   --material-shadow: 0 4px 28px 0 rgba(0, 0, 0, 0.06), 0 1px 3px 0 rgba(0, 0, 0, 0.04);
   --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.06);
+
+  /* Tokens de Destaque Sage Green & Olive Sage */
+  --accent-sage: #A8B29A;
+  --accent-sage-hover: #8D9B7F;
+  --accent-sage-active: #7c8a6f;
+  --accent-sage-glow: rgba(168, 178, 154, 0.28);
+  --accent-sage-subtle: rgba(168, 178, 154, 0.12);
+
+  /* Typography Stacks */
+  --font-ui: 'Nohemi', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+  --font-display: 'Nohemi', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
 }
 
 .dark {
-  /* Dark Mode Palette - Noir Housty per Apple Design Guidelines */
-  --background: #070707;
-  --foreground: #ffffff;
-  --card: #141414;
-  --card-foreground: #ffffff;
-  --popover: #141414;
-  --popover-foreground: #ffffff;
-  --primary: #ffffff;
-  --primary-foreground: #000000;
-  --secondary: #1c1c1e;
-  --secondary-foreground: #ffffff;
-  --muted: #262626;
-  --muted-foreground: #a1a1aa;
-  --text-subtle: #d4d4d8;
-  --text-faint: #71717a;
-  --accent: #ffffff;
-  --accent-foreground: #000000;
+  /* Dark Mode Palette - Made By Majid Standard */
+  --background: #111111;         /* DEEP BLACK */
+  --foreground: #FFFFFF;         /* PURE WHITE */
+  --card: #232323;               /* CHARCOAL */
+  --card-foreground: #FFFFFF;
+  --popover: #232323;            /* CHARCOAL */
+  --popover-foreground: #FFFFFF;
+  --primary: #A8B29A;            /* SAGE GREEN */
+  --primary-foreground: #111111; /* DEEP BLACK */
+  --secondary: #1a1a1a;
+  --secondary-foreground: #FFFFFF;
+  --muted: #282828;
+  --muted-foreground: #A8B29A;
+  --text-subtle: #F7F5F0;        /* SOFT IVORY */
+  --text-faint: #8D9B7F;         /* OLIVE SAGE */
+  --accent: #A8B29A;             /* SAGE GREEN */
+  --accent-foreground: #111111;
   --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --border: #27272a;
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --input: #27272a;
-  --ring: #ffffff;
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --input: #1a1a1a;
+  --ring: #A8B29A;
 
   /* Sidebar Tokens (Dark Mode) */
-  --sidebar: #0d0d0f;
-  --sidebar-foreground: #ffffff;
-  --sidebar-primary: #ffffff;
-  --sidebar-primary-foreground: #000000;
-  --sidebar-accent: #1c1c1e;
-  --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #27272a;
-  --sidebar-ring: #ffffff;
+  --sidebar: #161616;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #A8B29A;
+  --sidebar-primary-foreground: #111111;
+  --sidebar-accent: #232323;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: #A8B29A;
 
-  --material-shadow: 0 4px 28px 0 rgba(0, 0, 0, 0.4), 0 1px 3px 0 rgba(0, 0, 0, 0.3);
-  --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --material-shadow: 0 4px 28px 0 rgba(0, 0, 0, 0.6), 0 1px 3px 0 rgba(0, 0, 0, 0.4);
+  --card-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 4px 20px 0 rgba(0, 0, 0, 0.5);
 }
 
 @theme inline {
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Nohemi', -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Nohemi', -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --color-deep-black: #111111;
+  --color-charcoal: #232323;
+  --color-sage-green: #A8B29A;
+  --color-olive-sage: #8D9B7F;
+  --color-soft-ivory: #F7F5F0;
+  --color-pure-white: #FFFFFF;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -181,23 +219,69 @@
 }
 
 /* ============================================================ */
-/* Dark Mode Inversion & Apple Solid Surfaces                   */
+/* Brand Type Scale (Made By Majid / Nohemi Official Spec)      */
+/* ============================================================ */
+.type-hero,
+.font-hero {
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, 6vw, 90px);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  font-weight: 600;
+}
+
+.type-section,
+.font-section {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.5vw, 70px);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+}
+
+.type-product,
+.font-product {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3.2vw, 50px);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+}
+
+.type-body {
+  font-family: var(--font-ui);
+  font-size: 18px;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  font-weight: 400;
+}
+
+.type-small {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.4;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
+/* ============================================================ */
+/* Dark Mode Inversion & Brand Surfaces                         */
 /* ============================================================ */
 .dark {
   color-scheme: dark;
 }
 
 .dark body {
-  background-color: #070707 !important;
-  color: #ffffff !important;
+  background-color: #111111 !important;
+  color: #FFFFFF !important;
 }
 
 .dark .bg-white {
-  background-color: #141414 !important;
+  background-color: #232323 !important;
 }
 
 .dark .bg-white\/90 {
-  background-color: rgba(20, 20, 20, 0.92) !important;
+  background-color: rgba(35, 35, 35, 0.92) !important;
 }
 
 .dark .bg-\[\#fbfbfb\],

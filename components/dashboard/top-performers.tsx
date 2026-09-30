@@ -48,17 +48,17 @@ export function TopPerformers() {
   };
 
   return (
-    <div className="bg-white dark:bg-[#121212] border border-border dark:border-white/[0.08] rounded-2xl p-4 sm:p-5 shadow-sm">
+    <div className="bg-white dark:bg-[#232323] border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 sm:p-5 shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_16px_rgba(0,0,0,0.4)]">
       <div className="flex items-center justify-between mb-4 sm:mb-5">
         <div>
           <h3 className="text-sm sm:text-base font-semibold text-black dark:text-white">
             Procedimentos Mais Procurados
           </h3>
-          <p className="text-xs text-[#767676] dark:text-[#a0a0a0] mt-0.5">
+          <p className="text-xs text-[#767676] dark:text-[#8D9B7F] mt-0.5">
             Ranking real por procura e faturamento na clínica
           </p>
         </div>
-        <div className="flex items-center gap-1 text-black dark:text-white">
+        <div className="flex items-center gap-1 text-[#A8B29A]">
           <Sparkles className="w-4 h-4" />
         </div>
       </div>
@@ -71,7 +71,7 @@ export function TopPerformers() {
           <p className="text-xs font-semibold text-black dark:text-white">
             Nenhum procedimento registrado ainda
           </p>
-          <p className="text-[11px] text-[#767676] dark:text-[#8f8f8f] max-w-xs mt-1">
+          <p className="text-[11px] text-[#767676] dark:text-[#8D9B7F] max-w-xs mt-1">
             Conforme a Dra. Sâmara realizar novos atendimentos, o ranking dos mais procurados será calculado automaticamente.
           </p>
         </div>
@@ -83,12 +83,18 @@ export function TopPerformers() {
               className="group flex items-center justify-between p-2.5 sm:p-3 rounded-xl hover:bg-[#f7f7f7] dark:hover:bg-white/[0.04] transition-all duration-150 border border-black/[0.03] dark:border-white/[0.03]"
             >
               <div className="flex items-center gap-2.5 sm:gap-3">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-black text-white dark:bg-white dark:text-black flex items-center justify-center text-xs font-semibold shrink-0">
+                <div
+                  className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center text-xs font-bold shrink-0 ${
+                    item.rank === 1
+                      ? "bg-[#A8B29A] text-[#111111] shadow-sm"
+                      : "bg-black text-white dark:bg-white/10 dark:text-white"
+                  }`}
+                >
                   {item.rank}
                 </div>
                 <div>
                   <p className="text-xs font-semibold text-black dark:text-white">{item.name}</p>
-                  <p className="text-[11px] text-[#767676] dark:text-[#a0a0a0]">
+                  <p className="text-[11px] text-[#767676] dark:text-[#8D9B7F]">
                     {item.count} {item.count === 1 ? "sessão realizada" : "sessões realizadas"}
                   </p>
                 </div>
@@ -98,7 +104,7 @@ export function TopPerformers() {
                 <p className="text-xs font-semibold text-black dark:text-white">
                   {formatCurrency(item.revenue)}
                 </p>
-                <div className="flex items-center justify-end gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
+                <div className="flex items-center justify-end gap-1 text-[11px] text-[#A8B29A] font-medium">
                   <TrendingUp className="w-3 h-3" />
                   Em alta
                 </div>

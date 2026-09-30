@@ -35,24 +35,24 @@ export function RevenueChart() {
   }, []);
 
   return (
-    <div className="w-full min-w-0 max-w-full overflow-hidden bg-white dark:bg-[#121212] border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 sm:p-5 h-[300px] sm:h-[360px] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] transition-colors">
+    <div className="w-full min-w-0 max-w-full overflow-hidden bg-white dark:bg-[#232323] border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 sm:p-5 h-[300px] sm:h-[360px] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_20px_rgba(0,0,0,0.4)] transition-colors">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
         <div>
           <h3 className="text-sm sm:text-base font-semibold text-black dark:text-white">
             Evolução do Consultório
           </h3>
-          <p className="text-xs text-[#767676] dark:text-[#a1a1aa] mt-0.5">
-            Faturamento e metas mensais
+          <p className="text-xs text-[#767676] dark:text-[#8D9B7F] mt-0.5">
+            Faturamento e metas mensais da clínica
           </p>
         </div>
         <div className="flex items-center gap-3 text-xs">
           <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-            <span className="text-[#767676] dark:text-[#a1a1aa] text-[11px] font-medium">Faturamento</span>
+            <div className="w-2.5 h-2.5 rounded-full bg-[#A8B29A]" />
+            <span className="text-black dark:text-white text-[11px] font-semibold">Faturamento</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-            <span className="text-[#767676] dark:text-[#a1a1aa] text-[11px] font-medium">Meta Clínica</span>
+            <div className="w-2.5 h-2.5 rounded-full bg-[#8D9B7F]" />
+            <span className="text-[#767676] dark:text-[#8D9B7F] text-[11px] font-medium">Meta Clínica</span>
           </div>
         </div>
       </div>
@@ -62,15 +62,15 @@ export function RevenueChart() {
           <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#10b981" stopOpacity={0.35} />
-                <stop offset="100%" stopColor="#10b981" stopOpacity={0.0} />
+                <stop offset="0%" stopColor="#A8B29A" stopOpacity={0.4} />
+                <stop offset="100%" stopColor="#A8B29A" stopOpacity={0.0} />
               </linearGradient>
               <linearGradient id="targetGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.25} />
-                <stop offset="100%" stopColor="#3b82f6" stopOpacity={0.0} />
+                <stop offset="0%" stopColor="#8D9B7F" stopOpacity={0.2} />
+                <stop offset="100%" stopColor="#8D9B7F" stopOpacity={0.0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(128,128,128,0.15)" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
             <XAxis
               dataKey="month"
               axisLine={false}
@@ -87,29 +87,31 @@ export function RevenueChart() {
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: "#1c1c1e",
+                backgroundColor: "#232323",
                 border: "1px solid rgba(255,255,255,0.1)",
                 borderRadius: "12px",
                 fontSize: "12px",
                 color: "#fff",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
               }}
               labelStyle={{ color: "#fff", fontWeight: 600 }}
-              itemStyle={{ color: "#e5e5e5" }}
+              itemStyle={{ color: "#F7F5F0" }}
               formatter={(value: number) => [`R$ ${value.toLocaleString("pt-BR")}`, ""]}
             />
             <Area
               type="monotone"
               dataKey="target"
-              stroke="#3b82f6"
-              strokeWidth={2}
+              stroke="#8D9B7F"
+              strokeWidth={1.5}
+              strokeDasharray="4 4"
               fill="url(#targetGradient)"
               dot={false}
             />
             <Area
               type="monotone"
               dataKey="revenue"
-              stroke="#10b981"
-              strokeWidth={2}
+              stroke="#A8B29A"
+              strokeWidth={2.5}
               fill="url(#revenueGradient)"
               dot={false}
             />

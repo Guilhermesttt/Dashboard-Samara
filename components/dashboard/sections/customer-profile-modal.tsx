@@ -212,13 +212,13 @@ export function CustomerProfileModal({
   const statusBadge = (st: PatientRecord["status"]) => {
     switch (st) {
       case "Em Tratamento":
-        return "bg-purple-50 text-purple-700 border-purple-200";
+        return "bg-white/10 text-white border-white/20";
       case "Ativo":
-        return "bg-emerald-50 text-emerald-700 border-emerald-200";
+        return "bg-[#A8B29A]/15 text-[#A8B29A] border-[#A8B29A]/30";
       case "Retorno Agendado":
-        return "bg-blue-50 text-blue-700 border-blue-200";
+        return "bg-[#F7F5F0]/15 text-[#F7F5F0] border-[#F7F5F0]/30";
       case "Inativo":
-        return "bg-gray-100 text-gray-700 border-gray-200";
+        return "bg-[#232323] text-[#8D9B7F] border border-white/10";
     }
   };
 
@@ -283,8 +283,8 @@ export function CustomerProfileModal({
                       {patient.phone}
                     </span>
                     {anamnese?.instagram && (
-                      <span className="flex items-center gap-1 text-purple-700 font-medium">
-                        <Instagram className="w-3.5 h-3.5 text-purple-600" />
+                      <span className="flex items-center gap-1 text-[#A8B29A] font-medium">
+                        <Instagram className="w-3.5 h-3.5 text-[#A8B29A]" />
                         @{anamnese.instagram}
                       </span>
                     )}
@@ -427,7 +427,7 @@ export function CustomerProfileModal({
                       : "text-[#767676] hover:text-black"
                   }`}
                 >
-                  <Droplet className="w-3 h-3 text-purple-600" />
+                  <Droplet className="w-3 h-3 text-[#A8B29A]" />
                   <span>Ficha de Bioestimulador</span>
                 </button>
               )}
@@ -764,8 +764,8 @@ export function CustomerProfileModal({
                     )}
                   </>
                 ) : (
-                  <div className="py-12 text-center space-y-3 bg-[#fafafa] rounded-2xl border border-black/[0.06]">
-                    <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mx-auto">
+                  <div className="py-12 text-center space-y-3 bg-[#fafafa] dark:bg-[#1a1a1a] rounded-2xl border border-black/[0.06] dark:border-white/[0.08]">
+                    <div className="w-10 h-10 rounded-xl bg-[#A8B29A]/15 text-[#A8B29A] flex items-center justify-center mx-auto">
                       <Sparkles className="w-5 h-5" />
                     </div>
                     <h5 className="text-xs font-bold text-black">Nenhuma Ficha de Botox Registrada</h5>
@@ -920,35 +920,35 @@ export function CustomerProfileModal({
                           <span className="font-bold text-black uppercase tracking-wider text-[11px]">
                             Sessão / Região Primária
                           </span>
-                          <span className="text-[11px] text-purple-700 font-semibold">
+                          <span className="text-[11px] text-[#A8B29A] font-semibold">
                             Nova: {patient.bioRecord.nextApplication1}
                           </span>
                         </div>
                         <div className="space-y-1.5">
                           {patient.bioRecord.table1.filter((r) => r.area && r.ml).map((r, i) => (
-                            <div key={i} className="flex justify-between bg-[#fafafa] p-2 rounded-xl border border-black/[0.04]">
-                              <span className="font-medium text-black">{r.area}</span>
-                              <span className="font-bold text-purple-900">{r.ml}</span>
+                            <div key={i} className="flex justify-between bg-[#fafafa] dark:bg-[#232323] p-2 rounded-xl border border-black/[0.04] dark:border-white/[0.06]">
+                              <span className="font-medium text-black dark:text-white">{r.area}</span>
+                              <span className="font-bold text-[#A8B29A]">{r.ml}</span>
                             </div>
                           ))}
                         </div>
                       </div>
 
                       {/* Tabela 2 */}
-                      <div className="p-4 rounded-2xl bg-white border border-black/[0.08] space-y-2.5">
-                        <div className="flex items-center justify-between border-b border-black/[0.06] pb-1.5">
-                          <span className="font-bold text-black uppercase tracking-wider text-[11px]">
+                      <div className="p-4 rounded-2xl bg-white dark:bg-[#1c1c1c] border border-black/[0.08] dark:border-white/[0.08] space-y-2.5">
+                        <div className="flex items-center justify-between border-b border-black/[0.06] dark:border-white/[0.06] pb-1.5">
+                          <span className="font-bold text-black dark:text-white uppercase tracking-wider text-[11px]">
                             Sessão / Região Complementar
                           </span>
-                          <span className="text-[11px] text-purple-700 font-semibold">
+                          <span className="text-[11px] text-[#A8B29A] font-semibold">
                             Nova: {patient.bioRecord.nextApplication2}
                           </span>
                         </div>
                         <div className="space-y-1.5">
                           {patient.bioRecord.table2.filter((r) => r.area && r.ml).map((r, i) => (
-                            <div key={i} className="flex justify-between bg-[#fafafa] p-2 rounded-xl border border-black/[0.04]">
-                              <span className="font-medium text-black">{r.area}</span>
-                              <span className="font-bold text-purple-900">{r.ml}</span>
+                            <div key={i} className="flex justify-between bg-[#fafafa] dark:bg-[#232323] p-2 rounded-xl border border-black/[0.04] dark:border-white/[0.06]">
+                              <span className="font-medium text-black dark:text-white">{r.area}</span>
+                              <span className="font-bold text-[#A8B29A]">{r.ml}</span>
                             </div>
                           ))}
                         </div>
@@ -956,15 +956,15 @@ export function CustomerProfileModal({
                     </div>
 
                     {patient.bioRecord.notes && (
-                      <div className="p-3 rounded-xl bg-[#fafafa] border border-black/[0.04]">
-                        <span className="text-[11px] font-semibold text-[#767676] block">Observações:</span>
-                        <p className="text-black font-medium mt-0.5">{patient.bioRecord.notes}</p>
+                      <div className="p-3 rounded-xl bg-[#fafafa] dark:bg-[#232323] border border-black/[0.04] dark:border-white/[0.06]">
+                        <span className="text-[11px] font-semibold text-[#767676] dark:text-[#a0a0a0] block">Observações:</span>
+                        <p className="text-black dark:text-white font-medium mt-0.5">{patient.bioRecord.notes}</p>
                       </div>
                     )}
                   </div>
                 ) : (
-                  <div className="py-12 text-center space-y-3 bg-[#fafafa] rounded-2xl border border-black/[0.06]">
-                    <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mx-auto">
+                  <div className="py-12 text-center space-y-3 bg-[#fafafa] dark:bg-[#1a1a1a] rounded-2xl border border-black/[0.06] dark:border-white/[0.08]">
+                    <div className="w-10 h-10 rounded-xl bg-[#A8B29A]/15 text-[#A8B29A] flex items-center justify-center mx-auto">
                       <Droplet className="w-5 h-5" />
                     </div>
                     <h5 className="text-xs font-bold text-black">Nenhuma Ficha de Bioestimulador Registrada</h5>
@@ -1196,7 +1196,7 @@ export function CustomerProfileModal({
                   title: "Ficha de Bioestimulador",
                   subtitle: "Colágeno Facial & Corporal",
                   icon: Droplet,
-                  iconClass: "bg-purple-600 text-white",
+                  iconClass: "bg-[#8D9B7F] text-white",
                   description:
                     "Protocolo para Sculptra, Radiesse e Elleva. Mapeamento de vetores faciais/corporais, reconstituição, tipo de cânula e retornos.",
                   pills: ["Facial & Corporal", "Diluição & Cânula", "Retornos Progressivos"],

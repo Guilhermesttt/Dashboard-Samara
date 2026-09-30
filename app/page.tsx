@@ -12,6 +12,11 @@ import { ReportsSection } from "@/components/dashboard/sections/reports";
 import { SettingsSection } from "@/components/dashboard/sections/settings";
 import { MobileBottomNav } from "@/components/dashboard/mobile-bottom-nav";
 import { RemindersModal } from "@/components/dashboard/reminders-modal";
+import { OnboardingModal } from "@/components/auth/onboarding-modal";
+import {
+  STORAGE_KEYS,
+  getStoredUserProfile,
+} from "@/lib/storage-keys";
 import {
   ReminderItem,
   getLocalReminders,
@@ -37,7 +42,9 @@ export default function Dashboard() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Central Reminders State
+  // Central Reminders & Onboarding State
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<{ name: string; email: string } | null>(null);
   const [isRemindersOpen, setIsRemindersOpen] = useState(false);
   const [reminders, setReminders] = useState<ReminderItem[]>([]);
   const [hasTodayAppointments, setHasTodayAppointments] = useState(false);
@@ -56,12 +63,18 @@ export default function Dashboard() {
     };
   }, []);
 
-  // 1. Checar Sessão Persistente da Dra. Sâmara ao inicializar
+  // 1. Checar Sessão Persistente da Dra. Sâmara e status de Onboarding
   useEffect(() => {
     try {
-      const savedAuth = localStorage.getItem("samara_auth_session");
+      const savedAuth =
+        localStorage.getItem("samara_auth_session") ||
+        localStorage.getItem(STORAGE_KEYS.AUTH_SESSION);
       if (savedAuth === "true") {
         setIsAuthenticated(true);
+        const onboardingDone = localStorage.getItem(STORAGE_KEYS.ONBOARDING_DONE);
+        if (!onboardingDone) {
+          setIsOnboardingOpen(true);
+        }
       }
     } catch (e) {}
     setAuthChecked(true);
@@ -162,14 +175,28 @@ export default function Dashboard() {
 
   // Evita flash de tela antes de checar localStorage
   if (!authChecked) {
-    return <div className="min-h-screen bg-white dark:bg-[#070707]" />;
+    return <div className="min-h-screen bg-white dark:bg-[#111111]" />;
   }
 
-  // Se não autenticado, exibe a tela de login exclusiva da Dra. Sâmara
   if (!isAuthenticated) {
     return (
-      <div className="w-full min-h-screen bg-white dark:bg-[#070707] p8-page-enter">
-        <LoginView onLoginSuccess={() => setIsAuthenticated(true)} />
+      <div className="w-full min-h-[100dvh] h-[100dvh] overflow-hidden bg-[#111111] p8-page-enter">
+        <LoginView
+          onLoginSuccess={() => {
+            setIsAuthenticated(true);
+            try {
+              const done = localStorage.getItem(STORAGE_KEYS.ONBOARDING_DONE);
+              if (!done) {
+                setIsOnboardingOpen(true);
+              }
+            } catch (e) {}
+          }}
+          onRegisterSuccess={(user) => {
+            setCurrentUser(user);
+            setIsAuthenticated(true);
+            setIsOnboardingOpen(true);
+          }}
+        />
       </div>
     );
   }
@@ -196,7 +223,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="dashboard-shell flex w-full min-w-0 bg-white dark:bg-[#070707] text-black dark:text-white">
+    <div className="dashboard-shell flex w-full min-w-0 bg-white dark:bg-[#111111] text-black dark:text-white">
       {/* Sidebar with Portuguese labels & Mobile Drawer */}
       <Sidebar
         activeSection={activeSection}
@@ -224,7 +251,7 @@ export default function Dashboard() {
         />
         <main
           data-app-scroll-root
-          className="dashboard-scroll-root min-w-0 min-h-0 flex-1 p-3.5 sm:p-6 md:p-8 pb-[calc(var(--mobile-nav-height)+env(safe-area-inset-bottom,0px)+1.5rem)] md:pb-8 pl-[max(0.875rem,env(safe-area-inset-left,0px))] pr-[max(0.875rem,env(safe-area-inset-right,0px))] overflow-x-hidden overflow-y-auto scroll-momentum bg-white dark:bg-[#070707] transition-colors"
+          className="dashboard-scroll-root min-w-0 min-h-0 flex-1 p-3.5 sm:p-6 md:p-8 pb-[calc(var(--mobile-nav-height)+env(safe-area-inset-bottom,0px)+1.5rem)] md:pb-8 pl-[max(0.875rem,env(safe-area-inset-left,0px))] pr-[max(0.875rem,env(safe-area-inset-right,0px))] overflow-x-hidden overflow-y-auto scroll-momentum bg-white dark:bg-[#111111] dark:bg-[radial-gradient(ellipse_at_top,_rgba(255,255,255,0.035)_0%,_transparent_65%)] transition-colors"
         >
           <div key={activeSection} className="w-full min-w-0 p8-page-enter">
             {renderSection()}
@@ -240,6 +267,18 @@ export default function Dashboard() {
         onSaveReminder={handleSaveReminder}
         onToggleReminder={handleToggleReminder}
         onDeleteReminder={handleDeleteReminder}
+      />
+
+      {/* Modal de Boas-Vindas & Onboarding Personalizado da Dra. Sâmara */}
+      <OnboardingModal
+        isOpen={isOnboardingOpen}
+        onClose={() => setIsOnboardingOpen(false)}
+        initialName={currentUser?.name || getStoredUserProfile()?.name || "Dra. Sâmara Souza"}
+        initialEmail={
+          currentUser?.email ||
+          getStoredUserProfile()?.email ||
+          "samara@samaraestetica.com.br"
+        }
       />
 
       {/* iOS-Style Bottom Navigation for Mobile (Thumb-zone access) */}

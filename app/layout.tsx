@@ -13,7 +13,7 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#070707' },
+    { media: '(prefers-color-scheme: dark)', color: '#111111' },
   ],
 };
 
@@ -51,23 +51,29 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
+    <html lang="pt-BR" className="dark" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/Samara_logo.png" type="image/png" sizes="any" />
         <link rel="apple-touch-icon" href="/Samara_logo.png" />
+        <link rel="preload" href="/fonts/Nohemi-Regular.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link href="https://db.onlinewebfonts.com/c/29ddb4605533a38e086b48fa105e0d12?family=Nohemi" rel="stylesheet" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                if (localStorage.getItem('samara_theme') === 'dark') {
+                if (localStorage.getItem('samara_theme') === 'light') {
+                  document.documentElement.classList.remove('dark');
+                } else {
                   document.documentElement.classList.add('dark');
                 }
-              } catch (e) {}
+              } catch (e) {
+                document.documentElement.classList.add('dark');
+              }
             `,
           }}
         />
       </head>
-      <body className="font-sans antialiased bg-white text-black dark:bg-[#070707] dark:text-white transition-colors duration-150">
+      <body className="font-sans antialiased bg-white text-black dark:bg-[#111111] dark:text-[#ffffff] transition-colors duration-150">
         {children}
         <Toaster position="top-center" closeButton />
         <Analytics />

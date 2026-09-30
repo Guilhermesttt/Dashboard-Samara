@@ -11,6 +11,7 @@ import {
   ArrowRight,
   MessageCircle,
   CalendarCheck,
+  ChevronLeft,
   RotateCcw,
   X,
   Volume2,
@@ -38,22 +39,51 @@ import {
 } from "@/lib/firebase-service";
 import { isFirebaseConfigured } from "@/lib/firebase";
 import { SlidingTabs, AnimatedNumber, KineticHeading } from "@/components/motion";
+import { getLocalProcedures, ProcedureItem } from "@/lib/procedures-service";
+import {
+  getStoredAppointments,
+  setStoredAppointments,
+  getStoredPatients,
+  setStoredPatients,
+} from "@/lib/storage-keys";
 
 export interface Appointment {
   id: string;
   patientName: string;
   patientPhone: string;
   procedureName: string;
-  category: "Facial" | "Corporal" | "Facial/Corporal";
+  category: string;
   type: "Aplicação" | "Retorno de 15 Dias" | "Avaliação / Consulta";
   date: string;
   time: string;
   value: number;
   status: "agendado" | "confirmado" | "em_atendimento" | "retorno_pendente" | "concluido";
   notes?: string;
+  originAppointmentId?: string;
+  completedAt?: string;
 }
 
 const initialAppointments: Appointment[] = [];
+
+/**
+ * Sanitiza a lista de agendamentos removendo retornos idênticos duplicados
+ */
+function sanitizeAppointments(rawList: Appointment[]): Appointment[] {
+  const seenReturnKeys = new Set<string>();
+  const clean: Appointment[] = [];
+
+  for (const apt of rawList) {
+    if (apt.status === "retorno_pendente") {
+      const key = `${apt.patientName.trim().toLowerCase()}_${apt.procedureName.trim().toLowerCase()}_${apt.date}`;
+      if (seenReturnKeys.has(key)) {
+        continue;
+      }
+      seenReturnKeys.add(key);
+    }
+    clean.push(apt);
+  }
+  return clean;
+}
 
 const stages: {
   id: Appointment["status"];
@@ -61,19 +91,19 @@ const stages: {
   color: string;
   desc: string;
 }[] = [
-  { id: "agendado", label: "Agendados", color: "bg-blue-500", desc: "Aguardando confirmação" },
-  { id: "retorno_pendente", label: "Retorno 15 Dias", color: "bg-amber-500", desc: "Revisão e retoque" },
-  { id: "confirmado", label: "Confirmados", color: "bg-emerald-500", desc: "Confirmado no WhatsApp" },
-  { id: "em_atendimento", label: "Em Sala", color: "bg-purple-500", desc: "Com a Dra. Samara" },
-  { id: "concluido", label: "Concluídos", color: "bg-gray-400", desc: "Atendimento finalizado" },
+  { id: "agendado", label: "Agendados", color: "bg-[#8D9B7F]", desc: "Aguardando confirmação" },
+  { id: "retorno_pendente", label: "Retorno 15 Dias", color: "bg-[#F7F5F0] text-black", desc: "Revisão e retoque" },
+  { id: "confirmado", label: "Confirmados", color: "bg-[#A8B29A]", desc: "Confirmado no WhatsApp" },
+  { id: "em_atendimento", label: "Em Sala", color: "bg-white text-black", desc: "Com a Dra. Samara" },
+  { id: "concluido", label: "Concluídos", color: "bg-[#333333]", desc: "Atendimento finalizado" },
 ];
 
 export function AppointmentsSection() {
   const [appointments, setAppointments] = useState<Appointment[]>(() => {
     if (typeof window !== "undefined") {
       try {
-        const stored = localStorage.getItem("samara_real_appointments");
-        if (stored) return JSON.parse(stored);
+        const stored = getStoredAppointments();
+        if (stored && stored.length > 0) return sanitizeAppointments(stored);
       } catch (e) {}
     }
     return [];
@@ -81,8 +111,8 @@ export function AppointmentsSection() {
   const [patients, setPatients] = useState<PatientRecord[]>(() => {
     if (typeof window !== "undefined") {
       try {
-        const stored = localStorage.getItem("samara_real_patients");
-        if (stored) return JSON.parse(stored);
+        const stored = getStoredPatients();
+        if (stored && stored.length > 0) return stored;
       } catch (e) {}
     }
     return [];
@@ -96,7 +126,7 @@ export function AppointmentsSection() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
-        localStorage.setItem("samara_real_appointments", JSON.stringify(appointments));
+        setStoredAppointments(appointments);
         window.dispatchEvent(new Event("samara_appointments_updated"));
       } catch (e) {}
     }
@@ -112,8 +142,10 @@ export function AppointmentsSection() {
   const [isAnamneseModalOpen, setIsAnamneseModalOpen] = useState(false);
   const [isEditCustomerModalOpen, setIsEditCustomerModalOpen] = useState(false);
 
-  // Modal Novo Agendamento
+  // Modal Novo Agendamento e Seleção de Cliente
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isNewCustomerModalOpen, setIsNewCustomerModalOpen] = useState(false);
+  const [patientSearchQuery, setPatientSearchQuery] = useState("");
   const [formPatientName, setFormPatientName] = useState("");
   const [formPhone, setFormPhone] = useState("");
   const [formProcedure, setFormProcedure] = useState("Botox");
@@ -123,9 +155,35 @@ export function AppointmentsSection() {
   const [formValue, setFormValue] = useState("900");
   const [formNotes, setFormNotes] = useState("");
 
+  // Pacientes filtrados para a seleção do agendamento
+  const filteredPatientsForSelect = useMemo(() => {
+    const q = patientSearchQuery.toLowerCase().trim();
+    if (!q) return patients;
+    return patients.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        p.phone.includes(q) ||
+        (p.cpf && p.cpf.includes(q))
+    );
+  }, [patients, patientSearchQuery]);
+
   // Modal de Exclusão de Agendamento
   const [appointmentToDelete, setAppointmentToDelete] = useState<Appointment | null>(null);
   const [isDeletingAppointment, setIsDeletingAppointment] = useState(false);
+
+  // Catálogo dinâmico de procedimentos
+  const [availableProcedures, setAvailableProcedures] = useState<ProcedureItem[]>([]);
+
+  useEffect(() => {
+    setAvailableProcedures(getLocalProcedures());
+    const onProcs = () => setAvailableProcedures(getLocalProcedures());
+    window.addEventListener("samara_procedures_updated", onProcs);
+    window.addEventListener("storage", onProcs);
+    return () => {
+      window.removeEventListener("samara_procedures_updated", onProcs);
+      window.removeEventListener("storage", onProcs);
+    };
+  }, []);
 
   // Realtime Firebase Firestore Sync
   useEffect(() => {
@@ -155,130 +213,49 @@ export function AppointmentsSection() {
     }
   }, [appointments]);
 
-  // Auto-Fluxo Clínico Inteligente: move os cards automaticamente ao decorrer dos processos e horários
+  // Alertas Clínicos Semi-Automáticos (Notifica horário sem mover colunas forçadamente)
+  const alertedAppointmentsRef = useRef<Set<string>>(new Set());
   useEffect(() => {
     if (!autoFlowEnabled) return;
 
-    const checkAndAdvance = () => {
+    const checkAndNotify = () => {
       const now = new Date();
-      const currentHours = now.getHours();
-      const currentMinutes = now.getMinutes();
-      const nowTotalMin = currentHours * 60 + currentMinutes;
+      const nowTotalMin = now.getHours() * 60 + now.getMinutes();
 
-      setAppointments((prev) => {
-        let hasChanges = false;
-        const createdReturns: Appointment[] = [];
+      appointments.forEach((apt) => {
+        if (apt.status === "concluido") return;
 
-        const updated = prev.map((apt) => {
-          if (apt.status === "concluido") return apt;
+        const isToday =
+          apt.date?.toLowerCase() === "hoje" ||
+          apt.date === now.toLocaleDateString("pt-BR") ||
+          apt.date === now.toISOString().split("T")[0];
 
-          // Só auto-avança atendimentos marcados para HOJE
-          const isToday =
-            apt.date?.toLowerCase() === "hoje" ||
-            apt.date === now.toLocaleDateString("pt-BR") ||
-            apt.date === now.toISOString().split("T")[0];
+        if (!isToday) return;
 
-          if (!isToday) return apt;
+        const timeMatch = apt.time?.match(/^(\d{1,2}):(\d{2})/);
+        if (!timeMatch) return;
 
-          const timeMatch = apt.time?.match(/^(\d{1,2}):(\d{2})/);
-          if (!timeMatch) return apt;
+        const aptTotalMin = parseInt(timeMatch[1], 10) * 60 + parseInt(timeMatch[2], 10);
 
-          const aptHour = parseInt(timeMatch[1], 10);
-          const aptMin = parseInt(timeMatch[2], 10);
-          const aptTotalMin = aptHour * 60 + aptMin;
-
-          // 1. Agendado -> Confirmado automaticamente se for para hoje e faltar 60 min ou menos
-          if (apt.status === "agendado" && nowTotalMin >= aptTotalMin - 60) {
-            hasChanges = true;
-            toast.info(`📋 Paciente Confirmada: ${apt.patientName}`, {
-              description: `${apt.procedureName} hoje às ${apt.time}. Movida automaticamente para Confirmados.`,
-              duration: 4000,
-            });
-            updateAppointmentStatusInFirestore(apt.id, "confirmado");
-            return { ...apt, status: "confirmado" as const };
-          }
-
-          // 2. Confirmado ou Retorno 15 Dias -> Em Sala quando atingir o horário (ex: 22:40)
-          if (
-            (apt.status === "confirmado" || apt.status === "retorno_pendente") &&
-            nowTotalMin >= aptTotalMin &&
-            nowTotalMin < aptTotalMin + 90
-          ) {
-            hasChanges = true;
+        // Notifica quando faltam 15 minutos ou no horário exato
+        if (nowTotalMin >= aptTotalMin && nowTotalMin < aptTotalMin + 20) {
+          const alertKey = `${apt.id}_alert_${apt.time}`;
+          if (!alertedAppointmentsRef.current.has(alertKey)) {
+            alertedAppointmentsRef.current.add(alertKey);
             playNotificationSound();
-            toast.success(`✨ Paciente Em Sala: ${apt.patientName}`, {
-              description: `Horário ${apt.time} atingido! Iniciando atendimento de ${apt.procedureName} com a Dra. Sâmara.`,
-              duration: 6000,
-            });
-            updateAppointmentStatusInFirestore(apt.id, "em_atendimento");
-            return { ...apt, status: "em_atendimento" as const };
-          }
-
-          // 3. Em Sala -> Concluído após 60 min do horário agendado
-          if (apt.status === "em_atendimento" && nowTotalMin >= aptTotalMin + 60) {
-            hasChanges = true;
-            playNotificationSound();
-
-            const isBotoxOrFiller =
-              apt.procedureName?.toLowerCase().includes("botox") ||
-              apt.procedureName?.toLowerCase().includes("preenchimento") ||
-              apt.procedureName?.toLowerCase().includes("rinomodelação") ||
-              apt.procedureName?.toLowerCase().includes("bio") ||
-              apt.procedureName?.toLowerCase().includes("fios");
-
-            if (isBotoxOrFiller && apt.type !== "Retorno de 15 Dias") {
-              const returnDate = new Date();
-              returnDate.setDate(returnDate.getDate() + 15);
-              const day = String(returnDate.getDate()).padStart(2, "0");
-              const month = String(returnDate.getMonth() + 1).padStart(2, "0");
-              const year = returnDate.getFullYear();
-              const returnFormatted = `${day}/${month}/${year}`;
-
-              const returnApt: Appointment = {
-                id: `apt-ret-${Date.now()}`,
-                patientName: apt.patientName,
-                patientPhone: apt.patientPhone,
-                procedureName: `${apt.procedureName} (Revisão)`,
-                category: apt.category,
-                type: "Retorno de 15 Dias",
-                date: returnFormatted,
-                time: apt.time || "14:00",
-                value: 0,
-                status: "retorno_pendente",
-                notes: `Retorno de revisão automática de 15 dias pós-${apt.procedureName}. Avaliar simetria e retoque.`,
-              };
-              createdReturns.push(returnApt);
-              saveAppointmentToFirestore(returnApt);
-            }
-
-            toast.success(`✓ Procedimento Finalizado: ${apt.patientName}`, {
-              description: `Atendimento de ${apt.procedureName} concluído com sucesso.`,
+            toast.info(`⏰ Horário de Atendimento: ${apt.patientName}`, {
+              description: `${apt.procedureName} agendado para às ${apt.time}. Paciente pronta para atendimento.`,
               duration: 5000,
             });
-            updateAppointmentStatusInFirestore(apt.id, "concluido");
-            return { ...apt, status: "concluido" as const };
           }
-
-          return apt;
-        });
-
-        if (hasChanges) {
-          const finalApts = [...createdReturns, ...updated];
-          try {
-            localStorage.setItem("samara_real_appointments", JSON.stringify(finalApts));
-            window.dispatchEvent(new Event("samara_appointments_updated"));
-          } catch (e) {}
-          return finalApts;
         }
-
-        return prev;
       });
     };
 
-    checkAndAdvance();
-    const timer = setInterval(checkAndAdvance, 10000);
+    checkAndNotify();
+    const timer = setInterval(checkAndNotify, 25000);
     return () => clearInterval(timer);
-  }, [autoFlowEnabled]);
+  }, [autoFlowEnabled, appointments]);
 
   const formatBRL = (val: number) => {
     return new Intl.NumberFormat("pt-BR", {
@@ -338,11 +315,7 @@ export function AppointmentsSection() {
 
       setPatients((prev) => {
         const next = [newRecord, ...prev];
-        if (typeof window !== "undefined") {
-          try {
-            localStorage.setItem("samara_real_patients", JSON.stringify(next));
-          } catch (e) {}
-        }
+        setStoredPatients(next);
         return next;
       });
       patient = newRecord;
@@ -355,17 +328,14 @@ export function AppointmentsSection() {
   const handleUpdatePatient = (updatedPatient: PatientRecord) => {
     setPatients((prev) => {
       const next = prev.map((p) => (p.id === updatedPatient.id ? updatedPatient : p));
-      if (typeof window !== "undefined") {
-        try {
-          localStorage.setItem("samara_real_patients", JSON.stringify(next));
-        } catch (e) {}
-      }
+      setStoredPatients(next);
       return next;
     });
     setSelectedPatient(updatedPatient);
     savePatientToFirestore(updatedPatient);
   };
 
+  // Avançar card para a próxima etapa com trava estrita anti-duplicação
   const handleAdvanceStatus = (id: string, currentStatus: Appointment["status"]) => {
     let nextStatus: Appointment["status"] = "concluido";
 
@@ -385,7 +355,7 @@ export function AppointmentsSection() {
       let createdReturn: Appointment | null = null;
       const targetApt = prev.find((a) => a.id === id);
 
-      // Se concluiu um procedimento em sala que exige retorno de 15 dias (Botox, etc)
+      // Se concluiu um procedimento que exige revisão de 15 dias (Botox, Bio, Preenchimento, etc.)
       if (currentStatus === "em_atendimento" && targetApt && targetApt.type !== "Retorno de 15 Dias") {
         const needsReturn =
           targetApt.procedureName?.toLowerCase().includes("botox") ||
@@ -394,7 +364,16 @@ export function AppointmentsSection() {
           targetApt.procedureName?.toLowerCase().includes("fios") ||
           targetApt.procedureName?.toLowerCase().includes("bio");
 
-        if (needsReturn) {
+        // Trava anti-duplicação estrita: verifica se já existe algum retorno pendente para esse atendimento ou paciente
+        const hasPendingReturn = prev.some(
+          (a) =>
+            a.status === "retorno_pendente" &&
+            (a.originAppointmentId === targetApt.id ||
+              (a.patientName.trim().toLowerCase() === targetApt.patientName.trim().toLowerCase() &&
+                a.procedureName.toLowerCase().includes(targetApt.procedureName.toLowerCase().replace(" (revisão)", ""))))
+        );
+
+        if (needsReturn && !hasPendingReturn) {
           const returnDateObj = new Date();
           returnDateObj.setDate(returnDateObj.getDate() + 15);
           const day = String(returnDateObj.getDate()).padStart(2, "0");
@@ -404,6 +383,7 @@ export function AppointmentsSection() {
 
           createdReturn = {
             id: `apt-ret-${Date.now()}`,
+            originAppointmentId: targetApt.id,
             patientName: targetApt.patientName,
             patientPhone: targetApt.patientPhone,
             procedureName: `${targetApt.procedureName} (Revisão)`,
@@ -418,20 +398,77 @@ export function AppointmentsSection() {
         }
       }
 
-      const nextList = prev.map((item) => (item.id === id ? { ...item, status: nextStatus } : item));
+      const nextList = prev.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              status: nextStatus,
+              completedAt: nextStatus === "concluido" ? new Date().toISOString() : item.completedAt,
+            }
+          : item
+      );
+
       const finalList = createdReturn ? [createdReturn, ...nextList] : nextList;
 
       if (createdReturn) {
         saveAppointmentToFirestore(createdReturn);
-        toast.info(`🔍 Retorno de 15 Dias Agendado Automaticamente!`, {
+        toast.info(`🔍 Retorno de 15 Dias Agendado!`, {
           description: `Revisão de ${targetApt?.patientName} programada para ${createdReturn.date} na coluna de Retornos.`,
-          duration: 7000,
+          duration: 6000,
         });
       }
 
       updateAppointmentStatusInFirestore(id, nextStatus);
       return finalList;
     });
+  };
+
+  // Retroceder card para a etapa anterior
+  const handleRevertStatus = (id: string, currentStatus: Appointment["status"]) => {
+    let prevStatus: Appointment["status"] = "agendado";
+
+    if (currentStatus === "concluido") {
+      prevStatus = "em_atendimento";
+    } else if (currentStatus === "em_atendimento") {
+      prevStatus = "confirmado";
+    } else if (currentStatus === "confirmado") {
+      prevStatus = "agendado";
+    } else if (currentStatus === "retorno_pendente") {
+      prevStatus = "concluido";
+    }
+
+    playNotificationSound();
+
+    setAppointments((prev) => {
+      let nextList = prev.map((item) =>
+        item.id === id
+          ? { ...item, status: prevStatus, completedAt: undefined }
+          : item
+      );
+
+      // Se desfez a conclusão de um atendimento, remove o retorno automático criado a partir dele
+      if (currentStatus === "concluido") {
+        nextList = nextList.filter((item) => item.originAppointmentId !== id);
+      }
+
+      updateAppointmentStatusInFirestore(id, prevStatus);
+      return nextList;
+    });
+
+    toast.info("Etapa retrocedida com sucesso");
+  };
+
+  // Remarcar novo atendimento para cliente concluído
+  const handleReschedule = (apt: Appointment) => {
+    setFormPatientName(apt.patientName);
+    setFormPhone(apt.patientPhone);
+    setFormProcedure(apt.procedureName.replace(" (Revisão)", ""));
+    setFormType("Aplicação");
+    setFormDate("Hoje");
+    setFormTime(apt.time || "14:30");
+    setFormValue(apt.value ? apt.value.toString() : "900");
+    setFormNotes(`Remarcação pós-${apt.procedureName}`);
+    setIsAddModalOpen(true);
   };
 
   // Drag and Drop Handlers
@@ -471,12 +508,13 @@ export function AppointmentsSection() {
 
   const handleCreateAppointment = (e: React.FormEvent) => {
     e.preventDefault();
+    const chosenProc = availableProcedures.find((p) => p.name === formProcedure);
     const newApt: Appointment = {
       id: `apt-${Date.now()}`,
       patientName: formPatientName.trim(),
       patientPhone: formPhone.trim() || "(11) 99999-9999",
       procedureName: formProcedure,
-      category: "Facial",
+      category: chosenProc?.category || "Facial",
       type: formType,
       date: formDate,
       time: formTime,
@@ -517,12 +555,10 @@ export function AppointmentsSection() {
         action: {
           label: "Desfazer",
           onClick: async () => {
-            // Restaura no estado local
             setAppointments((prev) => {
               if (prev.some((item) => item.id === apt.id)) return prev;
               return [apt, ...prev];
             });
-            // Restaura no Firestore
             await saveAppointmentToFirestore(apt);
             toast.success(`Agendamento de ${apt.patientName} restaurado!`);
           },
@@ -537,9 +573,30 @@ export function AppointmentsSection() {
     }
   };
 
+  // Filtro de Agendamentos (com retenção dos concluídos apenas no dia e limpeza às 00:00)
   const filteredAppointments = useMemo(() => {
+    const todayStr = new Date().toLocaleDateString("pt-BR");
+    const todayIsoDate = new Date().toISOString().split("T")[0];
+
     return appointments.filter((apt) => {
-      if (selectedDayFilter === "hoje" && apt.date !== "Hoje") return false;
+      // 1. Se o filtro for "Hoje" e o agendamento estiver concluído:
+      // Só exibe se foi concluído hoje (às 00:00 sai da esteira do dia, mas permanece nos relatórios)
+      if (selectedDayFilter === "hoje" && apt.status === "concluido") {
+        const isCompletedToday =
+          apt.date === "Hoje" ||
+          apt.completedAt?.startsWith(todayIsoDate) ||
+          apt.completedAt?.includes(todayStr);
+        if (!isCompletedToday) return false;
+      }
+
+      if (selectedDayFilter === "hoje" && apt.status !== "concluido") {
+        const isToday =
+          apt.date?.toLowerCase() === "hoje" ||
+          apt.date === todayStr ||
+          apt.date === todayIsoDate;
+        if (!isToday) return false;
+      }
+
       if (selectedDayFilter === "retornos" && apt.type !== "Retorno de 15 Dias") return false;
 
       const q = searchQuery.toLowerCase().trim();
@@ -583,9 +640,9 @@ export function AppointmentsSection() {
 
             <button
               onClick={() => setIsAddModalOpen(true)}
-              className="h-11 sm:h-9 px-3.5 sm:px-4 rounded-xl bg-black dark:bg-white hover:bg-[#262626] dark:hover:bg-[#ededed] active:scale-[0.98] text-white dark:text-black text-xs font-semibold flex items-center gap-1.5 sm:gap-2 shadow-sm transition-all duration-150 cursor-pointer"
+              className="h-11 sm:h-9 px-3.5 sm:px-4 rounded-xl bg-black dark:bg-[#9ca889] hover:bg-[#262626] dark:hover:bg-[#8f9b7c] active:bg-[#849071] active:scale-[0.98] text-white dark:text-[#070707] text-xs font-semibold flex items-center gap-1.5 sm:gap-2 shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_4px_16px_rgba(156,168,137,0.25)] transition-all duration-150 cursor-pointer"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-4 h-4 stroke-[2.2]" />
               <span>Novo Agendamento</span>
             </button>
           </div>
@@ -694,12 +751,12 @@ export function AppointmentsSection() {
             className={cn(
               "flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer shrink-0 active:scale-95",
               autoFlowEnabled
-                ? "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800 hover:bg-purple-100"
+                ? "bg-[#A8B29A]/15 text-[#A8B29A] border-[#A8B29A]/30 hover:bg-[#A8B29A]/25"
                 : "bg-[#f4f4f4] dark:bg-[#1c1c1e] text-[#767676] dark:text-[#a1a1aa] border-transparent hover:bg-[#eaeaea] dark:hover:bg-[#2c2c2e]"
             )}
             title="Ativar/desativar avanço automático de cards por horário"
           >
-            <Zap className={cn("w-3.5 h-3.5", autoFlowEnabled ? "fill-purple-600 dark:fill-purple-400 text-purple-600 dark:text-purple-400 animate-pulse" : "text-[#8f8f8f]")} />
+            <Zap className={cn("w-3.5 h-3.5", autoFlowEnabled ? "fill-[#A8B29A] text-[#A8B29A] animate-pulse" : "text-[#8f8f8f]")} />
             <span className="hidden sm:inline">{autoFlowEnabled ? "Fluxo Ativo" : "Fluxo Manual"}</span>
           </button>
 
@@ -744,7 +801,7 @@ export function AppointmentsSection() {
           </div>
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="h-9 px-4 rounded-xl bg-black dark:bg-white hover:bg-[#262626] dark:hover:bg-[#ededed] text-white dark:text-black text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer"
+            className="h-9 px-4 rounded-xl bg-black dark:bg-[#9ca889] hover:bg-[#262626] dark:hover:bg-[#8f9b7c] active:bg-[#849071] text-white dark:text-[#070707] text-xs font-semibold flex items-center gap-2 shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_4px_16px_rgba(156,168,137,0.25)] transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Novo Agendamento</span>
@@ -795,7 +852,7 @@ export function AppointmentsSection() {
                           setDragOverStage(null);
                         }}
                         className={cn(
-                          "bg-white dark:bg-[#1c1c1e] p-3 rounded-xl border border-black/[0.06] dark:border-white/[0.08] shadow-sm hover:border-black/30 dark:hover:border-white/20 transition-all space-y-2.5 group cursor-grab active:cursor-grabbing",
+                          "bg-white dark:bg-[#18181b] p-3 rounded-xl border border-black/[0.06] dark:border-white/[0.08] shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_2px_8px_rgba(0,0,0,0.3)] hover:border-black/30 dark:hover:border-white/20 transition-all duration-150 space-y-2.5 group cursor-grab active:cursor-grabbing active:scale-[0.99]",
                           isDragging && "opacity-40 scale-95 border-dashed border-black/40 dark:border-white/40"
                         )}
                       >
@@ -881,26 +938,52 @@ export function AppointmentsSection() {
                             </button>
                           </div>
 
-                          {apt.status === "concluido" ? (
-                            <span className="text-[11px] font-bold text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                              <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-                              <span>Concluído</span>
-                            </span>
-                          ) : (
-                            <button
-                              onClick={() => handleAdvanceStatus(apt.id, apt.status)}
-                              className="h-7 px-2.5 rounded-lg bg-[#f4f4f4] dark:bg-[#28282b] hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black text-[11px] font-semibold text-black dark:text-white flex items-center gap-1 transition-colors cursor-pointer"
-                              title="Avançar para o próximo fluxo"
-                            >
-                              <span>
-                                {apt.status === "agendado" && "Confirmar"}
-                                {apt.status === "retorno_pendente" && "Confirmar"}
-                                {apt.status === "confirmado" && "Chamar em Sala"}
-                                {apt.status === "em_atendimento" && "Concluir"}
-                              </span>
-                              <ArrowRight className="w-3 h-3" />
-                            </button>
-                          )}
+                          <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                            {/* Botão de Retroceder etapa (disponível se não for agendado inicial) */}
+                            {apt.status !== "agendado" && (
+                              <button
+                                type="button"
+                                onClick={() => handleRevertStatus(apt.id, apt.status)}
+                                className="h-7 px-2 rounded-lg bg-[#f4f4f4] dark:bg-[#232323] hover:bg-[#ebebeb] dark:hover:bg-[#2e2e2e] text-[10px] font-medium text-[#767676] dark:text-[#8D9B7F] hover:text-black dark:hover:text-white flex items-center gap-0.5 transition-colors cursor-pointer border border-black/[0.04] dark:border-white/[0.06]"
+                                title="Voltar para a etapa anterior"
+                              >
+                                <ChevronLeft className="w-3 h-3" />
+                                <span className="hidden sm:inline">Voltar</span>
+                              </button>
+                            )}
+
+                            {apt.status === "concluido" ? (
+                              <div className="flex items-center gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={() => handleReschedule(apt)}
+                                  className="h-7 px-2.5 rounded-lg bg-[#A8B29A]/15 hover:bg-[#A8B29A]/25 text-[#2f3923] dark:text-[#A8B29A] text-[10px] font-semibold flex items-center gap-1 transition-colors cursor-pointer border border-[#A8B29A]/30"
+                                  title="Remarcar novo atendimento para esta cliente"
+                                >
+                                  <RotateCcw className="w-3 h-3" />
+                                  <span>Remarcar</span>
+                                </button>
+                                <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/50 dark:border-emerald-800/40">
+                                  <CheckCircle2 className="w-3 h-3" />
+                                  <span>Concluído</span>
+                                </span>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => handleAdvanceStatus(apt.id, apt.status)}
+                                className="h-7 px-2.5 rounded-lg bg-[#f4f4f4] dark:bg-[#232323] hover:bg-black hover:text-white dark:hover:bg-[#A8B29A] dark:hover:text-[#111111] text-[11px] font-semibold text-black dark:text-white flex items-center gap-1 transition-colors cursor-pointer border border-black/[0.04] dark:border-white/[0.08]"
+                                title="Avançar para o próximo fluxo"
+                              >
+                                <span>
+                                  {apt.status === "agendado" && "Confirmar"}
+                                  {apt.status === "retorno_pendente" && "Confirmar"}
+                                  {apt.status === "confirmado" && "Chamar em Sala"}
+                                  {apt.status === "em_atendimento" && "Concluir"}
+                                </span>
+                                <ArrowRight className="w-3 h-3" />
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     );
@@ -1043,29 +1126,101 @@ export function AppointmentsSection() {
             </div>
 
             <form onSubmit={handleCreateAppointment} className="space-y-4">
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-black dark:text-white">Nome da Paciente *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Ex: Beatriz Mendonça"
-                  value={formPatientName}
-                  onChange={(e) => setFormPatientName(e.target.value)}
-                  className="w-full h-10 px-3.5 rounded-xl bg-[#f7f7f7] dark:bg-[#252528] border border-transparent focus:border-black dark:focus:border-white text-xs text-black dark:text-white outline-none transition-all placeholder:text-[#8f8f8f]"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-black dark:text-white">Telefone / WhatsApp</label>
-                  <input
-                    type="text"
-                    placeholder="(11) 98765-4321"
-                    value={formPhone}
-                    onChange={(e) => setFormPhone(e.target.value)}
-                    className="w-full h-10 px-3.5 rounded-xl bg-[#f7f7f7] dark:bg-[#252528] border border-transparent focus:border-black dark:focus:border-white text-xs text-black dark:text-white outline-none transition-all placeholder:text-[#8f8f8f]"
-                  />
+              {/* Seleção de Paciente Cadastrada */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-black dark:text-white">
+                    Paciente Cadastrada *
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setIsNewCustomerModalOpen(true)}
+                    className="text-xs font-semibold text-[#8D9B7F] hover:text-[#A8B29A] flex items-center gap-1 transition-colors cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Cadastrar Nova Cliente</span>
+                  </button>
                 </div>
+
+                {formPatientName ? (
+                  <div className="p-3 rounded-xl bg-[#f7f7f7] dark:bg-[#232323] border border-black/[0.06] dark:border-white/[0.08] flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-full bg-[#A8B29A] text-[#111111] font-bold text-xs flex items-center justify-center shrink-0">
+                        {formPatientName.substring(0, 2).toUpperCase()}
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-black dark:text-white block">
+                          {formPatientName}
+                        </span>
+                        <span className="text-[11px] text-[#767676] dark:text-[#8D9B7F]">
+                          {formPhone || "Sem telefone informado"}
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFormPatientName("");
+                        setFormPhone("");
+                      }}
+                      className="text-[11px] text-[#8D9B7F] hover:text-black dark:hover:text-white font-medium cursor-pointer px-2 py-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                    >
+                      Trocar
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#8f8f8f]" />
+                      <input
+                        type="text"
+                        placeholder="Buscar por nome, telefone ou CPF..."
+                        value={patientSearchQuery}
+                        onChange={(e) => setPatientSearchQuery(e.target.value)}
+                        className="w-full h-10 pl-9 pr-3 rounded-xl bg-[#f7f7f7] dark:bg-[#232323] border border-transparent focus:border-[#A8B29A] text-xs text-black dark:text-white outline-none"
+                      />
+                    </div>
+
+                    <div className="max-h-36 overflow-y-auto rounded-xl border border-black/[0.06] dark:border-white/[0.08] divide-y divide-black/[0.04] dark:divide-white/[0.04] bg-[#fafafa] dark:bg-[#1a1a1c]">
+                      {filteredPatientsForSelect.length === 0 ? (
+                        <div className="p-3 text-center text-xs text-[#8f8f8f]">
+                          Nenhuma cliente encontrada.
+                          <button
+                            type="button"
+                            onClick={() => setIsNewCustomerModalOpen(true)}
+                            className="ml-1 text-[#A8B29A] font-semibold hover:underline cursor-pointer"
+                          >
+                            Cadastrar agora
+                          </button>
+                        </div>
+                      ) : (
+                        filteredPatientsForSelect.slice(0, 5).map((pat) => (
+                          <button
+                            key={pat.id}
+                            type="button"
+                            onClick={() => {
+                              setFormPatientName(pat.name);
+                              setFormPhone(pat.phone);
+                              setPatientSearchQuery("");
+                            }}
+                            className="w-full p-2.5 flex items-center justify-between text-left hover:bg-[#ebebeb] dark:hover:bg-[#2a2a2d] transition-colors cursor-pointer"
+                          >
+                            <div>
+                              <span className="text-xs font-semibold text-black dark:text-white block">
+                                {pat.name}
+                              </span>
+                              <span className="text-[10px] text-[#8f8f8f] dark:text-[#8D9B7F]">{pat.phone}</span>
+                            </div>
+                            <span className="text-[10px] text-[#A8B29A] font-semibold">
+                              Selecionar →
+                            </span>
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
 
                 <div className="space-y-1">
                   <label className="text-xs font-semibold text-black dark:text-white">Tipo de Agendamento</label>
@@ -1079,22 +1234,37 @@ export function AppointmentsSection() {
                     <option value="Avaliação / Consulta">Avaliação Inicial</option>
                   </select>
                 </div>
-              </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="text-xs font-semibold text-black dark:text-white">Procedimento</label>
                   <select
                     value={formProcedure}
-                    onChange={(e) => setFormProcedure(e.target.value)}
+                    onChange={(e) => {
+                      setFormProcedure(e.target.value);
+                      const proc = availableProcedures.find((p) => p.name === e.target.value);
+                      if (proc && formType !== "Retorno de 15 Dias") {
+                        setFormValue(proc.price.toString());
+                      }
+                    }}
                     className="w-full h-10 px-3 rounded-xl bg-[#f7f7f7] dark:bg-[#252528] border border-transparent focus:border-black dark:focus:border-white text-xs text-black dark:text-white outline-none"
                   >
-                    <option value="Botox">Botox</option>
-                    <option value="Preenchimento Labial">Preenchimento Labial</option>
-                    <option value="Rinomodelação">Rinomodelação</option>
-                    <option value="Bioestimulador de Colágeno">Bioestimulador de Colágeno</option>
-                    <option value="Fios de PDO">Fios de PDO</option>
-                    <option value="Microagulhamento">Microagulhamento</option>
+                    {availableProcedures.length > 0 ? (
+                      availableProcedures.map((proc) => (
+                        <option key={proc.id} value={proc.name}>
+                          {proc.name} ({proc.category})
+                        </option>
+                      ))
+                    ) : (
+                      <>
+                        <option value="Botox">Botox (Facial)</option>
+                        <option value="Preenchimento Labial">Preenchimento Labial (Facial)</option>
+                        <option value="Rinomodelação">Rinomodelação (Facial)</option>
+                        <option value="Bioestimulador de Colágeno">Bioestimulador de Colágeno (Facial/Corporal)</option>
+                        <option value="Fios de PDO">Fios de PDO (Facial)</option>
+                        <option value="Microagulhamento">Microagulhamento (Facial)</option>
+                      </>
+                    )}
                   </select>
                 </div>
 
@@ -1132,7 +1302,7 @@ export function AppointmentsSection() {
                 </button>
                 <button
                   type="submit"
-                  className="h-10 px-5 rounded-xl bg-black dark:bg-white hover:bg-[#262626] dark:hover:bg-[#ededed] text-white dark:text-black text-xs font-semibold shadow-sm transition-all duration-150 active:scale-[0.98] cursor-pointer"
+                  className="h-10 px-5 rounded-xl bg-black dark:bg-[#9ca889] hover:bg-[#262626] dark:hover:bg-[#8f9b7c] active:bg-[#849071] text-white dark:text-[#070707] text-xs font-semibold shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_4px_16px_rgba(156,168,137,0.25)] transition-all duration-150 active:scale-[0.98] cursor-pointer"
                 >
                   Confirmar Agendamento
                 </button>
@@ -1185,6 +1355,24 @@ export function AppointmentsSection() {
           }}
         />
       )}
+
+      {/* Modal de Cadastro de Nova Cliente acionado diretamente no Agendamento */}
+      <CustomerFormModal
+        isOpen={isNewCustomerModalOpen}
+        onClose={() => setIsNewCustomerModalOpen(false)}
+        onSave={(newPat) => {
+          setPatients((prev) => {
+            const next = [newPat, ...prev];
+            setStoredPatients(next);
+            return next;
+          });
+          savePatientToFirestore(newPat);
+          setFormPatientName(newPat.name);
+          setFormPhone(newPat.phone);
+          setIsNewCustomerModalOpen(false);
+          toast.success(`Cliente ${newPat.name} cadastrada e vinculada ao agendamento!`);
+        }}
+      />
 
       {/* 6. Modal de Confirmação de Exclusão (Apple Design) */}
       <ModalPortal isOpen={Boolean(appointmentToDelete)}>
