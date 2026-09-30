@@ -276,6 +276,9 @@ export default function Dashboard() {
           onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
           userRole={currentUser?.role || "admin"}
           userName={currentUser?.name}
+          userEmail={currentUser?.email}
+          onNavigateSection={setActiveSection}
+          onOpenSettings={() => setActiveSection("settings")}
         />
         <main
           data-app-scroll-root
