@@ -86,23 +86,27 @@ export function Sidebar({
   const navContent = (
     <div className="flex flex-col h-full bg-white dark:bg-[#111111] text-black dark:text-white transition-colors">
       {/* Brand Header */}
-      <div className="h-[68px] flex items-center justify-between px-3.5 border-b border-black/15 dark:border-white/20">
-        <div className="flex items-center gap-2 overflow-hidden flex-1">
+      <div className="h-[72px] flex items-center justify-between px-3.5 border-b border-black/15 dark:border-white/20">
+        <div className="flex items-center gap-2 overflow-hidden flex-1 min-w-0">
           {collapsed ? (
             <button
               onClick={() => onCollapsedChange(false)}
-              className="w-9 h-9 rounded-lg bg-black/[0.04] dark:bg-white/[0.08] hover:bg-black/[0.08] dark:hover:bg-white/[0.14] border border-black/[0.08] dark:border-white/[0.12] flex items-center justify-center shrink-0 transition-all cursor-pointer active:scale-95 mx-auto group"
+              className="w-10 h-10 rounded-xl bg-black/[0.03] dark:bg-white/[0.06] hover:bg-black/[0.08] dark:hover:bg-white/[0.12] border border-black/[0.08] dark:border-white/[0.12] flex items-center justify-center shrink-0 transition-all cursor-pointer active:scale-95 mx-auto group p-1.5"
               title="Expandir menu lateral"
               aria-label="Expandir menu lateral"
             >
-              <PanelLeft className="w-4.5 h-4.5 text-[#767676] dark:text-[#A8B29A] group-hover:text-black dark:group-hover:text-white transition-colors" />
+              <img
+                src="/Samara_logo.png"
+                alt="SS"
+                className="w-full h-full object-contain dark:invert transition-transform group-hover:scale-110"
+              />
             </button>
           ) : (
-            <div className="flex items-center flex-1">
+            <div className="flex items-center flex-1 min-w-0 pr-1">
               <img
                 src="/Samara_Logo_Completa.png"
                 alt="Dra. Sâmara Souza - Estética Avançada"
-                className="h-11 sm:h-12 max-w-[195px] object-contain object-left dark:invert transition-all drop-shadow-sm"
+                className="h-11 sm:h-12 w-auto max-w-[195px] object-contain object-left dark:invert transition-all drop-shadow-sm select-none"
               />
             </div>
           )}
