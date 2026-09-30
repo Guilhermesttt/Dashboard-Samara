@@ -1,5 +1,5 @@
-@import 'tailwindcss';
-@import 'tw-animate-css';
+@import "tailwindcss";
+@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -7,8 +7,8 @@
 /* Typefaces: Geist (Headings / H1) & SF Pro (Body / UI)        */
 /* ============================================================ */
 @font-face {
-  font-family: 'Geist';
-  src: url('/fonts/Geist-Variable.woff2') format('woff2');
+  font-family: "Geist";
+  src: url("/fonts/Geist-Variable.woff2") format("woff2");
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
@@ -18,53 +18,53 @@
   /* Brand Color Palette - Made By Majid */
   --color-deep-black: #111111;
   --color-charcoal: #232323;
-  --color-sage-green: #A8B29A;
-  --color-olive-sage: #8D9B7F;
-  --color-soft-ivory: #F7F5F0;
-  --color-pure-white: #FFFFFF;
+  --color-sage-green: #a8b29a;
+  --color-olive-sage: #8d9b7f;
+  --color-soft-ivory: #f7f5f0;
+  --color-pure-white: #ffffff;
 
   /* Light Mode Palette */
-  --background: #FFFFFF;
+  --background: #ffffff;
   --foreground: #111111;
-  --card: #FFFFFF;
+  --card: #ffffff;
   --card-foreground: #111111;
-  --popover: #FFFFFF;
+  --popover: #ffffff;
   --popover-foreground: #111111;
-  --primary: #8D9B7F;
-  --primary-foreground: #FFFFFF;
-  --secondary: #F7F5F0;
+  --primary: #8d9b7f;
+  --primary-foreground: #ffffff;
+  --secondary: #f7f5f0;
   --secondary-foreground: #111111;
-  --muted: #F7F5F0;
+  --muted: #f7f5f0;
   --muted-foreground: #6c6c6c;
   --text-subtle: #767676;
   --text-faint: #8f8f8f;
-  --accent: #A8B29A;
+  --accent: #a8b29a;
   --accent-foreground: #111111;
   --destructive: #e23014;
-  --destructive-foreground: #FFFFFF;
+  --destructive-foreground: #ffffff;
   --border: #eaeaea;
   --border-subtle: rgba(0, 0, 0, 0.06);
   --input: #e5e5e5;
-  --ring: #A8B29A;
+  --ring: #a8b29a;
   --chart-1: #111111;
   --chart-2: #232323;
-  --chart-3: #8D9B7F;
-  --chart-4: #A8B29A;
-  --chart-5: #F7F5F0;
+  --chart-3: #8d9b7f;
+  --chart-4: #a8b29a;
+  --chart-5: #f7f5f0;
   --radius: 0.75rem;
 
   /* Sidebar Tokens (Light Mode) */
-  --sidebar: #FFFFFF;
+  --sidebar: #ffffff;
   --sidebar-foreground: #111111;
-  --sidebar-primary: #A8B29A;
+  --sidebar-primary: #a8b29a;
   --sidebar-primary-foreground: #111111;
-  --sidebar-accent: #F7F5F0;
+  --sidebar-accent: #f7f5f0;
   --sidebar-accent-foreground: #111111;
   --sidebar-border: #ebebeb;
-  --sidebar-ring: #A8B29A;
+  --sidebar-ring: #a8b29a;
 
   /* Status Colors (Harmonized) */
-  --success: #8D9B7F;
+  --success: #8d9b7f;
   --success-bg: rgba(141, 155, 127, 0.15);
   --success-text: #6f7c62;
   --warning: #f59e0b;
@@ -95,70 +95,79 @@
   --p12-error-text: #d62b11;
 
   /* Material and Shadows */
-  --material-shadow: 0 4px 28px 0 rgba(0, 0, 0, 0.06), 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  --material-shadow:
+    0 4px 28px 0 rgba(0, 0, 0, 0.06), 0 1px 3px 0 rgba(0, 0, 0, 0.04);
   --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.06);
 
   /* Tokens de Destaque Sage Green & Olive Sage */
-  --accent-sage: #A8B29A;
-  --accent-sage-hover: #8D9B7F;
+  --accent-sage: #a8b29a;
+  --accent-sage-hover: #8d9b7f;
   --accent-sage-active: #7c8a6f;
   --accent-sage-glow: rgba(168, 178, 154, 0.28);
   --accent-sage-subtle: rgba(168, 178, 154, 0.12);
 
   /* Typography Stacks: Geist para Headings/H1 e SF Pro para Textos Menores/UI */
-  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", 'Inter', system-ui, sans-serif;
-  --font-display: 'Geist', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+  --font-ui:
+    -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+    "SF Pro", "Geist Sans", Geist, system-ui, sans-serif;
+  --font-display:
+    "Geist", -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
 }
 
 .dark {
   /* Dark Mode Palette - Made By Majid Standard */
-  --background: #111111;         /* DEEP BLACK */
-  --foreground: #FFFFFF;         /* PURE WHITE */
-  --card: #232323;               /* CHARCOAL */
-  --card-foreground: #FFFFFF;
-  --popover: #232323;            /* CHARCOAL */
-  --popover-foreground: #FFFFFF;
-  --primary: #A8B29A;            /* SAGE GREEN */
+  --background: #111111; /* DEEP BLACK */
+  --foreground: #ffffff; /* PURE WHITE */
+  --card: #232323; /* CHARCOAL */
+  --card-foreground: #ffffff;
+  --popover: #232323; /* CHARCOAL */
+  --popover-foreground: #ffffff;
+  --primary: #a8b29a; /* SAGE GREEN */
   --primary-foreground: #111111; /* DEEP BLACK */
   --secondary: #1a1a1a;
-  --secondary-foreground: #FFFFFF;
+  --secondary-foreground: #ffffff;
   --muted: #282828;
-  --muted-foreground: #A8B29A;
-  --text-subtle: #F7F5F0;        /* SOFT IVORY */
-  --text-faint: #8D9B7F;         /* OLIVE SAGE */
-  --accent: #A8B29A;             /* SAGE GREEN */
+  --muted-foreground: #a8b29a;
+  --text-subtle: #f7f5f0; /* SOFT IVORY */
+  --text-faint: #8d9b7f; /* OLIVE SAGE */
+  --accent: #a8b29a; /* SAGE GREEN */
   --accent-foreground: #111111;
   --destructive: #ef4444;
-  --destructive-foreground: #FFFFFF;
+  --destructive-foreground: #ffffff;
   --border: rgba(255, 255, 255, 0.08);
   --border-subtle: rgba(255, 255, 255, 0.05);
   --input: #1a1a1a;
-  --ring: #A8B29A;
+  --ring: #a8b29a;
 
   /* Sidebar Tokens (Dark Mode) */
   --sidebar: #161616;
-  --sidebar-foreground: #FFFFFF;
-  --sidebar-primary: #A8B29A;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #a8b29a;
   --sidebar-primary-foreground: #111111;
   --sidebar-accent: #232323;
-  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-accent-foreground: #ffffff;
   --sidebar-border: rgba(255, 255, 255, 0.08);
-  --sidebar-ring: #A8B29A;
+  --sidebar-ring: #a8b29a;
 
-  --material-shadow: 0 4px 28px 0 rgba(0, 0, 0, 0.6), 0 1px 3px 0 rgba(0, 0, 0, 0.4);
-  --card-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 4px 20px 0 rgba(0, 0, 0, 0.5);
+  --material-shadow:
+    0 4px 28px 0 rgba(0, 0, 0, 0.6), 0 1px 3px 0 rgba(0, 0, 0, 0.4);
+  --card-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 4px 20px 0 rgba(0, 0, 0, 0.5);
 }
 
 @theme inline {
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", 'Inter', system-ui, sans-serif;
-  --font-display: 'Geist', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    "SF Pro", "Inter", system-ui, sans-serif;
+  --font-display:
+    "Geist", -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --color-deep-black: #111111;
   --color-charcoal: #232323;
-  --color-sage-green: #A8B29A;
-  --color-olive-sage: #8D9B7F;
-  --color-soft-ivory: #F7F5F0;
-  --color-pure-white: #FFFFFF;
+  --color-sage-green: #a8b29a;
+  --color-olive-sage: #8d9b7f;
+  --color-soft-ivory: #f7f5f0;
+  --color-pure-white: #ffffff;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -208,13 +217,23 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
-  h1, h2, h3, h4, .font-heading, .font-display {
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-heading,
+  .font-display {
     font-family: var(--font-display);
     color: #000000;
     font-weight: 700;
     letter-spacing: -0.02em;
   }
-  .dark h1, .dark h2, .dark h3, .dark h4, .dark .font-heading, .dark .font-display {
+  .dark h1,
+  .dark h2,
+  .dark h3,
+  .dark h4,
+  .dark .font-heading,
+  .dark .font-display {
     color: #ffffff;
   }
 }
@@ -274,7 +293,7 @@
 
 .dark body {
   background-color: #111111 !important;
-  color: #FFFFFF !important;
+  color: #ffffff !important;
 }
 
 .dark .bg-white {
@@ -433,7 +452,9 @@
 /* Interactive Icon transitions (Gray -> Black on hover) */
 .icon-reactive {
   color: #8f8f8f;
-  transition: color 150ms var(--ease-smooth-out), transform 150ms var(--ease-smooth-out);
+  transition:
+    color 150ms var(--ease-smooth-out),
+    transform 150ms var(--ease-smooth-out);
 }
 
 .icon-reactive:hover,
@@ -446,7 +467,9 @@ tr:hover .icon-reactive {
 /* Squircle Curvature helper */
 .squircle {
   border-radius: 20px;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.04),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.06);
 }
 
 .squircle-sm {
@@ -471,7 +494,10 @@ tr:hover .icon-reactive {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: background-color 150ms var(--ease-smooth-out), transform 100ms var(--ease-smooth-out), opacity 150ms ease;
+  transition:
+    background-color 150ms var(--ease-smooth-out),
+    transform 100ms var(--ease-smooth-out),
+    opacity 150ms ease;
   user-select: none;
 }
 
@@ -496,7 +522,9 @@ tr:hover .icon-reactive {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: border-color 150ms var(--ease-smooth-out), background-color 150ms var(--ease-smooth-out);
+  transition:
+    border-color 150ms var(--ease-smooth-out),
+    background-color 150ms var(--ease-smooth-out);
 }
 
 .checkbox-custom:hover {
@@ -661,4 +689,3 @@ html {
     background-color: #0c0c0c !important;
   }
 }
-

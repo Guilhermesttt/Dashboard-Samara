@@ -5,6 +5,7 @@ import type { Section } from "@/app/page";
 import { Bell, Search, Calendar, Menu } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getStoredUserProfile, UserProfileData } from "@/lib/storage-keys";
+import { NotificationBadge, StaggerText } from "@/components/motion";
 
 interface HeaderProps {
   activeSection: Section;
@@ -59,8 +60,8 @@ export function Header({
           <Menu className="w-5 h-5" />
         </button>
 
-        <h1 className="min-w-0 text-base sm:text-xl font-bold text-black dark:text-white tracking-tight truncate">
-          {sectionTitles[activeSection] || "Painel"}
+        <h1 className="min-w-0 text-base sm:text-xl font-bold text-black dark:text-white tracking-tight truncate font-display">
+          <StaggerText>{sectionTitles[activeSection] || "Painel"}</StaggerText>
         </h1>
         <div className="hidden lg:flex items-center gap-1.5 text-xs text-[#767676] dark:text-[#8D9B7F] bg-[#f7f7f7] dark:bg-[#232323] px-2.5 py-1 rounded-lg border border-black/[0.04] dark:border-white/[0.06]">
           <Calendar className="w-3.5 h-3.5 text-[#8f8f8f]" />
@@ -95,9 +96,7 @@ export function Header({
         >
           <Bell className="w-4 h-4 text-black dark:text-white" />
           {pendingRemindersCount > 0 ? (
-            <span className="flex items-center justify-center h-4 min-w-[16px] px-1 rounded-full bg-rose-500 text-white text-[9px] font-bold">
-              {pendingRemindersCount}
-            </span>
+            <NotificationBadge count={pendingRemindersCount} variant="danger" />
           ) : (
             <span className="hidden sm:inline text-xs font-semibold text-black dark:text-white">
               Lembretes

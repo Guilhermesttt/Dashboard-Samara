@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { TiltCard } from "@/components/motion";
 
 interface MetricCardProps {
   title: string;
@@ -22,10 +23,15 @@ export function MetricCard({
   delay = 0,
 }: MetricCardProps) {
   return (
-    <div
-      className="p8-page-enter group relative min-w-0 max-w-full bg-white dark:bg-[#232323] border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-3.5 sm:p-5 hover:border-black/20 dark:hover:border-white/20 transition-all duration-200 overflow-hidden shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_16px_rgba(0,0,0,0.4)] active:scale-[0.99]"
+    <TiltCard
+      maxTilt={5}
+      glareOpacity={0.14}
+      className="p8-page-enter h-full"
       style={{ animationDelay: `${delay * 100}ms`, animationFillMode: "both" }}
     >
+      <div
+        className="group relative h-full min-w-0 max-w-full bg-white dark:bg-[#232323] border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-3.5 sm:p-5 hover:border-black/20 dark:hover:border-white/20 transition-all duration-200 overflow-hidden shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_16px_rgba(0,0,0,0.4)] active:scale-[0.99]"
+      >
       <div className="relative min-w-0">
         <div className="flex items-start justify-between gap-1 mb-2 sm:mb-3">
           <span className="text-xs sm:text-sm text-[#767676] dark:text-[#F7F5F0]/80 font-medium leading-snug line-clamp-1">
@@ -55,5 +61,6 @@ export function MetricCard({
         </div>
       </div>
     </div>
+    </TiltCard>
   );
 }

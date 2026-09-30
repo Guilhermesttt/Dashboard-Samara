@@ -38,7 +38,7 @@ import {
   deleteAppointmentFromFirestore,
 } from "@/lib/firebase-service";
 import { isFirebaseConfigured } from "@/lib/firebase";
-import { SlidingTabs, AnimatedNumber, KineticHeading } from "@/components/motion";
+import { SlidingTabs, AnimatedNumber, KineticHeading, ShimmerButton, TiltCard } from "@/components/motion";
 import { getLocalProcedures, ProcedureItem } from "@/lib/procedures-service";
 import {
   getStoredAppointments,
@@ -638,74 +638,82 @@ export function AppointmentsSection() {
               <span className="hidden sm:inline">Alerta Sonoro</span>
             </button>
 
-            <button
+            <ShimmerButton
               onClick={() => setIsAddModalOpen(true)}
-              className="h-11 sm:h-9 px-3.5 sm:px-4 rounded-xl bg-black dark:bg-[#9ca889] hover:bg-[#262626] dark:hover:bg-[#8f9b7c] active:bg-[#849071] active:scale-[0.98] text-white dark:text-[#070707] text-xs font-semibold flex items-center gap-1.5 sm:gap-2 shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_4px_16px_rgba(156,168,137,0.25)] transition-all duration-150 cursor-pointer"
+              className="h-11 sm:h-9 px-3.5 sm:px-4"
             >
               <Plus className="w-4 h-4 stroke-[2.2]" />
               <span>Novo Agendamento</span>
-            </button>
+            </ShimmerButton>
           </div>
         </div>
       </div>
 
-      {/* 2. Métricas da Agenda */}
+      {/* 2. Métricas da Agenda com Tilt 3D (transitions.dev P19) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5">
-        <div className="bg-white dark:bg-[#121212] p-3 sm:p-4 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)]">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">Pacientes Hoje</span>
-            <span className="w-7 h-7 rounded-lg bg-[#f6f6f6] dark:bg-[#1c1c1e] flex items-center justify-center text-black dark:text-white">
-              <User className="w-3.5 h-3.5" />
-            </span>
+        <TiltCard maxTilt={5} glareOpacity={0.12} className="h-full">
+          <div className="h-full bg-white dark:bg-[#121212] p-3 sm:p-4 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)]">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">Pacientes Hoje</span>
+              <span className="w-7 h-7 rounded-lg bg-[#f6f6f6] dark:bg-[#1c1c1e] flex items-center justify-center text-black dark:text-white">
+                <User className="w-3.5 h-3.5" />
+              </span>
+            </div>
+            <div className="text-xl sm:text-2xl font-bold text-black dark:text-white mt-1.5 sm:mt-2">
+              <AnimatedNumber value={appointments.filter((a) => a.date === "Hoje").length} ariaLabel="Pacientes hoje" />
+            </div>
+            <span className="text-[11px] text-[#8f8f8f] dark:text-[#a1a1aa] mt-0.5 block truncate">Atendimentos no dia</span>
           </div>
-          <div className="text-xl sm:text-2xl font-bold text-black dark:text-white mt-1.5 sm:mt-2">
-            <AnimatedNumber value={appointments.filter((a) => a.date === "Hoje").length} ariaLabel="Pacientes hoje" />
-          </div>
-          <span className="text-[11px] text-[#8f8f8f] dark:text-[#a1a1aa] mt-0.5 block truncate">Atendimentos no dia</span>
-        </div>
+        </TiltCard>
 
-        <div className="bg-white dark:bg-[#121212] p-3 sm:p-4 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)]">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">Retornos (15d)</span>
-            <span className="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-950/40 flex items-center justify-center text-amber-600 dark:text-amber-400">
-              <RotateCcw className="w-3.5 h-3.5" />
-            </span>
+        <TiltCard maxTilt={5} glareOpacity={0.12} className="h-full">
+          <div className="h-full bg-white dark:bg-[#121212] p-3 sm:p-4 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)]">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">Retornos (15d)</span>
+              <span className="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-950/40 flex items-center justify-center text-amber-600 dark:text-amber-400">
+                <RotateCcw className="w-3.5 h-3.5" />
+              </span>
+            </div>
+            <div className="text-xl sm:text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1.5 sm:mt-2">
+              <AnimatedNumber value={appointments.filter((a) => a.type === "Retorno de 15 Dias").length} ariaLabel="Retornos de 15 dias" />
+            </div>
+            <span className="text-[11px] text-amber-700 dark:text-amber-400 mt-0.5 block font-medium truncate">Revisões de Botox</span>
           </div>
-          <div className="text-xl sm:text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1.5 sm:mt-2">
-            <AnimatedNumber value={appointments.filter((a) => a.type === "Retorno de 15 Dias").length} ariaLabel="Retornos de 15 dias" />
-          </div>
-          <span className="text-[11px] text-amber-700 dark:text-amber-400 mt-0.5 block font-medium truncate">Revisões de Botox</span>
-        </div>
+        </TiltCard>
 
-        <div className="bg-white dark:bg-[#121212] p-3 sm:p-4 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)]">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">Confirmados</span>
-            <span className="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-            </span>
+        <TiltCard maxTilt={5} glareOpacity={0.12} className="h-full">
+          <div className="h-full bg-white dark:bg-[#121212] p-3 sm:p-4 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)]">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">Confirmados</span>
+              <span className="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+              </span>
+            </div>
+            <div className="text-xl sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1.5 sm:mt-2">
+              <AnimatedNumber value={appointments.filter((a) => a.status === "confirmado" || a.status === "em_atendimento").length} ariaLabel="Agendamentos confirmados" />
+            </div>
+            <span className="text-[11px] text-emerald-700 dark:text-emerald-400 mt-0.5 block font-medium truncate">Presença confirmada</span>
           </div>
-          <div className="text-xl sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1.5 sm:mt-2">
-            <AnimatedNumber value={appointments.filter((a) => a.status === "confirmado" || a.status === "em_atendimento").length} ariaLabel="Agendamentos confirmados" />
-          </div>
-          <span className="text-[11px] text-emerald-700 dark:text-emerald-400 mt-0.5 block font-medium truncate">Presença confirmada</span>
-        </div>
+        </TiltCard>
 
-        <div className="bg-white dark:bg-[#121212] p-3 sm:p-4 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)]">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">Faturamento</span>
-            <span className="w-7 h-7 rounded-lg bg-[#f6f6f6] dark:bg-[#1c1c1e] flex items-center justify-center text-black dark:text-white">
-              <Sparkles className="w-3.5 h-3.5" />
-            </span>
+        <TiltCard maxTilt={5} glareOpacity={0.12} className="h-full">
+          <div className="h-full bg-white dark:bg-[#121212] p-3 sm:p-4 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_1px_3px_0_rgba(0,0,0,0.02)]">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-[#767676] dark:text-[#a1a1aa] font-medium">Faturamento</span>
+              <span className="w-7 h-7 rounded-lg bg-[#f6f6f6] dark:bg-[#1c1c1e] flex items-center justify-center text-black dark:text-white">
+                <Sparkles className="w-3.5 h-3.5" />
+              </span>
+            </div>
+            <div className="text-xl sm:text-2xl font-bold text-black dark:text-white mt-1.5 sm:mt-2 truncate">
+              {formatBRL(
+                appointments
+                  .filter((a) => a.date === "Hoje")
+                  .reduce((acc, curr) => acc + curr.value, 0)
+              )}
+            </div>
+            <span className="text-[11px] text-[#8f8f8f] dark:text-[#a1a1aa] mt-0.5 block truncate">Estimativa do dia</span>
           </div>
-          <div className="text-xl sm:text-2xl font-bold text-black dark:text-white mt-1.5 sm:mt-2 truncate">
-            {formatBRL(
-              appointments
-                .filter((a) => a.date === "Hoje")
-                .reduce((acc, curr) => acc + curr.value, 0)
-            )}
-          </div>
-          <span className="text-[11px] text-[#8f8f8f] dark:text-[#a1a1aa] mt-0.5 block truncate">Estimativa do dia</span>
-        </div>
+        </TiltCard>
       </div>
 
       {/* 3. Filtros e Alternância */}
